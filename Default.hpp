@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 #include <random>
+#include <map>
 // OpenGL header include
 #include <gl/glew.h> 
 #include <gl/freeglut.h>

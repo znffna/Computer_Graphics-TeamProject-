@@ -418,6 +418,73 @@ void change_background() {
 	background_color = { urd(gen), urd(gen), urd(gen) };
 }
 
+
+class TIMER {
+	//디버그용 출력
+	void show_timerName(const unsigned int idx) {
+		std::cout << "timer[" << idx << "] = " << timer_name[idx];
+	}
+
+	//디버그용 출력
+	void show_boolean(const bool b) {
+		std::cout << b ? " True " : " False ";
+	}
+public:
+	size_t size{};						//--- 현재 적용된 타이머 갯수
+	std::vector<bool> timers;			//--- index값의 타이머를 키고 껏는지.
+	std::vector<bool> reverse;			//--- index값의 타이머에 주어지는 옵션.(대문자 = false, 소문자 = true)
+	std::vector<std::string> timer_name;//--- index값의 역할 저장
+	std::map <unsigned int, std::string> index;	// 타이머에 index와 이름을 연결.
+
+	//--- Timer 를 추가함.
+	void insert(const std::string& timerName, const bool& timer_power = false, const bool& timer_reverse = false) {
+		timers.push_back(timer_power);
+		reverse.push_back(timer_reverse);
+		timer_name.push_back(timerName);
+		index.insert({ size, timerName });
+		size = timers.size();
+	}
+
+	void show_list() {
+		for (int i = 0; i < size; ++i) {
+			show_timerName(i);
+			std::cout << ", 타이머 상황: ";
+			show_boolean(timers[i]);
+			std::cout << ", 타이머 리버스 : ";
+			show_boolean(reverse[i]);
+			std::cout << '\n';
+		}
+	}
+
+	//--- 타이머를 변경 시킨다.
+	void switching_timer(const int& idx, const bool& option) {
+		if (idx >= size) {		//입력 오류 방지
+			std::cout << "idx가 주어진 timers 수를 벗어남. ( " << idx << " > " << size << ") " << '\n';
+			return;
+		}
+
+		if (timers[idx] and reverse[idx] == option) {	// 현재 실행중인 타이머를 누를시.
+			timers[idx] = false;						// 해당 타이머를 중지 시킨다.
+		}
+		else if (timers[idx]) {							// 현재 실행중인 타이머인데 대/소문자 차이일 경우.
+			reverse[idx] = option;						// reverse 값이 바뀐다.
+		}
+		else {											// 실행중이지 않은 타이머를 누를 경우.
+			timers[idx] = true;							// 해당 타이머를 키고,
+			reverse[idx] = option;						// 해당 reverse 값을 넣어준다.
+		}
+	}
+
+	void reset() {
+		timers.clear();
+		reverse.clear();
+		timer_name.clear();
+		index.clear();
+		std::cout << "Timer 리셋 완료" << '\n';
+	}
+
+
+};
 void Timer_option(const int& type, const bool& option) {
 	if (timers[type] and reverse[type] == option) {
 		timers[type] = false;
