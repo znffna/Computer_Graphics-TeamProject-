@@ -169,7 +169,6 @@ void Shader::worldTransform(const Object& obj) {
 	glm::mat4 World_transformMatrix(1.0f);
 
 	obj.World_Transform(World_transformMatrix);
-	(obj.mesh).Object_Space_Transform(World_transformMatrix);	//오브젝트 파일에서 크기 정규화/ 중점 원점화
 
 	setUniform(World_transformMatrix, "modelTransform");
 	//glUniformMatrix4fv(getUniformLocate("modelTransform"), 1, GL_FALSE, glm::value_ptr(World_transformMatrix));
@@ -182,7 +181,6 @@ void Shader::worldTransform(const Object& obj, const glm::mat4& transMatrix) {
 	World_transformMatrix = transMatrix * World_transformMatrix;
 
 	obj.World_Transform(World_transformMatrix);
-	(obj.mesh).Object_Space_Transform(World_transformMatrix);	//오브젝트 파일에서 크기 정규화/ 중점 원점화
 
 	setUniform(World_transformMatrix, "modelTransform");
 	//glUniformMatrix4fv(getUniformLocate("modelTransform"), 1, GL_FALSE, glm::value_ptr(World_transformMatrix));

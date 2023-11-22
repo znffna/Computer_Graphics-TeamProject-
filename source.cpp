@@ -14,6 +14,18 @@ const std::string User_guide[] = {
 "-------------------"
 //"paste_here",
 };
+
+
+// 사용할 obj 저장할 포인터
+std::shared_ptr<Mesh> CUBE;
+std::shared_ptr<Mesh> PYRAMID;
+std::shared_ptr<Mesh> SPHERE;
+
+// 사용할 obj의 파일 위치
+const std::string cube_storage_location= "resource\\cube.obj";
+const std::string pyramid_storage_location = "resource\\pyramid.obj";
+const std::string sphere_storage_location = "resource\\sphere.obj";
+
 //--------------------------------------------------------
 //--- 메인 함수
 //--------------------------------------------------------
@@ -30,6 +42,7 @@ GLvoid Timer(int value);											//--- 타이머      콜백 함수
 //--------------------------------------------------------
 //--- 메인 변수 선언
 //--------------------------------------------------------
+
 
 //flag 및 베이스 변수들
 static glm::vec3 background_color{ 0.7f, 0.7f, 0.7f };	//--- 배경 색깔
@@ -52,6 +65,9 @@ static Camera camera;
 
 // 조명 위치 적용할 Object
 Object* Light;
+
+
+
 
 //--------------------------------------------------------
 //--- 실습용 함수 선언
@@ -86,14 +102,17 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설�
 	//--- GLEW 초기화하기
 	glewExperimental = GL_TRUE;
 	glewInit();
+
 	//--- 세이더 생성
 	shader.make_shaderProgram();
 
 	//--- 기본 셋팅 초기화
-	Mesh::debug = false;
 	setup();
 
-	//키보드 조작 명령어 출력
+	// 디버그 세팅
+	Mesh::debug = false;
+
+	// 키보드 조작 명령어 출력
 	for (const std::string& s : User_guide) {
 		std::cout << s << '\n';
 	}
@@ -123,21 +142,27 @@ GLvoid setup() {
 
 	Mesh::debug = false;
 
+	{	// 가져다 사용할 obj 읽어오기
+		CUBE = std::make_shared<Mesh>(cube_storage_location);
+		PYRAMID = std::make_shared<Mesh>(pyramid_storage_location);
+		SPHERE = std::make_shared<Mesh>(sphere_storage_location);
+	}
+
 	{	//카메라 위치 초기화
 		camera.reset();
 		camera.setPos({ 0.0f, 0.0f, 25.0f * sqrt(2)});
 	}
 
 	{	//조명 초기화
-		Light = new Object;
-		Light->reset(MESH_CUBE);
+		Light = new Object(CUBE);
 		Light->setRotate({ 0.0f, 0.0f, 0.0f });
 		Light->setTranslation({ 0.0f, 0.0f, 10.0f });	//light_pos
-		Light->own_point = { 1.0f, 1.0f, 1.0f };			//light_color
+		Light->setColor({ 1.0f, 1.0f, 1.0f });			//light_color
 	}
 	
 	{	// 오브젝트 초기화
-
+		Object tmp(SPHERE);
+		world.push_back(std::move(tmp));
 	}
 }
 
@@ -149,25 +174,18 @@ void RenderWorld(Camera& camera, int perspective) {
 	const int uniform_color{ 0 };
 	//--- 렌더링 파이프라인에 세이더 불러오기
 	shader.use();
-	//space_shader.use();
-	//glUseProgram(shaderProgramID);
 
 	//--- 깊이 비교 켜기	
 	depthcheck ? glEnable(GL_DEPTH_TEST) : glDisable(GL_DEPTH_TEST);
 
 	glDisable(GL_CULL_FACE);
-	//glEnable(GL_CULL_FACE);
 	//---- 뷰 변환
 	shader.viewTransform(camera);
 
 	//---- 투영 변환	
-	if (perspective) {	//원근 투영
-		shader.perspectiveTransform(camera);
-	}
-	else {	//직각 투영
-		shader.orthoTransform(camera);
-	}
+	perspective? shader.perspectiveTransform(camera) : shader.orthoTransform(camera);	// true : 원근 투영 / false : 직각 투영
 
+	//--- 조명 설정
 	shader.setLight(Shader::lightOption);
 
 	//--- 기본 색상 설정
@@ -178,11 +196,11 @@ void RenderWorld(Camera& camera, int perspective) {
 	//--- 조명 위치 출력
 	{	
 		shader.Colorselect(uniform_color);
-		shader.setColor({Light->own_point});
-		glm::vec3 tmp_translation = Light->translation;
-		Light->translation = Light->translation + (glm::normalize(Light->translation) * glm::vec3{ 1.5f });
+		shader.setColor({Light->getColor()});
+		glm::vec3 tmp_translation = Light->getTranslation();
+		Light->setTranslation(Light->getTranslation() + (glm::normalize(Light->getTranslation()) * glm::vec3{ 1.5f }));
 		shader.draw_object(*Light);
-		Light->translation = tmp_translation;
+		Light->setTranslation(tmp_translation);
 
 	}
 
@@ -193,7 +211,7 @@ void RenderWorld(Camera& camera, int perspective) {
 		int cnt{};
 		
 		for (const Object& o : world) {
-			shader.setColor({ o.color });
+			shader.setColor({ o.getColor()});
 			shader.draw_object(o);
 			++cnt;
 		}
@@ -225,8 +243,8 @@ GLvoid drawScene()
 
 	Shader::debug = true;
 	// 조명 옵션 설정 
-	shader.setUniform(Light->translation, "lightPos");
-	shader.setUniform(Light->own_point, "lightColor");
+	shader.setUniform(Light->getTranslation(), "lightPos");
+	shader.setUniform(Light->getColor(), "lightColor");
 	shader.setUniform(camera.getPos(), "viewPos");
 	Shader::debug = false;
 	RenderWorld(camera, Projective_PERSPECTIVE);
@@ -354,35 +372,35 @@ GLvoid handleMouseWheel(int wheel, int direction, int x, int y) {
 //--- 타이머 콜백 함수
 GLvoid Timer(int value) { //--- 콜백 함수: 타이머 콜백 함수
 
-	//----------------카메라 변환------------------------
-	// x/X: 좌우로 이동
-	if (timers[0]) {
-		int sign = reverse[0] ? 1 : -1;
-		for (Object& o : world) {
-			o.rotate.x += sign * 1.0f;
-		}
-	}
-	// r: 조명을 객체의 중심 y축에 대하여 양/음 방향으로 공전시키기
-	if (timers[1]) {
-		int sign = reverse[1] ? 1 : -1;
-		Light->translation_rotate({ 0.0f, sign * 1.0f, 0.0f });
-		Light->addRotate_y(sign * 1.0f);
-	}
-	// y / Y: 카메라가 현재 위치에서 화면 중심 y축을 기준으로 공전
-	if (timers[2]) {
-		int sign = reverse[2] ? 1 : -1;
-		//camera.rotate_Pos_y(sign * 5.0f);
-		for (Object& o : world) {
-			o.rotate.y += sign * 1.0f;
-		}
-	}
-	// z / Z : 조명을 객체에 가깝게/멀게 이동하기
-	if (timers[3]) {
-		int sign = reverse[3] ? 1 : -1;
-		Object& light = *Light;
-		glm::vec3 dir = glm::vec3{ static_cast<float>(sign * 0.03f)  } *glm::normalize(light.translation);
-		light.translation += dir;
-	}
+	////----------------카메라 변환------------------------
+	//// x/X: 좌우로 이동
+	//if (timers[0]) {
+	//	int sign = reverse[0] ? 1 : -1;
+	//	for (Object& o : world) {
+	//		o.rotate.x += sign * 1.0f;
+	//	}
+	//}
+	//// r: 조명을 객체의 중심 y축에 대하여 양/음 방향으로 공전시키기
+	//if (timers[1]) {
+	//	int sign = reverse[1] ? 1 : -1;
+	//	Light->translation_rotate({ 0.0f, sign * 1.0f, 0.0f });
+	//	Light->addRotate_y(sign * 1.0f);
+	//}
+	//// y / Y: 카메라가 현재 위치에서 화면 중심 y축을 기준으로 공전
+	//if (timers[2]) {
+	//	int sign = reverse[2] ? 1 : -1;
+	//	//camera.rotate_Pos_y(sign * 5.0f);
+	//	for (Object& o : world) {
+	//		o.rotate.y += sign * 1.0f;
+	//	}
+	//}
+	//// z / Z : 조명을 객체에 가깝게/멀게 이동하기
+	//if (timers[3]) {
+	//	int sign = reverse[3] ? 1 : -1;
+	//	Object& light = *Light;
+	//	glm::vec3 dir = glm::vec3{ static_cast<float>(sign * 0.03f)  } *glm::normalize(light.translation);
+	//	light.translation += dir;
+	//}
 	
 	glutPostRedisplay();	
 	glutTimerFunc(20, Timer, value); // 타이머함수 재 설정
@@ -482,9 +500,8 @@ public:
 		index.clear();
 		std::cout << "Timer 리셋 완료" << '\n';
 	}
-
-
 };
+
 void Timer_option(const int& type, const bool& option) {
 	if (timers[type] and reverse[type] == option) {
 		timers[type] = false;

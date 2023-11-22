@@ -4,7 +4,7 @@ float window_row = 800;			//윈도우 크기(가로)
 float window_col = 600;			//윈도우 크기(세로)
 
 void show_vec3(const glm::vec3& vector) {
-	std::cout << "{" << vector.x << ", " << vector.y << ", " << vector.z << "}" << '\n';
+	std::cout << "{" << vector.x << ", " << vector.y << ", " << vector.z << "}";
 }
 
 float random_number(const float& min, const float& max) {
@@ -39,7 +39,7 @@ glm::vec3 CalculateBezierPoint(float t, const glm::vec3& p0, const glm::vec3& p1
 }
 
 void print_vec3(const glm::vec3& vector) {
-	std::cout << "{" << vector.x << ", " << vector.y << ", " << vector.z << "} " << '\n';
+	std::cout << vector.x << ", " << vector.y << ", " << vector.z << '\n';
 }
 
 bool opengl_error() {

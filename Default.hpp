@@ -44,9 +44,6 @@ extern float window_col;			//윈도우 크기(세로)
 //error가 있을시 받아서 출력하는 함수.
 bool opengl_error();
 
-// 이제 안씀 -> pirnt_vec3로 변경
-void show_vec3(const glm::vec3&);
-
 // mt19937에 의한 랜덤 실수값 생성
 float random_number(const float& , const float& );
 // mt19937에 의한 랜덤 정수값 생성

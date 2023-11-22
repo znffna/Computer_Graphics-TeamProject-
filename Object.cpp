@@ -1,231 +1,144 @@
 #include "Object.hpp"
 
 //생성자
-Object::Object() {
-	radius = 1.0f;
-
-	after_translation = { 0.0f ,0.0f, 0.0f };
-	after_rotate = { 0.0f ,0.0f, 0.0f };
-	after_scale = { 1.0f ,1.0f, 1.0f };
-	scale = { 1.0f ,1.0f, 1.0f };
-	rotate = { 0.0f ,0.0f, 0.0f };
-	translation = { 0.0f ,0.0f, 0.0f };
-
-	own_point = { 0.0f ,0.0f, 0.0f };
+Object::Object(const std::shared_ptr<Mesh>& p) 	//생성자
+{
+	mesh = p;
 }
+
 // 복사 생성자
-Object::Object(const Object& other) {
-	radius = other.radius;
+Object::Object(const Object& other)
+{
 	after_translation = other.after_translation;
 	after_rotate = other.after_rotate;
 	after_scale = other.after_scale;
 
-	after_rotate_origin = other.after_rotate_origin;
-
 	translation = other.translation;
 	rotate = other.rotate;
 	scale = other.scale;
-	own_point = other.own_point;
 
 	mesh = other.mesh;
 	color = other.color;
-
-	t = other.t;
-	depth = other.depth;
 }
 // 복사 할당 연산자
-Object& Object::operator=(const Object& other) {
+Object& Object::operator=(const Object& other)
+{
 	if (this != &other) {
-		radius = other.radius;
 		after_translation = other.after_translation;
 		after_rotate = other.after_rotate;
 		after_scale = other.after_scale;
 
-		after_rotate_origin = other.after_rotate_origin;
-
 		translation = other.translation;
 		rotate = other.rotate;
 		scale = other.scale;
-		own_point = other.own_point;
 
 		mesh = other.mesh;
 		color = other.color;
-
-		t = other.t;
-		depth = other.depth;
 	}
 	return *this;
 }
 // 이동 생성자
-Object::Object(Object&& other) noexcept {
-	radius = other.radius;
-	after_translation = other.after_translation;
-	after_rotate = other.after_rotate;
-	after_scale = other.after_scale;
+Object::Object(Object&& other) noexcept
+{
+	after_translation = std::move(other.after_translation);
+	after_rotate = std::move(other.after_rotate);
+	after_scale = std::move(other.after_scale);
 
-	after_rotate_origin = other.after_rotate_origin;
-
-	translation = other.translation;
-	rotate = other.rotate;
-	scale = other.scale;
-	own_point = other.own_point;
+	translation = std::move(other.translation);
+	rotate = std::move(other.rotate);
+	scale = std::move(other.scale);
 
 	mesh = std::move(other.mesh);
-	color = other.color;
-
-	t = other.t;
-	depth = other.depth;
+	color = std::move(other.color);
 }
 // 이동 할당 연산자
-Object& Object::operator=(Object&& other) noexcept {
+Object& Object::operator=(Object&& other) noexcept
+{
 	if (this != &other) {
-		radius = other.radius;
-		after_translation = other.after_translation;
-		after_rotate = other.after_rotate;
-		after_scale = other.after_scale;
+		after_translation = std::move(other.after_translation);
+		after_rotate = std::move(other.after_rotate);
+		after_scale = std::move(other.after_scale);
 
-		after_rotate_origin = other.after_rotate_origin;
-
-		translation = other.translation;
-		rotate = other.rotate;
-		scale = other.scale;
-		own_point = other.own_point;
+		translation = std::move(other.translation);
+		rotate = std::move(other.rotate);
+		scale = std::move(other.scale);
 
 		mesh = std::move(other.mesh);
-		color = other.color;
-
-		t = other.t;
-		depth = other.depth;
+		color = std::move(other.color);
 	}
 	return *this;
 }
 // 소멸자
-Object::~Object() {
+Object::~Object() {}
 
-}
 //Object 설정 초기화
 
-
-void Object::reset() {
-	radius = 1.0f;
+void Object::transform_reset()
+{
 	after_translation = { 0.0f ,0.0f, 0.0f };
 	after_rotate = { 0.0f ,0.0f, 0.0f };
 	after_scale = { 1.0f ,1.0f, 1.0f };
-	scale = { 0.3f ,0.3f, 0.3f };
-	rotate = { 0.0f ,0.0f, 0.0f };
-	translation = { 0.0f ,0.0f, 0.0f };
-	after_rotate_origin= { 0.0f ,0.0f, 0.0f };	
-}
 
-void Object::reset(const int& polygon) {
-	radius = 1.0f;
-	after_translation = { 0.0f ,0.0f, 0.0f };
-	after_rotate = { 0.0f ,0.0f, 0.0f };
-	after_scale = { 1.0f ,1.0f, 1.0f };
-	scale = { 0.3f ,0.3f, 0.3f };
-	rotate = { 0.0f ,0.0f, 0.0f };
-	translation = { 0.0f ,0.0f, 0.0f };
-	after_rotate_origin = { 0.0f ,0.0f, 0.0f };
-	mesh.setMesh(polygon);
-}
-
-void Object::transform_reset() {
-	radius = 1.0f;
-
-	after_translation = { 0.0f ,0.0f, 0.0f };
-	after_rotate = { 0.0f ,0.0f, 0.0f };
-	after_scale = { 1.0f ,1.0f, 1.0f };
 	scale = { 0.3f ,0.3f, 0.3f };
 	rotate = { 0.0f ,0.0f, 0.0f };
 	translation = { 0.0f ,0.0f, 0.0f };
 }
 
-void Object::changemesh(const int& number) {
-	//mesh 변경
-	mesh.setMesh(number);
-	//object 변수 초기화
-	transform_reset();	
+void Object::changemesh(const std::shared_ptr<Mesh>& rhs)
+{
+	mesh = rhs;
 }
 
-void Object::show_state() const {
+void Object::show_state() const
+{
 	std::cout << "--------------Object-------------------" << '\n';
-	std::cout << "Translation : {" << translation.x << ", " << translation.y << ", " << translation.z << "} " << '\n';
-	std::cout << "Rotate : {" << rotate.x << ", " << rotate.y << ", " << rotate.z << "} " << '\n';
-	std::cout << "Scale : {" << scale.x << ", " << scale.y << ", " << scale.z << "} " << '\n';
+	std::cout << "Translation : {"; print_vec3(translation); std::cout << "} " << '\n';
+	std::cout << "Rotate : {"; print_vec3(rotate); std::cout << "} " << '\n';
+	std::cout << "Scale : {"; print_vec3(scale); std::cout << "} " << '\n';
+	std::cout << "After_Translation : {"; print_vec3(after_translation); std::cout << "} " << '\n';
+	std::cout << "After_Rotate : {"; print_vec3(after_rotate); std::cout << "} " << '\n';
+	std::cout << "After_Scale : {"; print_vec3(after_scale); std::cout << "} " << '\n';
+	std::cout << "Mesh : " << (mesh ? (mesh.get()->get_name()) : "nullptr") << '\n';
 	std::cout << "---------------------------------------" << '\n';
 }
 
-
-//World Transform 설정 함수
-void Object::setTranslation(const glm::vec3& vector = {0.0f, 0.0f, 0.0f}) {
+// --- getter / setter --- 
+void Object::setTranslation(const glm::vec3& vector = {0.0f, 0.0f, 0.0f})
+{
 	translation = vector;
 }
+glm::vec3 Object::getTranslation() const
+{
+	return translation;
+}
 
-void Object::setRotate(const glm::vec3& vector = { 0.0f, 0.0f, 0.0f }) {
+void Object::setRotate(const glm::vec3& vector = { 0.0f, 0.0f, 0.0f })
+{
 	rotate = vector;
 }
+glm::vec3 Object::getRotate() const
+{
+	return rotate;
+}
 
-void Object::setScale(const glm::vec3& vector = { 1.0f, 1.0f, 1.0f }) {
+void Object::setScale(const glm::vec3& vector = { 1.0f, 1.0f, 1.0f })
+{
 	scale = vector;
 }
+glm::vec3 Object::getScale() const
+{
+	return scale;
+}
 
-//Translation
-void Object::addTranslation_x(const float& value) {
-	translation.x += value;
+void Object::setColor(const glm::vec3& rhs)
+{
+	color = rhs;
 }
-void Object::addTranslation_y(const float& value) {
-	translation.y += value;
+glm::vec3 Object::getColor() const
+{
+	return color;
 }
-void Object::addTranslation_z(const float& value) {
-	translation.z += value;
-}
-void Object::addAfter_Translation_x(const float& value) {
-	after_translation.x += value;
-}
-void Object::addAfter_Translation_y(const float& value) {
-	after_translation.y += value;
-}
-void Object::addAfter_Translation_z(const float& value) {
-	after_translation.z += value;
-}
-//Rotate
-void Object::addRotate_x(const float& degree) {
-	rotate.x += degree;
-}
-void Object::addRotate_y(const float& degree) {
-	rotate.y += degree;
-}
-void Object::addRotate_z(const float& degree) {
-	rotate.z += degree;
-}
-void Object::addAfter_Rotate_x(const float& degree) {
-	after_rotate.x += degree;
-}
-void Object::addAfter_Rotate_y(const float& degree) {
-	after_rotate.y += degree;
-}
-void Object::addAfter_Rotate_z(const float& degree) {
-	after_rotate.z += degree;
-}
-void Object::addAfter_Rotate_origin_x(const float& degree) {
-	after_rotate_origin.x += degree;
-}
-void Object::addAfter_Rotate_origin_y(const float& degree) {
-	after_rotate_origin.y += degree;
-}
-void Object::addAfter_Rotate_origin_z(const float& degree) {
-	after_rotate_origin.z += degree;
-}
-//Scale
-void Object::addScale_x(const float& value) {
-	scale.x += value;
-}
-void Object::addScale_y(const float& value) {
-	scale.y += value;
-}
-void Object::addScale_z(const float& value) {
-	scale.z += value;
-}
+
 
 //--- 위치를 주어진 각도만큼 회전해서 저장함.
 void Object::translation_rotate(const glm::vec3& degrees) {
@@ -234,10 +147,6 @@ void Object::translation_rotate(const glm::vec3& degrees) {
 	transform = glm::rotate(transform, glm::radians(degrees.y), y_axis);
 	transform = glm::rotate(transform, glm::radians(degrees.z), z_axis);
 	translation = transform * glm::vec4{ translation, 1.0f };
-}
-
-void Object::setPoint(const glm::vec3& point) {
-	own_point = point;
 }
 
 bool Object::Collision(const Object& other) const {
@@ -266,7 +175,6 @@ bool Object::Collision(const Object& other) const {
 
 void Object::World_Transform(glm::mat4& transformMatrix) const {
 	World_after_Translation(transformMatrix);
-	World_after_rotate_origin(transformMatrix);
 	World_after_rotate(transformMatrix);
 
 	{
@@ -288,9 +196,7 @@ void Object::Normal_Transform(glm::mat4& transformMatrix) const {
 
 
 void Object::World_after_Scale(glm::mat4& transformMatrix) const {
-	transformMatrix = glm::translate(transformMatrix, own_point); //--- 이동(Translation)	
 	transformMatrix = glm::scale(transformMatrix, scale);		//--- 확대축소 변환(Scaling)					
-	transformMatrix = glm::translate(transformMatrix, sign * own_point); //--- 이동(Translation)	
 }
 
 void Object::World_after_Translation(glm::mat4& transformMatrix) const {
@@ -298,41 +204,13 @@ void Object::World_after_Translation(glm::mat4& transformMatrix) const {
 }
 
 void Object::World_after_rotate(glm::mat4& transformMatrix) const {
-	transformMatrix = glm::translate(transformMatrix, own_point); //--- 이동(Translation)	
 	transformMatrix = glm::rotate(transformMatrix, glm::radians(after_rotate.x), x_axis);	//--- x축 기준 회전(Rotate)
 	transformMatrix = glm::rotate(transformMatrix, glm::radians(after_rotate.y), y_axis);	//--- y축 기준 회전(Rotate)
 	transformMatrix = glm::rotate(transformMatrix, glm::radians(after_rotate.z), z_axis);	//--- y축 기준 회전(Rotate)
-	transformMatrix = glm::translate(transformMatrix, sign * own_point); //--- 이동(Translation)	
-}
-
-
-void Object::World_after_rotate_origin(glm::mat4& transformMatrix) const {
-	transformMatrix = glm::rotate(transformMatrix, glm::radians(after_rotate_origin.x), x_axis);	//--- x축 기준 회전(Rotate)
-	transformMatrix = glm::rotate(transformMatrix, glm::radians(after_rotate_origin.y), y_axis);	//--- y축 기준 회전(Rotate)
-	transformMatrix = glm::rotate(transformMatrix, glm::radians(after_rotate_origin.z), z_axis);	//--- y축 기준 회전(Rotate)
-}
-
-const GLuint& Object::getVao() const {
-	return mesh.vao;
 }
 
 void Object::draw() const
 {
-	mesh.AUTO_Draw();
+	mesh.get()->AUTO_Draw();
 }
 
-
-
-Axis::Axis() {
-	radius = 1.0f;
-	after_translation = { 0.0f ,0.0f, 0.0f };
-	after_rotate = { 0.0f ,0.0f, 0.0f };
-	after_scale = { 1.0f ,1.0f, 1.0f };
-	scale = { 10.0f, 10.0f, 10.0f };
-	rotate = { 0.0f ,0.0f, 0.0f };
-	translation = { 0.0f ,0.0f, 0.0f };
-}
-
-void Axis::draw() const {
-	glDrawArrays(GL_LINES, 0, mesh.vertex_index.size());
-}

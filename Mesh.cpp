@@ -21,9 +21,12 @@ Mesh::Mesh() {
 	vertex_index.clear();
 	uv_index.clear();
 	normal_index.clear();
-
-	origin_translation = { 0.0f, 0.0f, 0.0f };
-	origin_scale = { 1.0f, 1.0f, 1.0f };
+}
+Mesh::Mesh(const std::string& filename)
+{
+	genGPUbuffers();
+	ReadObj(filename.c_str());
+	push_GPU();
 }
 //소멸자
 Mesh::~Mesh() {
@@ -337,7 +340,6 @@ void Mesh::push_GPU() {
 	}
 
 	{
-		genGPUbuffers();
 		glBindVertexArray(vao); //--- VAO를 바인드하기
 
 
@@ -446,45 +448,10 @@ void Mesh::AUTO_Draw() const {
 }
 
 //---mesh에 정보를 세팅
-void Mesh::setMesh(const int& mesh, const float& radius) {
-	//if (exist()) {
-	//	clear();
-	//}
-
-	switch (mesh) {
-	case MESH_AXIS:
-		axis();
-		name = "axis";
-		break;
-	case MESH_TETRAHEDRON:
-		tetrahedron();
-		name = "tetrahedron";
-		break;
-	case MESH_SPIRAL:
-		spiral();
-		name = "spiral";
-		break;
-	case MESH_CUBE:
-		ReadObj("resource\\cube.obj");
-		name = "cube";
-		break;
-	case MESH_PYRAMID:
-		ReadObj("resource\\pyramid.obj");
-		name = "pyramid";
-		break;
-	case MESH_SPHERE:
-		ReadObj("resource\\sphere.obj");
-		name = "SPHERE";
-		break;
-	case MESH_CIRCLE:
-		circle(radius);
-		name = "circle";
-		break;
-	case MESH_TRIANGLE:	case MESH_SQUARE:	case MESH_PENTAGON:	case MESH_HEXAGON:	case MESH_HEPTAGON:	case MESH_OCTAGON:
-		//std::cout << "생성되는 도형 : " << mesh - MESH_TRIANGLE + 3 << '\n';
-		polygon(mesh - MESH_TRIANGLE + 3);
-		break;
-	}
+void Mesh::setMesh(const std::string& filename)
+{
+	ReadObj(filename.c_str());
+	push_GPU();
 }
 
 //---세팅된 정보를 삭제
@@ -578,12 +545,23 @@ void Mesh::ReadObj(const char* filename) {
 				normal_index.push_back(normalIndex - 1);
 
 				if (debug)
+				{
 					std::cout << "vertex_index.size() : " << vertex_index.size() << '\n';
+					std::cout << "vertex_index[" << vertex_index.size() - 1 << "]: " << vertex_index[vertex_index.size() - 1] << '\n';
+				}
 				// faceIndices.push_back(vertexIndex);
 				// 여기서 텍스처 좌표와 노멀이 필요하다면 처리 추가				
 			}
-
+			if (debug)
+			{
+			}
 			//faces.push_back(faceIndices);
+		}
+		else if (lineHeader == 'g') {
+			file >> name;
+			if (debug) {
+				std::cout << "polygon_name : " << name << '\n';
+			}
 		}
 		else {
 			// 다른 라인일 경우, 그냥 넘어감
@@ -766,364 +744,6 @@ void Mesh::ReadObj(const char* filename) {
 	push_GPU();
 }
 
-//--- 정사면체 mesh값으로 초기화 시켜줌.
-void Mesh::tetrahedron() {
-	glm::vec3* vertex_pos = new glm::vec3[4];
-
-	vertex_pos[0].x = 0.0f;
-	vertex_pos[0].y = glm::sin(glm::radians(60.0)) * 1.0f;
-	vertex_pos[0].z = 0.0f;
-
-	vertex_pos[1].x = cos(glm::radians(90.0)) * 1.0f;
-	vertex_pos[1].y = glm::sin(glm::radians(60.0)) * -1.0f * 1 / 2;
-	vertex_pos[1].z = sin(glm::radians(90.0)) * 1.0f;
-
-	vertex_pos[2].x = cos(glm::radians(210.0)) * 1.0f;
-	vertex_pos[2].y = glm::sin(glm::radians(60.0)) * -1.0f * 1 / 2;
-	vertex_pos[2].z = sin(glm::radians(210.0)) * 1.0f;
-
-	vertex_pos[3].x = cos(glm::radians(330.0)) * 1.0f;
-	vertex_pos[3].y = glm::sin(glm::radians(60.0)) * -1.0f * 1 / 2;
-	vertex_pos[3].z = sin(glm::radians(330.0)) * 1.0f;
-
-	glm::vec3* vertex_color = new glm::vec3[4];
-
-
-
-	//색상(랜덤)
-
-	//색상(정점 위치값 대입)
-	{
-		for (int i = 0; i < 4; i++) {
-			vertex_color[i].r = vertex_pos[i].x;
-			vertex_color[i].g = vertex_pos[i].y;
-			vertex_color[i].b = vertex_pos[i].z;
-		}
-	}
-
-	glm::uvec3* face = new glm::uvec3[4];
-
-	face[0].x = 0;
-	face[0].y = 1;
-	face[0].z = 2;
-
-	face[1].x = 0;
-	face[1].y = 2;
-	face[1].z = 3;
-
-	face[2].x = 0;
-	face[2].y = 3;
-	face[2].z = 1;
-
-	face[3].x = 1;
-	face[3].y = 2;
-	face[3].z = 3;
-
-	genGPUbuffers();
-	glBindVertexArray(vao); //--- VAO를 바인드하기
-
-
-	/*	std::cout << "sizeof(glm::vec3) : " << sizeof(glm::vec3) << '\n';
-		std::cout << "sizeof(vertex) : " << sizeof(vertex) << '\n';
-		std::cout << "vertexnum * sizeof(glm::vec3) :" << vertexnum * sizeof(glm::vec3) << '\n';*/
-
-		//--- 1번째 VBO를 활성화하여 바인드하고, 버텍스 속성 (좌표값)을 저장
-	glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-	//--- 변수 diamond 에서 버텍스 데이터 값을 버퍼에 복사한다.
-	//--- triShape 배열의 사이즈: 9 * float		
-	glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(glm::vec3), vertex_pos, GL_STATIC_DRAW);
-	//--- 좌표값을 attribute 인덱스 0번에 명시한다: 버텍스 당 3* float
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	//--- attribute 인덱스 0번을 사용가능하게 함
-	glEnableVertexAttribArray(0);
-
-	//--- 2번째 VBO를 활성화 하여 바인드 하고, 버텍스 속성 (색상)을 저장
-	glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-	//--- 변수 colors에서 버텍스 색상을 복사한다.
-	//--- colors 배열의 사이즈: 9 *float
-	glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(glm::vec3), vertex_color, GL_STATIC_DRAW);
-	//--- 색상값을 attribute 인덱스 1번에 명시한다: 버텍스 당 3*float
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	//--- attribute 인덱스 1번을 사용 가능하게 함.
-	glEnableVertexAttribArray(1);
-
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, 4 * sizeof(glm::uvec3), face, GL_STATIC_DRAW);
-
-	glBindVertexArray(0); //--- VAO를 바인드하기
-
-	origin_translation = { 0.0f, 0.0f, 0.0f };
-	origin_scale = { 1.0f, 1.0f, 1.0f };
-
-	delete[] vertex_pos;
-	delete[] vertex_color;
-}
-
-//--- x, y, z축 mesh값으로 초기화 시켜줌.
-void Mesh::axis() {
-	glm::vec3 vertex_pos[6];
-	glm::vec3 vertex_color[6];
-	GLuint vertex_index[6];
-
-	const float LEN{ 1.0f };
-	for (int i = 0; i < 6; i++) {
-		vertex_pos[i].x = i / 2 == 0 ? 1.0f : 0.0f;
-		vertex_pos[i].x *= i % 2 == 0 ? -1 : 1;
-		vertex_pos[i].y = i / 2 == 1 ? 1.0f : 0.0f;
-		vertex_pos[i].y *= i % 2 == 0 ? -1 : 1;
-		vertex_pos[i].z = i / 2 == 2 ? 1.0f : 0.0f;
-		vertex_pos[i].z *= i % 2 == 0 ? -1 : 1;
-
-		vertex_color[i].x = i / 2 == 0 ? 1.0f : 0.0f;
-		vertex_color[i].y = i / 2 == 1 ? 1.0f : 0.0f;
-		vertex_color[i].z = i / 2 == 2 ? 1.0f : 0.0f;
-
-		vertex_index[i] = i;
-	}
-
-
-	{
-		genGPUbuffers();
-		glBindVertexArray(vao); //--- VAO를 바인드하기
-
-
-		//--- 1번째 VBO를 활성화하여 바인드하고, 버텍스 속성 (좌표값)을 저장
-		glBindBuffer(GL_ARRAY_BUFFER,vbo[0]);
-		//--- 변수 diamond 에서 버텍스 데이터 값을 버퍼에 복사한다.
-		//--- triShape 배열의 사이즈: 9 * float		
-		glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(glm::vec3), vertex_pos, GL_STATIC_DRAW);
-		//--- 좌표값을 attribute 인덱스 0번에 명시한다: 버텍스 당 3* float
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		//--- attribute 인덱스 0번을 사용가능하게 함
-		glEnableVertexAttribArray(0);
-
-		//--- 2번째 VBO를 활성화 하여 바인드 하고, 버텍스 속성 (색상)을 저장
-		glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-		//--- 변수 colors에서 버텍스 색상을 복사한다.
-		//--- colors 배열의 사이즈: 9 *float
-		glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(glm::vec3), vertex_color, GL_STATIC_DRAW);
-		//--- 색상값을 attribute 인덱스 1번에 명시한다: 버텍스 당 3*float
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		//--- attribute 인덱스 1번을 사용 가능하게 함.
-		glEnableVertexAttribArray(1);
-
-		/*glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(GLuint), vertex_index, GL_STATIC_DRAW);*/
-
-		glBindVertexArray(0); //--- VAO를 바인드하기
-	}
-
-	name = "axis";
-}
-
-void Mesh::spiral() {	
-	std::vector<float> vertex_pos;
-	std::vector<float> vertex_color;
-
-	float LEN{ 0.0f };
-	float degree{ 0.0f };
-	int count{ 0 };
-	while (LEN < 1.0f) {
-		vertex_pos.push_back(cos(glm::radians(degree)) * LEN);	//x
-		vertex_pos.push_back(0.0f);	//y
-		vertex_pos.push_back(sin(glm::radians(degree)) * LEN);	//z
-
-
-		vertex_color.push_back(0.4f);
-		vertex_color.push_back(0.64f);
-		vertex_color.push_back(1.0f);
-		/*color.push_back(random_number(0.0f, 1.0f));
-		color.push_back(random_number(0.0f, 1.0f));
-		color.push_back(random_number(0.0f, 1.0f));*/
-		degree += 1.0f;
-		if (degree >= 360.0f) {
-			count++;
-			degree -= 360.0f;
-		}
-		LEN += 0.0003f;
-	}
-
-
-	{
-		genGPUbuffers();
-		glBindVertexArray(vao); //--- VAO를 바인드하기
-
-
-		//--- 1번째 VBO를 활성화하여 바인드하고, 버텍스 속성 (좌표값)을 저장
-		glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-		//--- 변수 diamond 에서 버텍스 데이터 값을 버퍼에 복사한다.
-		//--- triShape 배열의 사이즈: 9 * float		
-		glBufferData(GL_ARRAY_BUFFER, vertex_pos.size() * sizeof(float), vertex_pos.data(), GL_STATIC_DRAW);
-		//--- 좌표값을 attribute 인덱스 0번에 명시한다: 버텍스 당 3* float
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		//--- attribute 인덱스 0번을 사용가능하게 함
-		glEnableVertexAttribArray(0);
-
-		//--- 2번째 VBO를 활성화 하여 바인드 하고, 버텍스 속성 (색상)을 저장
-		glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-		//--- 변수 colors에서 버텍스 색상을 복사한다.
-		//--- colors 배열의 사이즈: 9 *float
-		glBufferData(GL_ARRAY_BUFFER, vertex_color.size() * sizeof(float), vertex_color.data(), GL_STATIC_DRAW);
-		//--- 색상값을 attribute 인덱스 1번에 명시한다: 버텍스 당 3*float
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		//--- attribute 인덱스 1번을 사용 가능하게 함.
-		glEnableVertexAttribArray(1);
-
-		glBindVertexArray(0); //--- VAO를 바인드하기
-	}
-
-	name = "spiral";
-}
-
-void Mesh::circle(const float& radius) {
-	std::vector<float> vertex_pos;
-	std::vector<float> vertex_color;
-
-	float LEN{ 1.0f };
-	float degree{ 0.0f };
-	int count{ 0 };
-	while (degree < 360.0f) {
-		vertex_pos.push_back(cos(glm::radians(degree)) * LEN);	//x
-		vertex_pos.push_back(sin(glm::radians(degree)) * LEN);	//y
-		vertex_pos.push_back(0.0f);	//z
-
-
-		vertex_color.push_back(0.4f);
-		vertex_color.push_back(0.64f);
-		vertex_color.push_back(1.0f);
-		/*color.push_back(random_number(0.0f, 1.0f));
-		color.push_back(random_number(0.0f, 1.0f));
-		color.push_back(random_number(0.0f, 1.0f));*/
-		degree += 1.0f;
-		
-	}
-
-
-	{
-		genGPUbuffers();
-		glBindVertexArray(vao); //--- VAO를 바인드하기
-
-
-		//--- 1번째 VBO를 활성화하여 바인드하고, 버텍스 속성 (좌표값)을 저장
-		glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-		//--- 변수 diamond 에서 버텍스 데이터 값을 버퍼에 복사한다.
-		//--- triShape 배열의 사이즈: 9 * float		
-		glBufferData(GL_ARRAY_BUFFER, vertex_pos.size() * sizeof(float), vertex_pos.data(), GL_STATIC_DRAW);
-		//--- 좌표값을 attribute 인덱스 0번에 명시한다: 버텍스 당 3* float
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		//--- attribute 인덱스 0번을 사용가능하게 함
-		glEnableVertexAttribArray(0);
-
-		//--- 2번째 VBO를 활성화 하여 바인드 하고, 버텍스 속성 (색상)을 저장
-		glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-		//--- 변수 colors에서 버텍스 색상을 복사한다.
-		//--- colors 배열의 사이즈: 9 *float
-		glBufferData(GL_ARRAY_BUFFER, vertex_color.size() * sizeof(float), vertex_color.data(), GL_STATIC_DRAW);
-		//--- 색상값을 attribute 인덱스 1번에 명시한다: 버텍스 당 3*float
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		//--- attribute 인덱스 1번을 사용 가능하게 함.
-		glEnableVertexAttribArray(1);
-
-		glBindVertexArray(0); //--- VAO를 바인드하기
-	}
-
-	name = "circle";
-}
-
-void Mesh::polygon(const int& polygon) {
-	//name = polygon + "각형";
-	//std::cout << "생성할 polygon :" << polygon << "\n";
-	vertex_pos.clear();
-	vertex_color.clear();
-	vertex_index.clear();
-	std::vector<float> vertex_pos;
-	std::vector<float> vertex_color;
-	std::vector<unsigned int> vertex_index;
-
-	float LEN{ 1.0f };
-	float degree{ 360.0f / polygon };
-	unsigned int count{ 0 };
-
-	while (count < polygon) {
-		//vertex.push_back({cos(glm::radians(degree * count)) * LEN, sin(glm::radians(degree * count)) * LEN, 0.0f});	//x
-		vertex_pos.push_back(cos(glm::radians(degree * count)) * LEN);	//y
-		vertex_pos.push_back(sin(glm::radians(degree * count)) * LEN);	//y
-		vertex_pos.push_back(0.0f);	//z
-		this-> vertex_pos.push_back({ cos(glm::radians(degree * count)) * LEN, sin(glm::radians(degree * count)) * LEN, 0.0f });	//x
-		
-
-		vertex_color.push_back(rainbow[count % 8].x);
-		vertex_color.push_back(rainbow[count % 8].y);
-		vertex_color.push_back(rainbow[count % 8].z);
-		this->vertex_color.push_back({ rainbow[count % 8].x, rainbow[count % 8].y, rainbow[count % 8].z });	//x
-		/*color.push_back(random_number(0.0f, 1.0f));
-		color.push_back(random_number(0.0f, 1.0f));
-		color.push_back(random_number(0.0f, 1.0f));*/
-		if (count >= 2) {
-			vertex_index.push_back(0);
-			vertex_index.push_back(count - 1);
-			vertex_index.push_back(count);
-			this->vertex_index.push_back(0);
-			this->vertex_index.push_back(count - 1);
-			this->vertex_index.push_back(count);
-		}
-		count++;
-	}
-	{
-		genGPUbuffers();
-		glBindVertexArray(vao); //--- VAO를 바인드하기
-
-
-		//--- 1번째 VBO를 활성화하여 바인드하고, 버텍스 속성 (좌표값)을 저장
-		glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-		//--- 변수 diamond 에서 버텍스 데이터 값을 버퍼에 복사한다.
-		//--- triShape 배열의 사이즈: 9 * float		
-
-		glBufferData(GL_ARRAY_BUFFER, vertex_pos.size() * sizeof(float), vertex_pos.data(), GL_STATIC_DRAW);
-
-		//--- 좌표값을 attribute 인덱스 0번에 명시한다: 버텍스 당 3* float
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		//--- attribute 인덱스 0번을 사용가능하게 함
-		glEnableVertexAttribArray(0);
-
-		//--- 2번째 VBO를 활성화 하여 바인드 하고, 버텍스 속성 (색상)을 저장
-		glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-		//--- 변수 colors에서 버텍스 색상을 복사한다.
-		//--- colors 배열의 사이즈: 9 *float
-		glBufferData(GL_ARRAY_BUFFER, vertex_color.size() * sizeof(float), vertex_color.data(), GL_STATIC_DRAW);
-		//--- 색상값을 attribute 인덱스 1번에 명시한다: 버텍스 당 3*float
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		//--- attribute 인덱스 1번을 사용 가능하게 함.
-		glEnableVertexAttribArray(1);
-
-	/*	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, vertex_index.size() * sizeof(unsigned int), vertex_index.data(), GL_STATIC_DRAW);*/
-
-
-		glBindVertexArray(0); //--- VAO를 바인드하기
-	}
-
-	switch (polygon) {
-	case 3:
-		name = "삼각형";
-		break;
-	case 4:
-		name = "사각형";
-		break;
-	case 5:
-		name = "오각형";
-		break;
-	case 6:
-		name = "육각형";
-		break;
-	case 7:
-		name = "칠각형";
-		break;
-	case 8:
-		name = "팔각형";
-		break;
-	}
-}
 
 bool Mesh::exist() const {
 	if (!name.compare("None")) {
@@ -1134,76 +754,3 @@ bool Mesh::exist() const {
 	return true;
 }
 
-std::string Mesh::getName() const {
-	return name;
-}
-
-void Mesh::Object_Space_Transform(glm::mat4& transformMatrix) const {
-	transformMatrix = glm::scale(transformMatrix, origin_scale);		//--- 확대축소 변환(Scaling)
-	transformMatrix = glm::translate(transformMatrix, origin_translation); //--- 이동(Translation)	
-}
-
-
-void Mesh::line_initBuffers(const glm::vec3& start, const glm::vec3& end) {
-
-	vertex_pos.clear();
-
-	std::vector<float> vertex_color;
-	std::vector<unsigned int> vertex_index;
-
-	{	//값을 집어넣음.
-		//--정점
-		vertex_pos.push_back({ start.x, start.y, 0.0f });
-		//vertex.push_back(start.x);
-		//vertex.push_back(start.y);
-		//vertex.push_back(0.0f);
-
-		vertex_pos.push_back({ end.x, end.y, 0.0f });
-		//vertex.push_back(end.x);
-		//vertex.push_back(end.y);
-		//vertex.push_back(0.0f);
-		//--색상
-		vertex_color.push_back(0.0f);
-		vertex_color.push_back(0.0f);
-		vertex_color.push_back(0.0f);
-
-		vertex_color.push_back(0.0f);
-		vertex_color.push_back(0.0f);
-		vertex_color.push_back(0.0f);
-
-		vertex_index.push_back(0);
-		vertex_index.push_back(1);
-	}
-
-	{
-		genGPUbuffers();
-		glBindVertexArray(vao); //--- VAO를 바인드하기
-
-		//--- 1번째 VBO를 활성화하여 바인드하고, 버텍스 속성 (좌표값)을 저장
-		glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-		//--- 변수 diamond 에서 버텍스 데이터 값을 버퍼에 복사한다.
-		//--- triShape 배열의 사이즈: 9 * float		
-		glBufferData(GL_ARRAY_BUFFER, vertex_pos.size() * sizeof(glm::vec3), vertex_pos.data(), GL_STATIC_DRAW);
-		//--- 좌표값을 attribute 인덱스 0번에 명시한다: 버텍스 당 3* float
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		//--- attribute 인덱스 0번을 사용가능하게 함
-		glEnableVertexAttribArray(0);
-
-		//--- 2번째 VBO를 활성화 하여 바인드 하고, 버텍스 속성 (색상)을 저장
-		glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-		//--- 변수 colors에서 버텍스 색상을 복사한다.
-		//--- colors 배열의 사이즈: 9 *float
-		glBufferData(GL_ARRAY_BUFFER, vertex_color.size() * sizeof(float), vertex_color.data(), GL_STATIC_DRAW);
-		//--- 색상값을 attribute 인덱스 1번에 명시한다: 버텍스 당 3*float
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		//--- attribute 인덱스 1번을 사용 가능하게 함.
-		glEnableVertexAttribArray(1);
-
-	/*	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, vertex_index.size() * sizeof(unsigned int), vertex_index.data(), GL_STATIC_DRAW);*/
-
-
-		glBindVertexArray(0); //--- VAO를 바인드하기
-	}
-	name = "Line";
-}
