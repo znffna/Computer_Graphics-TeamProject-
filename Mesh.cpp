@@ -5,6 +5,27 @@
 bool Mesh::debug = true;
 bool Mesh::draw_option = true;
 
+// 사용할 obj 저장할 포인터
+std::shared_ptr<Mesh> CUBE;
+std::shared_ptr<Mesh> PYRAMID;
+std::shared_ptr<Mesh> SPHERE;
+std::shared_ptr<Mesh> PIZZA;
+
+
+// 사용할 obj의 파일 위치
+const std::string cube_storage_location = "resource\\cube.obj";
+const std::string pyramid_storage_location = "resource\\pyramid.obj";
+const std::string sphere_storage_location = "resource\\sphere.obj";
+const std::string pizza_storage_location = "resource\\pizza.obj";
+
+void Read_ObjectFile(){
+	// 가져다 사용할 obj 읽어오기
+	CUBE = std::make_shared<Mesh>(cube_storage_location);
+	PYRAMID = std::make_shared<Mesh>(pyramid_storage_location);
+	SPHERE = std::make_shared<Mesh>(sphere_storage_location);
+	PIZZA = std::make_shared<Mesh>(pizza_storage_location);	
+}
+
 //--- 생성자
 Mesh::Mesh() {
 	name = "None";

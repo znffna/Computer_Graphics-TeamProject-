@@ -3,8 +3,6 @@
 #ifndef MESH_HPP
 #define MESH_HPP
 
-
-
 struct Mesh {
 private:
 	std::string name;
@@ -81,6 +79,9 @@ public:
 	void push_GPU();
 	bool exist() const;
 };
+
+void Read_ObjectFile();
+
 
 #endif //
 

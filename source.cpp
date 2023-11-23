@@ -15,16 +15,11 @@ const std::string User_guide[] = {
 //"paste_here",
 };
 
-
 // 사용할 obj 저장할 포인터
-std::shared_ptr<Mesh> CUBE;
-std::shared_ptr<Mesh> PYRAMID;
-std::shared_ptr<Mesh> SPHERE;
-
-// 사용할 obj의 파일 위치
-const std::string cube_storage_location= "resource\\cube.obj";
-const std::string pyramid_storage_location = "resource\\pyramid.obj";
-const std::string sphere_storage_location = "resource\\sphere.obj";
+extern std::shared_ptr<Mesh> CUBE;
+extern std::shared_ptr<Mesh> PYRAMID;
+extern std::shared_ptr<Mesh> SPHERE;
+extern std::shared_ptr<Mesh> PIZZA;
 
 //--------------------------------------------------------
 //--- 메인 함수
@@ -64,9 +59,8 @@ static Shader shader;
 static Camera camera;
 
 // 조명 위치 적용할 Object
-Object* Light;
-
-
+//Object* Light;
+std::unique_ptr<Object> Light;
 
 
 //--------------------------------------------------------
@@ -143,9 +137,7 @@ GLvoid setup() {
 	Mesh::debug = false;
 
 	{	// 가져다 사용할 obj 읽어오기
-		CUBE = std::make_shared<Mesh>(cube_storage_location);
-		PYRAMID = std::make_shared<Mesh>(pyramid_storage_location);
-		SPHERE = std::make_shared<Mesh>(sphere_storage_location);
+		Read_ObjectFile();
 	}
 
 	{	//카메라 위치 초기화
@@ -154,7 +146,8 @@ GLvoid setup() {
 	}
 
 	{	//조명 초기화
-		Light = new Object(CUBE);
+		Light = std::make_unique<Object>(CUBE);
+		// Light = new Object(CUBE);
 		Light->setRotate({ 0.0f, 0.0f, 0.0f });
 		Light->setTranslation({ 0.0f, 0.0f, 10.0f });	//light_pos
 		Light->setColor({ 1.0f, 1.0f, 1.0f });			//light_color
@@ -163,6 +156,14 @@ GLvoid setup() {
 	{	// 오브젝트 초기화
 		Object tmp(SPHERE);
 		world.push_back(std::move(tmp));
+
+		for (int i = 0; i < 12; ++i) {
+			Object temp(PIZZA);
+			temp.setTranslation({ 0.0f, 5.0f, 0.0f });
+			temp.setRotate({ 0.0f, 30.0f * i, 0.0f });
+			temp.setColor(rainbow[i % 8]);
+			world.push_back(std::move(temp));
+		}
 	}
 }
 
@@ -447,6 +448,7 @@ class TIMER {
 	void show_boolean(const bool b) {
 		std::cout << b ? " True " : " False ";
 	}
+
 public:
 	size_t size{};						//--- 현재 적용된 타이머 갯수
 	std::vector<bool> timers;			//--- index값의 타이머를 키고 껏는지.
