@@ -157,11 +157,25 @@ GLvoid setup() {
 		Object tmp(SPHERE);
 		world.push_back(std::move(tmp));
 
-		for (int i = 0; i < 12; ++i) {
+		for (int i = 0; i < 30; ++i) {
+			for( int j = 0; j < 12; ++j) {
+				Object temp(PIZZA);
+				temp.setTranslation({ 0.0f, 75.0f  - 5.0f * i, 0.0f });
+				temp.setScale({ 5.0f, 0.2f, 5.0f });
+				temp.setRotate({ 0.0f, 30.0f * j, 0.0f });
+				temp.setColor(rainbow[(i + j) % 8]);
+
+				world.push_back(std::move(temp));
+			}
+		}
+
+		for (int j = 0; j < 12; ++j) {
 			Object temp(PIZZA);
-			temp.setTranslation({ 0.0f, 5.0f, 0.0f });
-			temp.setRotate({ 0.0f, 30.0f * i, 0.0f });
-			temp.setColor(rainbow[i % 8]);
+			temp.setTranslation({ 0.0f, 0.0f, 0.0f });
+			temp.setScale({ 1.5f, 75.0f, 1.5f });
+			temp.setRotate({ 0.0f, 30.0f * j, 0.0f });
+			temp.setColor({1.0f, 1.0f, 1.0f});
+
 			world.push_back(std::move(temp));
 		}
 	}
