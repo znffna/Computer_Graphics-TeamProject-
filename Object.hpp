@@ -72,6 +72,13 @@ public: // ---- 멤버 함수 ----
 
 	// 실제 object를 출력
 	void draw() const;
+
+
+	// 다형성을 위한 기본 옵션
+	void render() const;
+	void update();
+	std::vector<float> get_bb();
+	void handle_collision(const std::string& group, std::shared_ptr<Object>& other);
 };
 
 class Pizza : public Object {	//상 속

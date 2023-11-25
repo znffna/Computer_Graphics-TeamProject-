@@ -5,6 +5,7 @@
 #include "Object.hpp"
 #include "Camera.hpp"
 #include "Shader.hpp"
+#include "game_world.hpp"
 
 //glew32.lib freeglut.lib
 const char title[] = "[[팀 프로젝트]]";
@@ -69,9 +70,7 @@ void Change_switch(bool&);
 //--------------------------------------------------------
 //--- 실습용 전역변수 선언
 //-------------------------------------------------------
-std::vector<std::shared_ptr<Object>> world;	//--- 출력될 오브젝트 모음.
-
-
+//std::vector<std::shared_ptr<Object>> world;	//--- 출력될 오브젝트 모음.
 
 int timer_stop{ 0 };	//0일때 timer 꺼짐.
 bool timers[10]{ false };	//--- 해당 타이머 스위치
@@ -165,7 +164,8 @@ GLvoid setup() {
 		std::shared_ptr<Object> tmp = std::make_shared<Object> (SPHERE);
 		//tmp.changemesh(CUBE);
 		tmp.get()->setTranslation({10.0f, 0.0f, 10.0f});
-		world.push_back(tmp);
+		world.add_object(tmp);
+		//world.push_back(tmp);
 
 		// 각층 구조 생성
 		for (int i = 0; i < 30; ++i) {	//floor
@@ -175,7 +175,9 @@ GLvoid setup() {
 				temp.get()->setScale({ 5.0f, 0.2f, 5.0f });
 				temp.get()->setColor(rainbow[(i + j) % 8]);
 
-				world.push_back(temp);
+				auto tmp = std::static_pointer_cast<Object>(temp);
+				world.add_object(tmp);
+				//world.push_back(temp);
 			}
 		}
 		// 중앙 기둥 생성
@@ -185,7 +187,9 @@ GLvoid setup() {
 			temp.get()->setScale({ 1.5f, 75.0f, 1.5f });
 			temp.get()->setColor({ 1.0f, 1.0f, 1.0f });
 
-			world.push_back(temp);
+			auto tmp = std::static_pointer_cast<Object>(temp);
+			world.add_object(tmp);
+			//world.push_back(temp);
 		}
 	}
 }
@@ -234,11 +238,13 @@ void RenderWorld(Camera& camera, int perspective) {
 		Mesh::draw_option = drawstyle;
 		int cnt{};
 		
-		for (const std::shared_ptr<Object>& o : world) {
-			shader.setColor({ o.get()->getColor()});
-			shader.draw_object(*o.get());
-			++cnt;
-		}
+		world.render(shader);
+
+		//for (const std::shared_ptr<Object>& o : world) {
+		//	shader.setColor({ o.get()->getColor()});
+		//	shader.draw_object(*o.get());
+		//	++cnt;
+		//}
 
 	}
 

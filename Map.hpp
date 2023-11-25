@@ -3,6 +3,9 @@
 #ifndef MAP_HPP
 #define MAP_HPP
 
+#include "Default.hpp"
+#include "Object.hpp"
+
 class Map {
 	std::vector<std::vector< std::shared_ptr<Object> >> map;
 

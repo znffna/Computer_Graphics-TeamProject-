@@ -209,8 +209,36 @@ void Object::World_after_rotate(glm::mat4& transformMatrix) const {
 	transformMatrix = glm::rotate(transformMatrix, glm::radians(after_rotate.z), z_axis);	//--- y축 기준 회전(Rotate)
 }
 
+// 다형성을 위한 기본 옵션
+
 void Object::draw() const
 {
 	mesh.get()->AUTO_Draw();
 }
 
+void Object::render() const
+{
+	//std::cout << "Object의 render() 호출" << '\n';
+	draw();
+}
+
+void Object::update()
+{
+	//std::cout << "Object의 update() 호출" << '\n';
+
+}
+
+std::vector<float> Object::get_bb()
+{
+	std::vector<float> tmp;
+
+	//std::cout << "Object의 get_bb() 호출" << '\n';
+	return tmp;
+}
+
+void Object::handle_collision(const std::string& group, std::shared_ptr<Object>& other)
+{
+	//std::cout << "Object의 handle_collision() 호출" << '\n';
+
+	//std::cout << "아직 충돌 핸들판정에 오버로딩 된 값이 없음. " << '\n';
+}
