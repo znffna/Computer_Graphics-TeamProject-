@@ -83,12 +83,7 @@ public:
 };
 
 
-class Map {
-	std::vector<std::vector< std::shared_ptr<Object> >> map;
 
-public:
-
-};
 
 
 #endif
