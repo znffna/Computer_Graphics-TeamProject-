@@ -765,7 +765,6 @@ void Mesh::ReadObj(const char* filename) {
 	push_GPU();
 }
 
-
 bool Mesh::exist() const {
 	if (!name.compare("None")) {
 		//std::cout << "현재 mesh에 저장된 값 없음." << '\n';

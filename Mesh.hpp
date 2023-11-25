@@ -82,6 +82,12 @@ public:
 
 void Read_ObjectFile();
 
+// 사용할 obj 저장할 포인터
+extern std::shared_ptr<Mesh> CUBE;
+extern std::shared_ptr<Mesh> PYRAMID;
+extern std::shared_ptr<Mesh> SPHERE;
+extern std::shared_ptr<Mesh> PIZZA;
+
 
 #endif //
 

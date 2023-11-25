@@ -168,7 +168,6 @@ x64/
 *.lastbuildstate
 *.tlog
 *.txt
-*.obj
 *.idb
 *.recipe
 *.enc

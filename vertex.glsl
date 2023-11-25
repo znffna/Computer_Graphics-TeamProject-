@@ -6,7 +6,7 @@ layout (location = 0) in vec3 in_Position; //--- 위치 변수: attribute positi
 layout (location = 1) in vec3 in_Normal; //--- 위치 변수: attribute position 1
 layout (location = 2) in vec3 in_Color; //--- 컬러 변수: attribute position 2
 
-out vec3 FragPos;		//--- 객체의 위치값을 프래그먼트 세이더로 보낸다.
+out vec4 FragPos;		//--- 객체의 위치값을 프래그먼트 세이더로 보낸다.
 out vec3 Normal;		//--- 노멀값을 프래그먼트 세이더로 보낸다.
 out vec3 out_Color; //--- 프래그먼트 세이더에게 전달
 
@@ -23,7 +23,7 @@ uniform bool vColor;		// 정정 색상 true, 고정 색상 false
 
 void main(void) {
 	gl_Position = projectionTransform * viewTransform * modelTransform * vec4 (in_Position.x, in_Position.y, in_Position.z, 1.0);
-	FragPos = vec3(modelTransform * vec4(in_Position, 1.0));
+	FragPos = (modelTransform * vec4(in_Position, 1.0));
 	//Normal = in_Normal;
 	Normal = vec3(normalTransform * vec4(in_Normal, 1.0));
 

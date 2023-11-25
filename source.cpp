@@ -15,11 +15,6 @@ const std::string User_guide[] = {
 //"paste_here",
 };
 
-// 사용할 obj 저장할 포인터
-extern std::shared_ptr<Mesh> CUBE;
-extern std::shared_ptr<Mesh> PYRAMID;
-extern std::shared_ptr<Mesh> SPHERE;
-extern std::shared_ptr<Mesh> PIZZA;
 
 //--------------------------------------------------------
 //--- 메인 함수
@@ -74,7 +69,9 @@ void Change_switch(bool&);
 //--------------------------------------------------------
 //--- 실습용 전역변수 선언
 //-------------------------------------------------------
-std::vector<Object> world;	//--- 출력될 오브젝트 모음.
+std::vector<std::shared_ptr<Object>> world;	//--- 출력될 오브젝트 모음.
+
+
 
 int timer_stop{ 0 };	//0일때 timer 꺼짐.
 bool timers[10]{ false };	//--- 해당 타이머 스위치
@@ -83,7 +80,11 @@ bool reverse[10]{ false };//--- 해당 타이머의 역방향 여부
 //------------------------------------
 //메인 함수 정의
 //------------------------------------
-
+void APIENTRY MessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
+	fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+		(type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
+		type, severity, message);
+}
 //--- main
 void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
 {
@@ -93,9 +94,16 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설�
 	glutInitWindowPosition(100, 100);
 	glutInitWindowSize(window_row, window_col);
 	glutCreateWindow(title);
+
 	//--- GLEW 초기화하기
 	glewExperimental = GL_TRUE;
 	glewInit();
+
+	{
+		//--- GL 디버그
+		glEnable(GL_DEBUG_OUTPUT);
+		glDebugMessageCallback(MessageCallback, 0);
+	}
 
 	//--- 세이더 생성
 	shader.make_shaderProgram();
@@ -154,29 +162,30 @@ GLvoid setup() {
 	}
 	
 	{	// 오브젝트 초기화
-		Object tmp(SPHERE);
-		world.push_back(std::move(tmp));
+		std::shared_ptr<Object> tmp = std::make_shared<Object> (SPHERE);
+		//tmp.changemesh(CUBE);
+		tmp.get()->setTranslation({10.0f, 0.0f, 10.0f});
+		world.push_back(tmp);
 
-		for (int i = 0; i < 30; ++i) {
-			for( int j = 0; j < 12; ++j) {
-				Object temp(PIZZA);
-				temp.setTranslation({ 0.0f, 75.0f  - 5.0f * i, 0.0f });
-				temp.setScale({ 5.0f, 0.2f, 5.0f });
-				temp.setRotate({ 0.0f, 30.0f * j, 0.0f });
-				temp.setColor(rainbow[(i + j) % 8]);
+		// 각층 구조 생성
+		for (int i = 0; i < 30; ++i) {	//floor
+			for( int j = 0; j < 12; ++j) {	// 층에서 각 조각
+				std::shared_ptr<Pizza> temp = std::make_shared<Pizza>(30.0f * j);
+				temp.get()->setTranslation({ 0.0f, 75.0f  - 5.0f * i, 0.0f });
+				temp.get()->setScale({ 5.0f, 0.2f, 5.0f });
+				temp.get()->setColor(rainbow[(i + j) % 8]);
 
-				world.push_back(std::move(temp));
+				world.push_back(temp);
 			}
 		}
-
+		// 중앙 기둥 생성
 		for (int j = 0; j < 12; ++j) {
-			Object temp(PIZZA);
-			temp.setTranslation({ 0.0f, 0.0f, 0.0f });
-			temp.setScale({ 1.5f, 75.0f, 1.5f });
-			temp.setRotate({ 0.0f, 30.0f * j, 0.0f });
-			temp.setColor({1.0f, 1.0f, 1.0f});
+			std::shared_ptr<Pizza> temp = std::make_shared<Pizza>(30.0f * j);
+			temp.get()->setTranslation({ 0.0f, 0.0f, 0.0f });
+			temp.get()->setScale({ 1.5f, 75.0f, 1.5f });
+			temp.get()->setColor({ 1.0f, 1.0f, 1.0f });
 
-			world.push_back(std::move(temp));
+			world.push_back(temp);
 		}
 	}
 }
@@ -201,10 +210,10 @@ void RenderWorld(Camera& camera, int perspective) {
 	perspective? shader.perspectiveTransform(camera) : shader.orthoTransform(camera);	// true : 원근 투영 / false : 직각 투영
 
 	//--- 조명 설정
-	shader.setLight(Shader::lightOption);
+	shader.setLight(Shader::lightOption);	// 조명 사용 유무
 
 	//--- 기본 색상 설정
-	shader.Colorselect(1);
+	shader.Colorselect(uniform_color);
 
 	glFrontFace(GL_CCW);	//시계 좌표계
 	
@@ -225,9 +234,9 @@ void RenderWorld(Camera& camera, int perspective) {
 		Mesh::draw_option = drawstyle;
 		int cnt{};
 		
-		for (const Object& o : world) {
-			shader.setColor({ o.getColor()});
-			shader.draw_object(o);
+		for (const std::shared_ptr<Object>& o : world) {
+			shader.setColor({ o.get()->getColor()});
+			shader.draw_object(*o.get());
 			++cnt;
 		}
 

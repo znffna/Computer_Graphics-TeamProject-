@@ -49,6 +49,8 @@ public: // ---- ¸â¹ö ÇÔ¼ö ----
 	void setRotate(const glm::vec3& vector);
 	void setScale(const glm::vec3& vector);	
 
+
+
 	glm::vec3 getTranslation() const ;
 	glm::vec3 getRotate() const;
 	glm::vec3 getScale() const;
@@ -72,6 +74,21 @@ public: // ---- ¸â¹ö ÇÔ¼ö ----
 	void draw() const;
 };
 
+class Pizza : public Object {	//»ó ¼Ó
+	int money;
+public:
+	Pizza(float rad) : Object(PIZZA){
+		setRotate({ 0.0f, rad, 0.0f });
+	}
+};
+
+
+class Map {
+	std::vector<std::vector< std::shared_ptr<Object> >> map;
+
+public:
+
+};
 
 
 #endif
