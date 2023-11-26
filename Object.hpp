@@ -23,6 +23,7 @@ private:
 
 	// 출력할 3D 오브젝트
 	std::shared_ptr<Mesh> mesh{ nullptr };
+
 public: // ---- 멤버 함수 ----	
 	//--- special Function
 	Object(const std::shared_ptr<Mesh>&);	//생성자
@@ -81,16 +82,6 @@ public: // ---- 멤버 함수 ----
 	void handle_collision(const std::string& group, std::shared_ptr<Object>& other);
 };
 
-class Pizza : public Object {	//상 속
-	int money;
-public:
-	Pizza(float rad) : Object(PIZZA){
-		setRotate({ 0.0f, rad, 0.0f });
-	}
-};
-
-
-
-
+extern std::shared_ptr<Object> NULLPTR;
 
 #endif

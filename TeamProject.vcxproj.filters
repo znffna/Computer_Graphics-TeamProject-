@@ -39,6 +39,9 @@
     <ClCompile Include="game_world.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Pizza.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.hpp">
@@ -60,6 +63,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="game_world.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Pizza.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

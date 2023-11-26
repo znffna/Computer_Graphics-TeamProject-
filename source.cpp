@@ -3,9 +3,11 @@
 #include "Default.hpp"
 #include "Mesh.hpp"
 #include "Object.hpp"
+#include "Pizza.hpp"
 #include "Camera.hpp"
 #include "Shader.hpp"
 #include "game_world.hpp"
+#include "Map.hpp"
 
 //glew32.lib freeglut.lib
 const char title[] = "[[팀 프로젝트]]";
@@ -161,36 +163,22 @@ GLvoid setup() {
 	}
 	
 	{	// 오브젝트 초기화
-		std::shared_ptr<Object> tmp = std::make_shared<Object> (SPHERE);
-		//tmp.changemesh(CUBE);
-		tmp.get()->setTranslation({10.0f, 0.0f, 10.0f});
-		world.add_object(tmp);
-		//world.push_back(tmp);
 
-		// 각층 구조 생성
-		for (int i = 0; i < 30; ++i) {	//floor
-			for( int j = 0; j < 12; ++j) {	// 층에서 각 조각
-				std::shared_ptr<Pizza> temp = std::make_shared<Pizza>(30.0f * j);
-				temp.get()->setTranslation({ 0.0f, 75.0f  - 5.0f * i, 0.0f });
-				temp.get()->setScale({ 5.0f, 0.2f, 5.0f });
-				temp.get()->setColor(rainbow[(i + j) % 8]);
+		{	// 조작할 공 생성
+			std::shared_ptr<Object> tmp = std::make_shared<Object>(SPHERE);
+			//tmp.changemesh(CUBE);
 
-				auto tmp = std::static_pointer_cast<Object>(temp);
-				world.add_object(tmp);
-				//world.push_back(temp);
-			}
-		}
-		// 중앙 기둥 생성
-		for (int j = 0; j < 12; ++j) {
-			std::shared_ptr<Pizza> temp = std::make_shared<Pizza>(30.0f * j);
-			temp.get()->setTranslation({ 0.0f, 0.0f, 0.0f });
-			temp.get()->setScale({ 1.5f, 75.0f, 1.5f });
-			temp.get()->setColor({ 1.0f, 1.0f, 1.0f });
-
-			auto tmp = std::static_pointer_cast<Object>(temp);
+			tmp.get()->setTranslation({ 10.0f, 0.0f, 10.0f });
 			world.add_object(tmp);
-			//world.push_back(temp);
+			//world.push_back(tmp);
 		}
+
+		{	// 맵구조 로딩
+			map.exampleMap();
+			map.outputMap("example_map.map");
+			map.makeMap();
+		}
+		
 	}
 }
 
@@ -239,13 +227,6 @@ void RenderWorld(Camera& camera, int perspective) {
 		int cnt{};
 		
 		world.render(shader);
-
-		//for (const std::shared_ptr<Object>& o : world) {
-		//	shader.setColor({ o.get()->getColor()});
-		//	shader.draw_object(*o.get());
-		//	++cnt;
-		//}
-
 	}
 
 	//--- GL 오류시 출력하도록 하는 디버깅코드
@@ -402,35 +383,7 @@ GLvoid handleMouseWheel(int wheel, int direction, int x, int y) {
 //--- 타이머 콜백 함수
 GLvoid Timer(int value) { //--- 콜백 함수: 타이머 콜백 함수
 
-	////----------------카메라 변환------------------------
-	//// x/X: 좌우로 이동
-	//if (timers[0]) {
-	//	int sign = reverse[0] ? 1 : -1;
-	//	for (Object& o : world) {
-	//		o.rotate.x += sign * 1.0f;
-	//	}
-	//}
-	//// r: 조명을 객체의 중심 y축에 대하여 양/음 방향으로 공전시키기
-	//if (timers[1]) {
-	//	int sign = reverse[1] ? 1 : -1;
-	//	Light->translation_rotate({ 0.0f, sign * 1.0f, 0.0f });
-	//	Light->addRotate_y(sign * 1.0f);
-	//}
-	//// y / Y: 카메라가 현재 위치에서 화면 중심 y축을 기준으로 공전
-	//if (timers[2]) {
-	//	int sign = reverse[2] ? 1 : -1;
-	//	//camera.rotate_Pos_y(sign * 5.0f);
-	//	for (Object& o : world) {
-	//		o.rotate.y += sign * 1.0f;
-	//	}
-	//}
-	//// z / Z : 조명을 객체에 가깝게/멀게 이동하기
-	//if (timers[3]) {
-	//	int sign = reverse[3] ? 1 : -1;
-	//	Object& light = *Light;
-	//	glm::vec3 dir = glm::vec3{ static_cast<float>(sign * 0.03f)  } *glm::normalize(light.translation);
-	//	light.translation += dir;
-	//}
+	// world.update();
 	
 	glutPostRedisplay();	
 	glutTimerFunc(20, Timer, value); // 타이머함수 재 설정

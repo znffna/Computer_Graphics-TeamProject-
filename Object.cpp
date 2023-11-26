@@ -1,5 +1,8 @@
 #include "Object.hpp"
 
+
+std::shared_ptr<Object> NULLPTR;
+
 //持失切
 Object::Object(const std::shared_ptr<Mesh>& p) 	//持失切
 {

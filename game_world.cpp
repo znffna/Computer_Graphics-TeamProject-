@@ -13,6 +13,11 @@ void World::add_object(std::shared_ptr<Object>& object)
 {
     objects.push_back(object);
 }
+void World::add_object(std::shared_ptr<Pizza>& object)
+{
+    objects.push_back(object);
+}
+
 
 void World::add_objects(std::vector<std::shared_ptr<Object>>& object_vector)
 {
@@ -106,7 +111,7 @@ bool World::collide(std::shared_ptr<Object>& a, std::shared_ptr<Object>& b)
 }
 
 // 충돌 판정 리스트에 추가
-void World::add_collision_pair(std::string& group, std::shared_ptr<Object>& a, std::shared_ptr<Object>& b)
+void World::add_collision_pair(const std::string& group, std::shared_ptr<Object>& a, std::shared_ptr<Object>& b)
 {
     auto it = collision_pairs.find(group);
 

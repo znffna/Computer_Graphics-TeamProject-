@@ -10,6 +10,7 @@ std::shared_ptr<Mesh> CUBE;
 std::shared_ptr<Mesh> PYRAMID;
 std::shared_ptr<Mesh> SPHERE;
 std::shared_ptr<Mesh> PIZZA;
+std::shared_ptr<Mesh> PILLAR;
 
 
 // 사용할 obj의 파일 위치
@@ -17,6 +18,7 @@ const std::string cube_storage_location = "resource\\cube.obj";
 const std::string pyramid_storage_location = "resource\\pyramid.obj";
 const std::string sphere_storage_location = "resource\\sphere.obj";
 const std::string pizza_storage_location = "resource\\pizza.obj";
+const std::string pillar_storage_location = "resource\\pillar.obj";
 
 void Read_ObjectFile(){
 	// 가져다 사용할 obj 읽어오기
@@ -24,6 +26,7 @@ void Read_ObjectFile(){
 	PYRAMID = std::make_shared<Mesh>(pyramid_storage_location);
 	SPHERE = std::make_shared<Mesh>(sphere_storage_location);
 	PIZZA = std::make_shared<Mesh>(pizza_storage_location);	
+	PILLAR = std::make_shared<Mesh>(pillar_storage_location);
 }
 
 //--- 생성자

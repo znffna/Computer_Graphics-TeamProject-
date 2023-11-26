@@ -7,6 +7,7 @@
 #include "Default.hpp"
 #include "Object.hpp"
 #include "Shader.hpp"
+#include "Pizza.hpp"
 #include <unordered_set>
 
 struct World {
@@ -17,6 +18,9 @@ struct World {
 
     // 객체 추가
     void add_object(std::shared_ptr<Object>& object);
+    void add_object(std::shared_ptr<Pizza>& object);
+
+
     void add_objects(std::vector<std::shared_ptr<Object>>& object);
     void remove_object(std::shared_ptr<Object>& o);
 
@@ -31,7 +35,7 @@ struct World {
 
     // 충돌판정
     bool collide(std::shared_ptr<Object>& a, std::shared_ptr<Object>& b);
-    void add_collision_pair(std::string& group, std::shared_ptr<Object>& a, std::shared_ptr<Object>& b);
+    void add_collision_pair(const std::string& group, std::shared_ptr<Object>& a, std::shared_ptr<Object>& b);
     void remove_collision_object(std::shared_ptr<Object>& object);
 
     // World 제거
