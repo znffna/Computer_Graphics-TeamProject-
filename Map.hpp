@@ -29,6 +29,13 @@ public:
 
 	// 불러온 데이터로 실제 오브젝트 생성하는 함수
 	void makeMap();
+
+	float getHeight() {
+		if (map.empty()) {
+			return 0.0f;
+		}
+		return map[0][0].get()->getTranslation().y;
+	}
 };
 
 extern Map map;

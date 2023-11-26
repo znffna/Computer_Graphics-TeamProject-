@@ -112,7 +112,7 @@ void Map::makeMap()
 	{
 		std::shared_ptr<Object> tmp = std::make_shared<Object>(PILLAR);
 		tmp.get()->setTranslation({ 0.0f, 0.0f, 0.0f });
-		tmp.get()->setScale({ 1.5f, start_height, 1.5f });
+		tmp.get()->setScale({ 1.5f, start_height * 1.5f, 1.5f });
 		tmp.get()->setColor({ 1.0f, 1.0f, 1.0f });
 
 		world.add_object(tmp);

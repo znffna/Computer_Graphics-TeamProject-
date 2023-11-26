@@ -100,11 +100,11 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설�
 	glewExperimental = GL_TRUE;
 	glewInit();
 
-	{
-		//--- GL 디버그
-		glEnable(GL_DEBUG_OUTPUT);
-		glDebugMessageCallback(MessageCallback, 0);
-	}
+	//{
+	//	//--- GL 디버그
+	//	glEnable(GL_DEBUG_OUTPUT);
+	//	glDebugMessageCallback(MessageCallback, 0);
+	//}
 
 	//--- 세이더 생성
 	shader.make_shaderProgram();
@@ -154,32 +154,39 @@ GLvoid setup() {
 		camera.setPos({ 0.0f, 0.0f, 25.0f * sqrt(2)});
 	}
 
-	{	//조명 초기화
-		Light = std::make_unique<Object>(CUBE);
-		// Light = new Object(CUBE);
-		Light->setRotate({ 0.0f, 0.0f, 0.0f });
-		Light->setTranslation({ 0.0f, 0.0f, 10.0f });	//light_pos
-		Light->setColor({ 1.0f, 1.0f, 1.0f });			//light_color
-	}
+
 	
 	{	// 오브젝트 초기화
+		{	// 맵구조 로딩
+			//map.exampleMap();
+			//map.outputMap("example_map.map");
+			map.loadMap("example_map.map");
+			map.makeMap();
+		}
 
 		{	// 조작할 공 생성
 			std::shared_ptr<Object> tmp = std::make_shared<Object>(SPHERE);
 			//tmp.changemesh(CUBE);
 
-			tmp.get()->setTranslation({ 10.0f, 0.0f, 10.0f });
+			tmp.get()->setTranslation({ 3.0f, map.getHeight() + tmp.get()->getScale().y, 0.0f});
 			world.add_object(tmp);
 			//world.push_back(tmp);
-		}
-
-		{	// 맵구조 로딩
-			map.exampleMap();
-			map.outputMap("example_map.map");
-			map.makeMap();
-		}
-		
+		}		
 	}
+
+	{	//조명 초기화
+		Light = std::make_unique<Object>(CUBE);
+		// Light = new Object(CUBE);
+		Light->setRotate({ 0.0f, 0.0f, 0.0f });
+		Light->setTranslation({ 0.0f, map.getHeight() + 5.0f, 10.0f });	//light_pos
+		Light->setColor({ 1.0f, 1.0f, 1.0f });			//light_color
+	}
+
+	{	
+		camera.setPos({ 0.0f, map.getHeight() + 5.0f, 25.0f * sqrt(2) });
+		camera.setDir({ 0.0f, Light.get()->getTranslation().y, 0.0f });
+	}
+
 }
 
 const int Projective_PERSPECTIVE{ 1 };
