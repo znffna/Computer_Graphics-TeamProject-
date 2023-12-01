@@ -189,7 +189,6 @@ GLvoid setup() {
 
 	{	
 		camera.setPos({ 0.0f, map.getHeight() + 5.0f, 25.0f * sqrt(2) });
-		camera.setDir({ 0.0f, Light.get()->getTranslation().y, 0.0f });
 	}
 
 }
@@ -290,6 +289,10 @@ GLvoid Keyboard(unsigned char key, int x, int y) {
 	static int shape{ 0 };
 	//std::cout << key << "가 눌림" << std::endl;	
 	switch (key) {
+	// 카메라 이동 (debug 용)
+	case 'w': case 'W': case 's': case 'S': case 'a': case 'A': case 'd': case 'D':
+		camera.movePos(key);
+		break;
 	// 조명 제거
 	case 'l': case 'L':
 		shader.setLight(!Shader::lightOption);
@@ -365,8 +368,8 @@ GLvoid Motion(int x, int y) {
 	if (leftdown) {
 		float dx = mx - mousex;
 		float dy = my - mousey;
-	
-		camera.Pos_rotate(glm::vec3(camera.getSensitivity(), camera.getSensitivity(), camera.getSensitivity()) * glm::vec3(dy, -dx, 0.0f));
+		
+		camera.Dir_rotate(glm::vec3(camera.getSensitivity(), camera.getSensitivity(), camera.getSensitivity()) * glm::vec3(dy, -dx, 0.0f));
 
 		mousex = mx;
 		mousey = my;

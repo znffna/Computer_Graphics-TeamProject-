@@ -8,6 +8,10 @@
 #include "Shader.hpp"
 #include "Object.hpp"
 #include "Pizza.hpp"
+#include "Ball.hpp"
+#include "Cube.hpp"
+#include "Pillar.hpp"
+
 #include <unordered_set>
 
 struct World {
@@ -30,8 +34,8 @@ struct World {
     // 출력
     void render(Shader& shader);
 
-    // World 초기화
-    void clear();
+    // World 초기화(지우는게 아니라 존재하는 Object들의 값을 초기화)
+    void reset();
 
     // 충돌판정
     bool collide(std::shared_ptr<Object>& first, std::shared_ptr<Object>& second);
@@ -41,8 +45,8 @@ struct World {
     bool Check_collision(std::shared_ptr<Ball>& ball, std::shared_ptr<Pizza>& pizza);
     bool Check_collision(std::shared_ptr<Ball>& ball, std::shared_ptr<Cube>& cube);
 
-    // World 제거
-    void exit();
+    // World 제거 ( 이게 진짜 clear )
+    void clear();
 };
 
 extern World world;

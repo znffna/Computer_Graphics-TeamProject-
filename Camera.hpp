@@ -5,7 +5,7 @@
 #define CAMERA_HPP
 
 class Camera {
-	float lat;
+	float lat; // 카메라가 y축과 가까워질수록 절대값이 커짐(90.0f = y축과 평행)
 	float radius;
 	//카메라 외부 파라미터
 	glm::vec3 cameraPos; //--- 카메라 위치
@@ -58,8 +58,25 @@ public:
 	void rotate_Up(const float& );
 
 	void Pos_translation(const glm::vec3&);
-	void Pos_rotate(const glm::vec3&);
+	void Dir_rotate(const glm::vec3&);
 	void Pos_scale(const glm::vec3&);
+
+	void movePos(unsigned char key) {
+		switch (key) {
+		case 'w': case 'W':
+			cameraPos += cameraDirection;
+			break;
+		case 's': case 'S':
+			cameraPos -= cameraDirection;
+			break;
+		case 'd': case 'D':
+			cameraPos += glm::cross(cameraDirection, cameraUp);
+			break;
+		case 'a': case 'A':
+			cameraPos -= glm::cross(cameraDirection, cameraUp);
+			break;
+		}
+	}
 
 	void zoom_in(const float len);
 	void zoom_out(const float len);

@@ -71,6 +71,7 @@ Object& Object::operator=(Object&& other) noexcept
 	}
 	return *this;
 }
+
 // ¼Ò¸êÀÚ
 Object::~Object() {}
 
@@ -148,6 +149,19 @@ glm::vec3 Object::getScale() const
 	return scale;
 }
 
+void Object::backup()
+{
+	reset_translation = translation;
+	reset_rotate = rotate;
+	reset_scale = scale;
+}
+
+void Object::rollback()
+{
+	translation = reset_translation;
+	translation = reset_rotate;
+	translation = reset_scale;
+}
 
 
 void Object::setColor(const glm::vec3& rhs)

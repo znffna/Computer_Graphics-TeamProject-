@@ -8,10 +8,14 @@ Camera::Camera()
 
 	//뷰 변환용 카메라 파라미터
 	cameraPos = glm::vec3(0.0f, 0.0f, 20.0f); //--- 카메라 위치
-	cameraDirection = glm::vec3(0.0f, 0.0f, 0.0f); //--- 카메라 바라보는 방향
+	cameraDirection = {0.0f, 0.0f, -1.0f}; //--- 카메라 바라보는 방향
+
+	std::cout << "cameraDirection : ";
+	print_vec3(cameraDirection);
+	std::cout << '\n';
+
 	cameraUp = glm::vec3(0.0f, 1.0f, 0.0f); //--- 카메라 위쪽 방향
 
-	
 	//투영 변환용 카메라 파라미터
 	fovy = 45.0f;
 	aspect = static_cast<float> (window_row) / static_cast<float>(window_col);
@@ -29,7 +33,7 @@ void Camera::reset()
 
 	//뷰 변환용 카메라 파라미터
 	cameraPos = glm::vec3(0.0f, 10.0f, 20.0f); //--- 카메라 위치
-	cameraDirection = glm::vec3(0.0f, 0.0f, 0.0f); //--- 카메라 바라보는 방향
+	cameraDirection = glm::vec3(0.0f, 0.0f, -1.0f); //--- 카메라 바라보는 방향
 	cameraUp = glm::vec3(0.0f, 1.0f, 0.0f); //--- 카메라 위쪽 방향
 
 
@@ -193,25 +197,17 @@ void Camera::Pos_translation(const glm::vec3& vector)
 	trans_Pos_z(vector.z);
 }
 
-void Camera::Pos_rotate(const glm::vec3& degrees)
+void Camera::Dir_rotate(const glm::vec3& degrees)
 {
-	//좌우 이동
-	rotate_Pos_y(degrees.y);
+	camera_rotate += degrees;
+	camera_rotate.x = glm::clamp(camera_rotate.x, -90.0f + 1.0f, 90.0f - 1.0f);
+	print_vec3(camera_rotate);
 
-	//상하 이동
-	lat += degrees.x;
-	if (-90.0f < lat and lat < 90.0f) {	//y축과 평행하지 않게 유지
-		glm::vec3 axis = glm::cross(cameraUp, cameraPos);
-		//std::cout << "axis = {" << axis.x << ", " << axis.y << ", " << axis.z << "} " << '\n';
-		glm::mat4 t{ 1.0f };
-		t = glm::translate(t, -cameraDirection);
-		t = glm::rotate(t, glm::radians(degrees.x), axis);
-		t = glm::translate(t, cameraDirection);
-		cameraPos = t * glm::vec4{ cameraPos, 1.0f };
-	}
-	else {
-		lat -= degrees.x;
-	}
+	glm::quat rotation = glm::angleAxis(glm::radians(camera_rotate.y), glm::vec3(0.0f, 1.0f, 0.0f))
+		* glm::angleAxis(glm::radians(camera_rotate.x), glm::vec3(1.0f, 0.0f, 0.0f));
+
+	cameraDirection = glm::normalize(rotation * glm::vec3(0.0f, 0.0f, -1.0f));
+	return;
 }
 
 void Camera::Pos_scale(const glm::vec3& degrees)
@@ -246,7 +242,7 @@ void Camera::adj_sensitivity(const float& value)
 
 
 glm::mat4 Camera::View_transform() const {
-	return  glm::lookAt(cameraPos, cameraDirection, cameraUp);
+	return  glm::lookAt(cameraPos, cameraPos + cameraDirection, cameraUp);
 }
 
 glm::mat4 Camera::perspective_transform() const {

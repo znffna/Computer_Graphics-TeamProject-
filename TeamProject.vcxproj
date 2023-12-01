@@ -140,8 +140,11 @@
     <ClCompile Include="source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Ball.hpp" />
     <ClInclude Include="Camera.hpp" />
+    <ClInclude Include="Cube.hpp" />
     <ClInclude Include="Default.hpp" />
+    <ClInclude Include="Pillar.hpp" />
     <ClInclude Include="World.hpp" />
     <ClInclude Include="Map.hpp" />
     <ClInclude Include="Mesh.hpp" />

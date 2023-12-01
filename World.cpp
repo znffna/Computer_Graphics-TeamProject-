@@ -1,6 +1,6 @@
 #include "World.hpp"
 
-bool World::debug = true;
+bool World::debug = false;
 
 World world;
 
@@ -84,10 +84,11 @@ void World::remove_object(std::shared_ptr<Object>& object)
     //std::cout << "Cannot delete non existing object";
 }
 
-void World::clear()
+void World::reset()
 {
-    objects.clear();
-    collision_pairs.clear();
+    for (auto p : objects) {
+        p.get()->rollback();
+    }
 }
 
 // 충돌 체크 검사 
@@ -127,7 +128,6 @@ bool World::Check_collision(std::shared_ptr<Ball>& ball, std::shared_ptr<Pizza>&
 
         // Ball 의 바닥y값이 pizza와 겹칠시 true 리턴.
         if (ball_floor < pizza_mid + pizza_height and ball_floor > pizza_mid - pizza_height) {
-            std::cout << "충돌됨." << '\n';
             return true;
         }
     }
@@ -255,7 +255,8 @@ void World::handle_collisions()
 }
 
 
-void World::exit() {
-    clear();
+void World::clear() {
+    objects.clear();
+    collision_pairs.clear();
 }
 
