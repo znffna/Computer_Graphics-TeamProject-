@@ -2,11 +2,11 @@
 
 #include "Default.hpp"
 #include "Mesh.hpp"
+#include "World.hpp"
 #include "Object.hpp"
 #include "Pizza.hpp"
 #include "Camera.hpp"
 #include "Shader.hpp"
-#include "game_world.hpp"
 #include "Map.hpp"
 
 //glew32.lib freeglut.lib
@@ -77,6 +77,8 @@ void Change_switch(bool&);
 int timer_stop{ 0 };	//0일때 timer 꺼짐.
 bool timers[10]{ false };	//--- 해당 타이머 스위치
 bool reverse[10]{ false };//--- 해당 타이머의 역방향 여부
+
+std::shared_ptr<Ball> ball;
 
 //------------------------------------
 //메인 함수 정의
@@ -160,16 +162,19 @@ GLvoid setup() {
 		{	// 맵구조 로딩
 			//map.exampleMap();
 			//map.outputMap("example_map.map");
-			map.loadMap("example_map.map");
+			map.loadMap("waterslide.map");
 			map.makeMap();
 		}
 
 		{	// 조작할 공 생성
-			std::shared_ptr<Object> tmp = std::make_shared<Object>(SPHERE);
+			std::shared_ptr<Ball> tmp = std::make_shared<Ball>();
 			//tmp.changemesh(CUBE);
 
 			tmp.get()->setTranslation({ 3.0f, map.getHeight() + tmp.get()->getScale().y, 0.0f});
-			world.add_object(tmp);
+			auto send = std::dynamic_pointer_cast<Object>(tmp);
+			world.add_object(send);
+			world.add_collision_pair("Ball:Pizza", send, NULLPTR);
+			ball = tmp;
 			//world.push_back(tmp);
 		}		
 	}
@@ -390,7 +395,9 @@ GLvoid handleMouseWheel(int wheel, int direction, int x, int y) {
 //--- 타이머 콜백 함수
 GLvoid Timer(int value) { //--- 콜백 함수: 타이머 콜백 함수
 
-	// world.update();
+	world.update();
+
+	Light.get()->setTranslation({0.0f, ball.get()->getTranslation().y + 5.0f, 25.0f * sqrt(2)});
 	
 	glutPostRedisplay();	
 	glutTimerFunc(20, Timer, value); // 타이머함수 재 설정

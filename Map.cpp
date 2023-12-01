@@ -1,7 +1,4 @@
 #include "Map.hpp"
-#include "Default.hpp"
-#include "Object.hpp"
-#include "Game_world.hpp"
 
 bool Map::debug{ false };
 Map map;
@@ -52,6 +49,15 @@ void Map::loadMap(const std::string & filename)
 			}
 			floor_member.push_back(std::move(typelist));
 		}
+		else if (input == 'i') {
+			// 존재하는 각도 저장
+			int floor;	// 아이템이 있는 층
+			float rad;	// 아이템이 존재하는 각도
+			in >> floor >> rad;
+
+			//TODO 아이템 어떻게 저장할지 생각하자.
+			
+		}
 	}
 
 	if (debug) {
@@ -80,6 +86,11 @@ void Map::exampleMap()
 		}
 
 		floor_member.push_back(std::move(typelist));
+	}
+
+	// 아이템 생성
+	{
+		//item.push_back()
 	}
 }
 

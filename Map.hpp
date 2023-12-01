@@ -4,8 +4,9 @@
 #define MAP_HPP
 
 #include "Default.hpp"
+#include "Object.hpp"
 #include "Pizza.hpp"
-#include "game_world.hpp"
+#include "World.hpp"
 #include <fstream>
 
 class Map {
@@ -14,7 +15,8 @@ class Map {
 	std::vector<std::vector<int>> floor_member;
 
 	// 실제로 생성된 객체들을 가르키는 변수들
-	std::vector<std::vector< std::shared_ptr<Object> >> map;	// 스테이지 구성
+	std::vector<std::vector< std::shared_ptr<Object> >> map;	// 스테이지 구성 (바닥)
+	std::vector<std::shared_ptr<Object>> item;					// 스테이지 구성 (아이템)
 	std::shared_ptr<Object> pillar;	// 가운데 기둥
 public:
 	static bool debug;	// 디버그 출력 여부

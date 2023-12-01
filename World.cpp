@@ -1,6 +1,6 @@
-#include "game_world.hpp"
+#include "World.hpp"
 
-bool World::debug = false;
+bool World::debug = true;
 
 World world;
 
@@ -32,6 +32,9 @@ void World::update()
     for (std::shared_ptr<Object>& object : objects) {
         object.get()->update();
     }
+
+    // 충돌판정 시작.
+    handle_collisions();
 }
 
 // 출력
@@ -67,7 +70,6 @@ void World::remove_collision_object(std::shared_ptr<Object>& object)
     }
 }
 
-
 void World::remove_object(std::shared_ptr<Object>& object)
 {
     auto search = std::find(objects.begin(), objects.end(), object);
@@ -82,33 +84,88 @@ void World::remove_object(std::shared_ptr<Object>& object)
     //std::cout << "Cannot delete non existing object";
 }
 
-
 void World::clear()
 {
     objects.clear();
     collision_pairs.clear();
 }
 
-// 충돌 체크 검사 (AABB)
-bool World::collide(std::shared_ptr<Object>& a, std::shared_ptr<Object>& b)
+// 충돌 체크 검사 
+bool World::collide(std::shared_ptr<Object>& first, std::shared_ptr<Object>& second)
 {
-    std::vector<float> a_bb = a.get()->get_bb();
-    std::vector<float> b_bb = b.get()->get_bb();
-    //la, ba, ra, ta = a.get_bb()
-    //lb, bb, rb, tb = b.get_bb()
+    // 첫 파라미터 down_casting
+    auto first1 = std::dynamic_pointer_cast<Ball>(first);
+    auto first2 = std::dynamic_pointer_cast<Pizza>(first);
+    auto first3 = std::dynamic_pointer_cast<Cube>(first);
 
-    // x
-    if (a_bb[0] > b_bb[2]) return false;
-    if (a_bb[2] < b_bb[0]) return false;
-    // y
-    if (a_bb[3] < b_bb[1]) return false;
-    if (a_bb[1] > b_bb[3]) return false;
-    // z
-    if (a_bb[5] < b_bb[4]) return false;
-    if (a_bb[4] > b_bb[5]) return false;
+    // 세컨드 파라미터 down_casting
+    auto second1 = std::dynamic_pointer_cast<Ball>(second);
+    auto second2 = std::dynamic_pointer_cast<Pizza>(second);
+    auto second3 = std::dynamic_pointer_cast<Cube>(second);
 
-    return true;
+    if (first1 and second2) {   // Ball : Pizza
+        return Check_collision(first1, second2);
+    }
+    else if (first1 and second3) {
+        return Check_collision(first1, second3);
+    }
+    std::cout << "충돌판정 함수가 없음. ("<< typeid(first).name() << ", " << typeid(second).name() << ")" << '\n';
+    return false;
 }
+
+bool World::Check_collision(std::shared_ptr<Ball>& ball, std::shared_ptr<Pizza>& pizza) {
+    //std::cout << "Check_collision(ball:pizza)" << '\n';
+    float ball_rad = ball.get()->getRotate().y;
+    float pizza_rad = pizza.get()->getRotate().y;
+    degree_range_normalization(pizza_rad);
+    // x,z축이 일단 ball과 같은 경우
+    if (pizza_rad <= ball_rad and ball_rad < pizza_rad + 30.0f) {
+        // y축 값 비교 시작
+        float ball_floor = ball.get()->getTranslation().y - ball.get()->getScale().y;
+        float pizza_mid = pizza.get()->getTranslation().y;
+        float pizza_height = pizza.get()->getScale().y;
+
+        // Ball 의 바닥y값이 pizza와 겹칠시 true 리턴.
+        if (ball_floor < pizza_mid + pizza_height and ball_floor > pizza_mid - pizza_height) {
+            std::cout << "충돌됨." << '\n';
+            return true;
+        }
+    }
+    return false;
+}
+
+bool World::Check_collision(std::shared_ptr<Ball>& ball, std::shared_ptr<Cube>& cube) {
+    std::cout << "Check_collision(ball:cube)" << '\n';
+    glm::vec3 ball_pos = ball.get()->getTranslation();
+    glm::vec3 cube_pos = cube.get()->getTranslation();
+    
+    if (glm::length(ball_pos - cube_pos) < ball.get()->getScale().x + (cube.get()->getScale().x * sqrt(3))) {
+        // 일단 중심간의 거리가 size 합보다 작은경우 true;
+        return true;
+    }
+  
+    return false;
+}
+
+//bool World::collide(std::shared_ptr<Object>& a, std::shared_ptr<Object>& b)
+//{
+//    std::vector<float> a_bb = a.get()->get_bb();
+//    std::vector<float> b_bb = b.get()->get_bb();
+//    //la, ba, ra, ta = a.get_bb()
+//    //lb, bb, rb, tb = b.get_bb()
+//
+//    // x
+//    if (a_bb[0] > b_bb[2]) return false;
+//    if (a_bb[2] < b_bb[0]) return false;
+//    // y
+//    if (a_bb[3] < b_bb[1]) return false;
+//    if (a_bb[1] > b_bb[3]) return false;
+//    // z
+//    if (a_bb[5] < b_bb[4]) return false;
+//    if (a_bb[4] > b_bb[5]) return false;
+//
+//    return true;
+//}
 
 // 충돌 판정 리스트에 추가
 void World::add_collision_pair(const std::string& group, std::shared_ptr<Object>& a, std::shared_ptr<Object>& b)
@@ -125,19 +182,31 @@ void World::add_collision_pair(const std::string& group, std::shared_ptr<Object>
         collision_pairs.emplace(group, tmp3);
         if(debug)
         {
-            std::cout << "New group : '" << group << "' added." << '\n';
-            std::cout << "New group.size() : '" << collision_pairs.size() << '\n';
-            std::cout << "New group.first.size() : '" << collision_pairs[group].at(0).size() << '\n';
-            std::cout << "New group.second.size() : '" << collision_pairs[group].at(1).size() << '\n';
+            std::cout << "New group : " << group << "' added." << '\n';
+            std::cout << "New group.size() : " << collision_pairs.size() << '\n';
+            std::cout << "New group.first.size() : " << collision_pairs[group].at(0).size() << '\n';
+            std::cout << "New group.second.size() : " << collision_pairs[group].at(1).size() << '\n';
         }
     }
 
     if (a.get()) {
         collision_pairs[group][0].insert(a);
+        if (debug)
+        {
+            std::cout << "group : " << group << '\n';
+            std::cout << "New group.first.size() : " << collision_pairs[group].at(0).size() << '\n';
+            std::cout << "New group.second.size() : " << collision_pairs[group].at(1).size() << '\n';
+        }
     }
 
     if (b.get()) {
         collision_pairs[group][1].insert(b);
+        if (debug)
+        {
+            std::cout << "group : " << group << '\n';
+            std::cout << "New group.first.size() : " << collision_pairs[group].at(0).size() << '\n';
+            std::cout << "New group.second.size() : " << collision_pairs[group].at(1).size() << '\n';
+        }
     }
 
     //if (group not in collision_pairs)
@@ -161,8 +230,8 @@ void World::handle_collisions()
 
         auto& first = data.at(0);
         auto& second = data.at(1);
-
         for (auto f_o : first) {
+            int cnt{ 0 };
             for (auto s_o : second) {
                 if (collide(f_o, s_o)) {
                     // 충돌시 해당 group과 상대방을 리턴.

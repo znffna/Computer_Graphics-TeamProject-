@@ -8,8 +8,12 @@
 class Pizza : public Object {	//»ó ¼Ó
 	int type;
 public:
-	Pizza(float rad, int type) : Object(PIZZA), type{ type } {
-		setRotate({ 0.0f, rad, 0.0f });
+	Pizza(float rad, int type);
+
+	void update();
+
+	void handle_collision(const std::string& group, const std::shared_ptr<Object>& other) override {
+
 	}
 };
 

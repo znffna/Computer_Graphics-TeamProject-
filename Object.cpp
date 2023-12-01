@@ -110,28 +110,45 @@ void Object::setTranslation(const glm::vec3& vector = {0.0f, 0.0f, 0.0f})
 {
 	translation = vector;
 }
-glm::vec3 Object::getTranslation() const
-{
-	return translation;
-}
-
 void Object::setRotate(const glm::vec3& vector = { 0.0f, 0.0f, 0.0f })
 {
 	rotate = vector;
 }
+void Object::setScale(const glm::vec3& vector = { 1.0f, 1.0f, 1.0f })
+{
+	scale = vector;
+}
+
+void Object::addTranslation(const glm::vec3& vector)
+{
+	translation += vector;
+}
+void Object::addRotate(const glm::vec3& vector)
+{
+	rotate += vector;
+	degree_range_normalization(rotate.x);
+	degree_range_normalization(rotate.y);
+	degree_range_normalization(rotate.z);
+}
+void Object::addScale(const glm::vec3& vector)
+{
+	scale += vector;
+}
+
 glm::vec3 Object::getRotate() const
 {
 	return rotate;
 }
-
-void Object::setScale(const glm::vec3& vector = { 1.0f, 1.0f, 1.0f })
+glm::vec3 Object::getTranslation() const
 {
-	scale = vector;
+	return translation;
 }
 glm::vec3 Object::getScale() const
 {
 	return scale;
 }
+
+
 
 void Object::setColor(const glm::vec3& rhs)
 {
@@ -231,17 +248,8 @@ void Object::update()
 
 }
 
-std::vector<float> Object::get_bb()
-{
-	std::vector<float> tmp;
-
-	//std::cout << "Object의 get_bb() 호출" << '\n';
-	return tmp;
-}
-
-void Object::handle_collision(const std::string& group, std::shared_ptr<Object>& other)
+void Object::handle_collision(const std::string& group, const std::shared_ptr<Object>& other)
 {
 	//std::cout << "Object의 handle_collision() 호출" << '\n';
-
 	//std::cout << "아직 충돌 핸들판정에 오버로딩 된 값이 없음. " << '\n';
 }

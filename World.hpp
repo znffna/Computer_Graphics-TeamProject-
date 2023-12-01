@@ -5,8 +5,8 @@
 #define GAME_WORLD_HPP
 
 #include "Default.hpp"
-#include "Object.hpp"
 #include "Shader.hpp"
+#include "Object.hpp"
 #include "Pizza.hpp"
 #include <unordered_set>
 
@@ -34,9 +34,12 @@ struct World {
     void clear();
 
     // 충돌판정
-    bool collide(std::shared_ptr<Object>& a, std::shared_ptr<Object>& b);
+    bool collide(std::shared_ptr<Object>& first, std::shared_ptr<Object>& second);
     void add_collision_pair(const std::string& group, std::shared_ptr<Object>& a, std::shared_ptr<Object>& b);
     void remove_collision_object(std::shared_ptr<Object>& object);
+
+    bool Check_collision(std::shared_ptr<Ball>& ball, std::shared_ptr<Pizza>& pizza);
+    bool Check_collision(std::shared_ptr<Ball>& ball, std::shared_ptr<Cube>& cube);
 
     // World 제거
     void exit();

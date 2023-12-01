@@ -204,7 +204,9 @@ void Camera::Pos_rotate(const glm::vec3& degrees)
 		glm::vec3 axis = glm::cross(cameraUp, cameraPos);
 		//std::cout << "axis = {" << axis.x << ", " << axis.y << ", " << axis.z << "} " << '\n';
 		glm::mat4 t{ 1.0f };
+		t = glm::translate(t, -cameraDirection);
 		t = glm::rotate(t, glm::radians(degrees.x), axis);
+		t = glm::translate(t, cameraDirection);
 		cameraPos = t * glm::vec4{ cameraPos, 1.0f };
 	}
 	else {
