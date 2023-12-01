@@ -155,8 +155,6 @@ GLvoid setup() {
 		camera.reset();
 		camera.setPos({ 0.0f, 0.0f, 25.0f * sqrt(2)});
 	}
-
-
 	
 	{	// 오브젝트 초기화
 		{	// 맵구조 로딩

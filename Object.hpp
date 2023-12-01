@@ -86,6 +86,8 @@ public: // ---- 멤버 함수 ----
 
 	// 다형성을 위한 기본 옵션
 	void render() const;
+
+	virtual void handle_events(unsigned char);
 	virtual void update();
 	virtual void handle_collision(const std::string& group, const std::shared_ptr<Object>& other);
 };

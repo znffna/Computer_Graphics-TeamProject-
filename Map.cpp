@@ -121,12 +121,11 @@ void Map::makeMap()
 	}
 	// Áß¾Ó ±âµÕ »ý¼º		
 	{
-		std::shared_ptr<Object> tmp = std::make_shared<Object>(PILLAR);
+		std::shared_ptr<Pillar> tmp = std::make_shared<Pillar>(glm::vec3{ 1.5f, start_height * 1.5f, 1.5f });
 		tmp.get()->setTranslation({ 0.0f, 0.0f, 0.0f });
-		tmp.get()->setScale({ 1.5f, start_height * 1.5f, 1.5f });
 		tmp.get()->setColor({ 1.0f, 1.0f, 1.0f });
-
-		world.add_object(tmp);
+		auto o_tmp = std::static_pointer_cast<Object>(tmp);
+		world.add_object(o_tmp);
 		//world.push_back(temp);
 	}
 }

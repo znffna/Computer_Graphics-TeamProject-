@@ -8,5 +8,5 @@ Pizza::Pizza(float rad, int type) : Object(PIZZA), type{ type }
 
 void Pizza::update()
 {
-
+	//std::cout << "Pizza ÀÇ update È£Ãâ" << '\n';
 }

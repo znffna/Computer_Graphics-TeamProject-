@@ -14,6 +14,10 @@ public:
 		Object::addRotate({ 0.0f, 5.0f, 0.0f });
 	}
 
+	void handle_events(unsigned char key) override {
+		rollback();
+	}
+
 	void handle_collision(const std::string& group, const std::shared_ptr<Object>& other) override {
 		if (group == "ball:cube") {
 			//std::shared_ptr<Object> tmp = shared_from_this();

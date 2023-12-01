@@ -12,6 +12,10 @@ public:
 
 	void update();
 
+	void handle_events(unsigned char key) override {
+		rollback();
+	}
+
 	void handle_collision(const std::string& group, const std::shared_ptr<Object>& other) override {
 
 	}

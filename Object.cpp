@@ -161,6 +161,7 @@ void Object::rollback()
 	translation = reset_translation;
 	translation = reset_rotate;
 	translation = reset_scale;
+	setInvaild(false);
 }
 
 
@@ -256,14 +257,18 @@ void Object::render() const
 	draw();
 }
 
+void Object::handle_events(unsigned char key) {
+	std::cout << "handle_events() 함수가 override 안된 경우 출력되는 줄." << '\n';
+}
+
 void Object::update()
 {
-	//std::cout << "Object의 update() 호출" << '\n';
-
+	std::cout << "update() 함수가 override 안된 경우 출력되는 줄." << '\n';
 }
 
 void Object::handle_collision(const std::string& group, const std::shared_ptr<Object>& other)
 {
+	std::cout << "handle_collision() 함수가 override 안된 경우 출력되는 줄." << '\n';
 	//std::cout << "Object의 handle_collision() 호출" << '\n';
 	//std::cout << "아직 충돌 핸들판정에 오버로딩 된 값이 없음. " << '\n';
 }

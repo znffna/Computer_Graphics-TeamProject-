@@ -7,6 +7,10 @@ public:
 		backup();
 	}
 
+	void handle_events(unsigned char key) override {
+		rollback();
+	}
+
 	void update() override {
 		// 가운데 기둥은 아무것도 하지 않음.
 	}

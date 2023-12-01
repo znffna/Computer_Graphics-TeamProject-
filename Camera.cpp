@@ -9,11 +9,6 @@ Camera::Camera()
 	//뷰 변환용 카메라 파라미터
 	cameraPos = glm::vec3(0.0f, 0.0f, 20.0f); //--- 카메라 위치
 	cameraDirection = {0.0f, 0.0f, -1.0f}; //--- 카메라 바라보는 방향
-
-	std::cout << "cameraDirection : ";
-	print_vec3(cameraDirection);
-	std::cout << '\n';
-
 	cameraUp = glm::vec3(0.0f, 1.0f, 0.0f); //--- 카메라 위쪽 방향
 
 	//투영 변환용 카메라 파라미터
@@ -201,7 +196,6 @@ void Camera::Dir_rotate(const glm::vec3& degrees)
 {
 	camera_rotate += degrees;
 	camera_rotate.x = glm::clamp(camera_rotate.x, -90.0f + 1.0f, 90.0f - 1.0f);
-	print_vec3(camera_rotate);
 
 	glm::quat rotation = glm::angleAxis(glm::radians(camera_rotate.y), glm::vec3(0.0f, 1.0f, 0.0f))
 		* glm::angleAxis(glm::radians(camera_rotate.x), glm::vec3(1.0f, 0.0f, 0.0f));
