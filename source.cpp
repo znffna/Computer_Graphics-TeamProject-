@@ -58,7 +58,6 @@ static Camera camera;
 
 // 조명 위치 적용할 Object
 //Object* Light;
-std::unique_ptr<Object> Light;
 
 
 //--------------------------------------------------------
@@ -113,7 +112,6 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설�
 
 	//--- 기본 셋팅 초기화
 	setup();
-
 	// 디버그 세팅
 	Mesh::debug = false;
 
@@ -156,6 +154,7 @@ GLvoid setup() {
 		camera.setPos({ 0.0f, 0.0f, 25.0f * sqrt(2)});
 	}
 	
+	//TODO mode class에서 수행하도록 바꿀 예정
 	{	// 오브젝트 초기화
 		{	// 맵구조 로딩
 			//map.exampleMap();
@@ -178,11 +177,11 @@ GLvoid setup() {
 	}
 
 	{	//조명 초기화
-		Light = std::make_unique<Object>(CUBE);
+		light = std::make_unique<Light>(CUBE);
 		// Light = new Object(CUBE);
-		Light->setRotate({ 0.0f, 0.0f, 0.0f });
-		Light->setTranslation({ 0.0f, map.getHeight() + 5.0f, 10.0f });	//light_pos
-		Light->setColor({ 1.0f, 1.0f, 1.0f });			//light_color
+		light->setRotate({ 0.0f, 0.0f, 0.0f });
+		light->setTranslation({ 0.0f, map.getHeight() + 5.0f, 10.0f });	//light_pos
+		light->setColor({ 1.0f, 1.0f, 1.0f });			//light_color
 	}
 
 	{	
@@ -221,11 +220,11 @@ void RenderWorld(Camera& camera, int perspective) {
 	//--- 조명 위치 출력
 	{	
 		shader.Colorselect(uniform_color);
-		shader.setColor({Light->getColor()});
-		glm::vec3 tmp_translation = Light->getTranslation();
-		Light->setTranslation(Light->getTranslation() + (glm::normalize(Light->getTranslation()) * glm::vec3{ 1.5f }));
-		shader.draw_object(*Light);
-		Light->setTranslation(tmp_translation);
+		shader.setColor({ light->getColor()});
+		glm::vec3 tmp_translation = light->getTranslation();
+		light->setTranslation(light->getTranslation() + (glm::normalize(light->getTranslation()) * glm::vec3{ 1.5f }));
+		shader.draw_object(*light);
+		light->setTranslation(tmp_translation);
 
 	}
 
@@ -263,8 +262,8 @@ GLvoid drawScene()
 
 	Shader::debug = true;
 	// 조명 옵션 설정 
-	shader.setUniform(Light->getTranslation(), "lightPos");
-	shader.setUniform(Light->getColor(), "lightColor");
+	shader.setUniform(light->getTranslation(), "lightPos");
+	shader.setUniform(light->getColor(), "lightColor");
 	shader.setUniform(camera.getPos(), "viewPos");
 	Shader::debug = false;
 	RenderWorld(camera, Projective_PERSPECTIVE);
@@ -420,7 +419,7 @@ GLvoid Timer(int value) { //--- 콜백 함수: 타이머 콜백 함수
 
 	world.update();
 
-	Light.get()->setTranslation({0.0f, ball.get()->getTranslation().y + 5.0f, 25.0f * sqrt(2)});
+	light.get()->setTranslation({0.0f, ball.get()->getTranslation().y + 5.0f, 25.0f * sqrt(2)});
 	camera.setPos(ball.get()->getTranslation());
 	camera.setPos(0, ball.get()->getTranslation().x * 5);
 	camera.setPos(1, ball.get()->getTranslation().y+ 6.0f);

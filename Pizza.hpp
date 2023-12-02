@@ -16,6 +16,10 @@ public:
 
 	void update();
 
+	void render() const override {
+		draw();
+	}
+
 	void handle_events(unsigned char key) override {
 		switch (key) {
 		case 'r': case 'R':

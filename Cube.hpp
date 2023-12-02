@@ -1,17 +1,20 @@
+
+#ifndef CUBE_HPP
+#define CUBE_HPP
 #include "Object.hpp"
 
 class Cube : public Object {
 public:
 	Cube(glm::vec3 position, glm::vec3 rotate, glm::vec3 scale) : Object(CUBE) {
-		Object::setTranslation(position);
-		Object::setRotate(rotate);
-		Object::setScale(scale);
+		setTranslation(position);
+		setRotate(rotate);
+		setScale(scale);
 		backup();
 	}
 
 	void update() override {
 		//TODO 아이템을 계속 회전시킴.
-		Object::addRotate({ 0.0f, 5.0f, 0.0f });
+		addRotate({ 0.0f, 5.0f, 0.0f });
 	}
 
 	void handle_events(unsigned char key) override {
@@ -30,3 +33,5 @@ public:
 		}
 	}
 };
+
+#endif // !CUBE_HPP

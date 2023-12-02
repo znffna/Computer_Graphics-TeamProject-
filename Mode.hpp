@@ -1,0 +1,87 @@
+//-------------------------------------------------------
+//  Mode.hpp
+//  2023. 12. 02
+// 
+//  게임 모드를 관리하는 class
+//-------------------------------------------------------
+
+#ifndef MODE_HPP
+#define MODE_HPP
+
+#include "Default.hpp"
+#include "World.hpp"
+#include "Map.hpp"
+
+extern Camera camera;
+extern Shader shader;
+extern std::unique_ptr<Light> light;
+
+class Mode {
+public:
+	Mode() {} // setup 역할
+
+	virtual void render() { // displayScene 역할
+		
+	}
+
+	virtual void update() { // timer 역할
+
+	}
+};
+
+class Play_mode : public Mode {
+	std::shared_ptr<Ball> ball;
+	std::shared_ptr<Map> map;
+	
+public:
+	Play_mode(int stage) {
+		// 오브젝트 초기화
+		{	// 맵구조 로딩
+			map = std::make_shared<Map>();
+			switch (stage) {
+			default:
+				map.get()->loadMap("waterslide.map");
+				break;
+			}
+			map.get()->makeMap();
+		}
+
+		{	// 조작할 공 생성
+			ball = std::make_shared<Ball>();
+			ball.get()->setTranslation({ 3.0f, map.get()->getHeight() + ball.get()->getScale().y, 0.0f });
+			auto send = std::dynamic_pointer_cast<Object>(ball);
+			world.add_object(send);
+			world.add_collision_pair("Ball:Pizza", send, NULLPTR);
+		}
+
+		{	//조명 초기화
+			light = std::make_unique<Light>(CUBE);
+			// Light = new Object(CUBE);
+			light->setRotate({ 0.0f, 0.0f, 0.0f });
+			light->setTranslation({ 0.0f, map.get()->getHeight() + 5.0f, 10.0f });	//light_pos
+			light->setColor({ 1.0f, 1.0f, 1.0f });			//light_color
+		}
+
+		{
+			camera.setPos({ 0.0f, map.get()->getHeight() + 5.0f, 25.0f * sqrt(2) });
+		}
+	}
+
+	void render() override { // displayScene 역할
+
+	}
+
+	void update() override { // timer 역할
+
+	}
+
+	void reset() { // 시작때로 초기화
+		world.reset();
+	}
+};
+
+
+
+#endif // !MODE_HPP
+
+

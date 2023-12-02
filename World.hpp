@@ -12,6 +12,8 @@
 #include "Cube.hpp"
 #include "Pillar.hpp"
 
+#include "Light.hpp"
+
 #include <unordered_set>
 
 struct World {

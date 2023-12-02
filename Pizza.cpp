@@ -2,7 +2,10 @@
 
 Pizza::Pizza(float rad, int type) : Object(PIZZA), type{ type }
 {
-	setRotate({ 0.0f, rad, 0.0f });
+	float degree = rad;
+	degree_range_normalization(degree);
+	setRotate({ 0.0f, degree, 0.0f });
+
 	backup();
 }
 

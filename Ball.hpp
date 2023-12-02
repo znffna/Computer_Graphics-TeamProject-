@@ -1,5 +1,8 @@
 #include "Object.hpp"
 
+#ifndef BALL_HPP
+#define BALL_HPP
+
 class Ball : public Object {
 	float velocity{ 5.0f };		// 좌우 이동 속도(rad)
 	int move_dir{ 0 };			// 좌우 이동 방향(0: 이동안함)
@@ -26,8 +29,8 @@ public:
 
 	// 좌우 회전 이동
 	void horizontal_move() {
-		Object::translation_rotate({ 0.0f,  move_dir * velocity, 0.0f });
-		Object::addRotate({ 0.0f,  move_dir * velocity, 0.0f });
+		translation_rotate({ 0.0f,  move_dir * velocity, 0.0f });
+		addRotate({ 0.0f,  move_dir * velocity, 0.0f });
 	}
 
 	// vertical_move( 상하 수직 운동 )
@@ -40,6 +43,10 @@ public:
 		//std::cout << "Ball.update() 호출" << '\n';
 		horizontal_move();	// 좌우 이동 갱신
 		falling();	// 상하 이동 갱신
+	}
+
+	void render() const override {
+		draw();
 	}
 
 	void handle_events(unsigned char key) override {
@@ -67,3 +74,5 @@ public:
 	}
 
 };
+
+#endif // !BALL_HPP

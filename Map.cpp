@@ -79,10 +79,17 @@ void Map::exampleMap()
 		floor_rad.push_back(rad);
 
 		// 해당 층의 각 조각 모음
+
 		std::vector<int> typelist;
 		for (int j = 0; j < 12; ++j) {
 			// 도형 종류를 여기서 결정 (임시코드는 랜덤값으로)
-			typelist.push_back(random_number(0, 3));
+			if (i % 12 <= j and j < (i + 3) % 12) {
+				typelist.push_back(0);
+			}
+			else
+			{
+				typelist.push_back(1);
+			}
 		}
 
 		floor_member.push_back(std::move(typelist));
