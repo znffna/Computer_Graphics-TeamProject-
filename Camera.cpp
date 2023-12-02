@@ -62,6 +62,10 @@ void Camera::setPos(const glm::vec3& pos)
 {
 	cameraPos = pos;
 }
+void Camera::setPos(const int idx, const float value)
+{
+	cameraPos[idx] = value;
+}
 void Camera::setDir(const glm::vec3& dir)
 {
 	cameraDirection = dir;

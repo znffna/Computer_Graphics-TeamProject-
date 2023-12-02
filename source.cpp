@@ -126,7 +126,7 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설�
 	glutDisplayFunc(drawScene);
 	glutReshapeFunc(Reshape);
 	glutKeyboardFunc(Keyboard);
-	//glutKeyboardUpFunc(KeyboardUp);
+	glutKeyboardUpFunc(KeyboardUp);
 	glutSpecialFunc(specialKeyboard);
 	glutMouseFunc(Mouse);
 	glutMouseWheelFunc(handleMouseWheel);
@@ -279,8 +279,7 @@ GLvoid Reshape(int w, int h)
 	glViewport(0, 0, w, h);
 }
 
-int move_key{ 0 };
-bool move_dir[]{ false, false, false, false };
+bool move_dir[]{ false, false };
 
 //--- 키보드 콜백 함수
 GLvoid Keyboard(unsigned char key, int x, int y) {
@@ -288,8 +287,21 @@ GLvoid Keyboard(unsigned char key, int x, int y) {
 	//std::cout << key << "가 눌림" << std::endl;	
 	switch (key) {
 	// 카메라 이동 (debug 용)
-	case 'w': case 'W': case 's': case 'S': case 'a': case 'A': case 'd': case 'D':
+	/*case 'w': case 'W': case 's': case 'S': case 'a': case 'A': case 'd': case 'D':
 		camera.movePos(key);
+		break;*/
+	// 볼 움직임.
+	case 'a': case 'A': // 시계 방향으로
+		if (!move_dir[0]){
+			ball.get()->handle_events(key);
+			move_dir[0] = true;
+		}
+		break;
+	case 'd': case 'D': // 반시계 방향으로
+		if (!move_dir[1]) {
+			ball.get()->handle_events(key);
+			move_dir[1] = true;
+		}
 		break;
 	// 조명 제거
 	case 'l': case 'L':
@@ -318,7 +330,17 @@ GLvoid Keyboard(unsigned char key, int x, int y) {
 GLvoid KeyboardUp(unsigned char key, int x, int y) {
 	//std::cout << key << "가 눌림" << std::endl;	
 	switch (key) {
-	default:
+	case 'a': case 'A':
+		if (move_dir[0]) {
+			ball.get()->handle_events('d');
+			move_dir[0] = false;
+		}
+		break;
+	case 'd': case 'D':
+		if (move_dir[1]) {
+			ball.get()->handle_events('a');
+			move_dir[1] = false;
+		}
 		break;
 	}
 	//glutPostRedisplay();
@@ -399,6 +421,11 @@ GLvoid Timer(int value) { //--- 콜백 함수: 타이머 콜백 함수
 	world.update();
 
 	Light.get()->setTranslation({0.0f, ball.get()->getTranslation().y + 5.0f, 25.0f * sqrt(2)});
+	camera.setPos(ball.get()->getTranslation());
+	camera.setPos(0, ball.get()->getTranslation().x * 5);
+	camera.setPos(1, ball.get()->getTranslation().y+ 6.0f);
+	camera.setPos(2, ball.get()->getTranslation().z * 5);
+	camera.setDir(glm::normalize(ball.get()->getTranslation() - camera.getPos()));
 	
 	glutPostRedisplay();	
 	glutTimerFunc(20, Timer, value); // 타이머함수 재 설정

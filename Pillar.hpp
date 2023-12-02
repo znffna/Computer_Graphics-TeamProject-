@@ -8,7 +8,11 @@ public:
 	}
 
 	void handle_events(unsigned char key) override {
-		rollback();
+		switch (key) {
+		case 'r': case 'R':
+			rollback();
+			break;
+		}
 	}
 
 	void update() override {

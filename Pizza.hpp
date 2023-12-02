@@ -10,10 +10,18 @@ class Pizza : public Object {	//»ó ¼Ó
 public:
 	Pizza(float rad, int type);
 
+	// interface
+	void setType(int rhs) { type = rhs; }
+	int getType() { return type; }
+
 	void update();
 
 	void handle_events(unsigned char key) override {
-		rollback();
+		switch (key) {
+		case 'r': case 'R':
+			rollback();
+			break;
+		}
 	}
 
 	void handle_collision(const std::string& group, const std::shared_ptr<Object>& other) override {

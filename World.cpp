@@ -116,7 +116,7 @@ bool World::collide(std::shared_ptr<Object>& first, std::shared_ptr<Object>& sec
     if (first1 and second2) {   // Ball : Pizza
         return Check_collision(first1, second2);
     }
-    else if (first1 and second3) {
+    else if (first1 and second3) { // Ball : Cube
         return Check_collision(first1, second3);
     }
     std::cout << "충돌판정 함수가 없음. ("<< typeid(first).name() << ", " << typeid(second).name() << ")" << '\n';
@@ -124,19 +124,26 @@ bool World::collide(std::shared_ptr<Object>& first, std::shared_ptr<Object>& sec
 }
 
 bool World::Check_collision(std::shared_ptr<Ball>& ball, std::shared_ptr<Pizza>& pizza) {
-    //std::cout << "Check_collision(ball:pizza)" << '\n';
+    if (pizza.get()->getInvaild() || pizza.get()->getType() == 1) {
+        // invaild 데이터일경우 pass 해버린다.
+        // 빈칸을 담당하는 구역일 경우 역시 pass 해버린다.
+        return false;
+    }
     float ball_rad = ball.get()->getRotate().y;
     float pizza_rad = pizza.get()->getRotate().y;
     degree_range_normalization(pizza_rad);
     // x,z축이 일단 ball과 같은 경우
     if (pizza_rad <= ball_rad and ball_rad < pizza_rad + 30.0f) {
         // y축 값 비교 시작
-        float ball_floor = ball.get()->getTranslation().y - ball.get()->getScale().y;
+        float ball_mid = ball.get()->getTranslation().y;
+        float ball_height = ball.get()->getScale().y;
         float pizza_mid = pizza.get()->getTranslation().y;
         float pizza_height = pizza.get()->getScale().y;
 
         // Ball 의 바닥y값이 pizza와 겹칠시 true 리턴.
-        if (ball_floor < pizza_mid + pizza_height and ball_floor > pizza_mid - pizza_height) {
+        if (ball_mid - ball_height < pizza_mid + pizza_height and ball_mid + ball_height > pizza_mid - pizza_height) {
+            std::cout << "충돌판정 (Ball : Pizza)" << '\n';
+            std::cout << "Ball.rad :" << ball_rad << " : Pizza.rad :"<< pizza_rad << '\n';
             return true;
         }
     }
@@ -155,26 +162,6 @@ bool World::Check_collision(std::shared_ptr<Ball>& ball, std::shared_ptr<Cube>& 
   
     return false;
 }
-
-//bool World::collide(std::shared_ptr<Object>& a, std::shared_ptr<Object>& b)
-//{
-//    std::vector<float> a_bb = a.get()->get_bb();
-//    std::vector<float> b_bb = b.get()->get_bb();
-//    //la, ba, ra, ta = a.get_bb()
-//    //lb, bb, rb, tb = b.get_bb()
-//
-//    // x
-//    if (a_bb[0] > b_bb[2]) return false;
-//    if (a_bb[2] < b_bb[0]) return false;
-//    // y
-//    if (a_bb[3] < b_bb[1]) return false;
-//    if (a_bb[1] > b_bb[3]) return false;
-//    // z
-//    if (a_bb[5] < b_bb[4]) return false;
-//    if (a_bb[4] > b_bb[5]) return false;
-//
-//    return true;
-//}
 
 // 충돌 판정 리스트에 추가
 void World::add_collision_pair(const std::string& group, std::shared_ptr<Object>& a, std::shared_ptr<Object>& b)
@@ -228,7 +215,6 @@ void World::add_collision_pair(const std::string& group, std::shared_ptr<Object>
     //    collision_pairs[group][1].append(b)
 }
 
-
 void World::handle_collisions()
 {
     // 등록된 모든 충돌 상황에 대해서 충돌 검사 및 충돌 처리 수행.
@@ -262,7 +248,6 @@ void World::handle_collisions()
     //}
     //return
 }
-
 
 void World::clear() {
     objects.clear();

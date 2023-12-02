@@ -35,6 +35,7 @@ public:
 	glm::vec3 getUp() const;
 
 	void setPos(const glm::vec3&);
+	void setPos(const int , const float );
 	void setDir(const glm::vec3&);
 	void setUp(const glm::vec3&);
 

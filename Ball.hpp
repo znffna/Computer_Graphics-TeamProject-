@@ -19,11 +19,15 @@ public:
 	float getFallAccelation() { return fall_acceleration; }
 	void setFallAccelation(float rhs) { fall_acceleration = rhs; }
 
+	int getDir() { return move_dir; }
+	void setDir(int rhs) { move_dir = rhs; }
+
 	// method
 
 	// 좌우 회전 이동
 	void horizontal_move() {
 		Object::translation_rotate({ 0.0f,  move_dir * velocity, 0.0f });
+		Object::addRotate({ 0.0f,  move_dir * velocity, 0.0f });
 	}
 
 	// vertical_move( 상하 수직 운동 )
@@ -39,7 +43,17 @@ public:
 	}
 
 	void handle_events(unsigned char key) override {
-		rollback();
+		switch (key) {
+		case 'd': case 'D':
+			move_dir += 1;
+			break;
+		case 'a': case 'A':
+			move_dir -= 1;
+			break;
+		case 'r': case 'R':
+			rollback();
+			break;
+		}
 	}
 
 	void handle_collision(const std::string& group, const std::shared_ptr<Object>& other) override {

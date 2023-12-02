@@ -238,5 +238,5 @@ void Shader::draw_object(const Object& object)
 {
 	normalTransform(object);
 	worldTransform(object);
-	object.draw();
+	//object.draw();
 }
