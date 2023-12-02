@@ -94,6 +94,64 @@ void Map::exampleMap()
 	}
 }
 
+void Map::Map1()
+{
+	// 기존 데이터 초기화
+	floor_rad.clear();
+	floor_member.clear();
+
+	for (int i = 0; i < 30; ++i) {
+		float rad = 30.0f; // 0.0f ~ 360.0f 사이로 조절 가능
+		floor_rad.push_back(rad);
+
+		std::vector<int> typelist;
+		for (int j = 0; j < 12; ++j) {
+			int start_index = i % 12;
+			int type;
+			if (j >= start_index && j < start_index + 3) {
+				type = 0;
+			}
+			else {
+				type = 1;
+			}
+			typelist.push_back(type);
+		}
+
+		floor_member.push_back(std::move(typelist));
+	}
+
+}
+
+void Map::Map2()
+{
+	// 기존 데이터 초기화
+	floor_rad.clear();
+	floor_member.clear();
+
+	for (int i = 0; i < 30; ++i) {
+		float rad = 30.0f; // 0.0f ~ 360.0f 사이로 조절 가능
+		floor_rad.push_back(rad);
+
+		std::vector<int> typelist;
+		for (int j = 0; j < 12; ++j) {
+			int start_index = i % 12;
+			int type;
+			if (j >= start_index && j < start_index + 3) {
+				type = 1;
+			}
+			else {
+				type = 0;
+			}
+			typelist.push_back(type);
+		}
+
+		floor_member.push_back(std::move(typelist));
+	}
+
+}
+
+
+
 // 불러온 데이터로 실제 오브젝트 생성하는 함수
 void Map::makeMap()
 {
@@ -105,12 +163,27 @@ void Map::makeMap()
 	// 각층 구조 생성
 	for (int i = 0; i < floor_rad.size(); ++i) {
 		std::vector< std::shared_ptr<Object> > floor;
+
 		float rad = floor_rad[i];
 		for (int j = 0; j < floor_member[i].size(); ++j) {
+
 			std::shared_ptr<Pizza> tmp = std::make_shared<Pizza>(30.0f * j + rad, floor_member[i][j]);
 			tmp.get()->setTranslation({ 0.0f, start_height - 5.0f * i, 0.0f });
 			tmp.get()->setScale({ 5.0f, 0.2f, 5.0f });
-			tmp.get()->setColor(rainbow[floor_member[i][j] % 8]);
+
+			switch (floor_member[i][j]) {
+			case 0: //pass or 만들지 않기
+				tmp.get()->setColor(glm::vec3(0.0f, 1.0f, 0.0f));
+				break;
+			case 1: // die
+				tmp.get()->setColor(glm::vec3(1.0f, 0.0f, 0.0f));
+				break;
+			case 2: // break
+				tmp.get()->setColor(glm::vec3(0.0f, 0.0f, 1.0f));
+				break;
+			default:
+				tmp.get()->setColor(rainbow[floor_member[i][j] % 8]);
+			}
 			floor.push_back(tmp);
 
 			world.add_object(tmp);

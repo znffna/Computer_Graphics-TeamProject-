@@ -28,6 +28,8 @@ public:
 	void loadMap(const std::string& filename);
 	// 맵 코드 만드는 예제 함수
 	void exampleMap();
+	void Map1();
+	void Map2();
 
 	// 불러온 데이터로 실제 오브젝트 생성하는 함수
 	void makeMap();

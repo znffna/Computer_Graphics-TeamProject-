@@ -159,9 +159,10 @@ GLvoid setup() {
 	{	// 오브젝트 초기화
 		{	// 맵구조 로딩
 			//map.exampleMap();
-			//map.outputMap("example_map.map");
-			map.loadMap("waterslide.map");
-			map.makeMap();
+			map.Map1();
+			map.outputMap("Map1.map");
+			//map.loadMap("waterslide.map");
+			//map.makeMap();
 		}
 
 		{	// 조작할 공 생성
