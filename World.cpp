@@ -133,7 +133,9 @@ bool World::Check_collision(std::shared_ptr<Ball>& ball, std::shared_ptr<Pizza>&
     float pizza_rad = pizza.get()->getRotate().y;
     degree_range_normalization(pizza_rad);
     // x,z축이 일단 ball과 같은 경우
-    if (pizza_rad <= ball_rad and ball_rad < pizza_rad + 30.0f) {
+    float theta = glm::asin(ball.get()->getScale().x / ball.get()->getRadius());
+
+    if (pizza_rad - 30.0f - theta <= ball_rad and ball_rad < pizza_rad + theta) {
         // y축 값 비교 시작
         float ball_mid = ball.get()->getTranslation().y;
         float ball_height = ball.get()->getScale().y;

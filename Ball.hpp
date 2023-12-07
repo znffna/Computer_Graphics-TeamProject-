@@ -4,6 +4,8 @@
 #define BALL_HPP
 
 class Ball : public Object {
+	float radius{ 3.0f }; // 원기둥 중심으로 부터의 거리
+
 	float velocity{ 5.0f };		// 좌우 이동 속도(rad)
 	int move_dir{ 0 };			// 좌우 이동 방향(0: 이동안함)
 
@@ -22,6 +24,9 @@ public:
 	float getFallAccelation() { return fall_acceleration; }
 	void setFallAccelation(float rhs) { fall_acceleration = rhs; }
 
+	float getRadius() { return radius; }
+	void setRadius(float rhs) { radius = rhs; }
+
 	int getDir() { return move_dir; }
 	void setDir(int rhs) { move_dir = rhs; }
 
@@ -36,6 +41,7 @@ public:
 	// vertical_move( 상하 수직 운동 )
 	void falling() {
 		fall_velocity -= fall_acceleration; // 시간개념은 안넣었음.
+		fall_velocity = glm::clamp(fall_velocity, -5.0f, 5.0f);
 		addTranslation({ 0.0f, fall_velocity, 0.0f });
 	}
 

@@ -32,16 +32,18 @@ public:
 class Play_mode : public Mode {
 	std::shared_ptr<Ball> ball;
 	std::shared_ptr<Map> map;
-	
+	std::vector<std::shared_ptr<Cube>> items;
 public:
 	Play_mode(int stage) {
 		// 오브젝트 초기화
 		{	// 맵구조 로딩
 			map = std::make_shared<Map>();
-			switch (stage) {
-			default:
-				map.get()->loadMap("waterslide.map");
-				break;
+			if (stage < 0) {
+				//TODO 랜덤으로 맵 생성하는 함수 호출 할 것.
+				// map.get()->exampleMap();
+			}
+			else {
+				map.get()->loadMap(Map_filename[stage]);
 			}
 			map.get()->makeMap();
 		}

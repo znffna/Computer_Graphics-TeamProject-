@@ -131,6 +131,7 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Default.cpp" />
+    <ClCompile Include="Light.cpp" />
     <ClCompile Include="World.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -144,6 +145,8 @@
     <ClInclude Include="Camera.hpp" />
     <ClInclude Include="Cube.hpp" />
     <ClInclude Include="Default.hpp" />
+    <ClInclude Include="Light.hpp" />
+    <ClInclude Include="Mode.hpp" />
     <ClInclude Include="Pillar.hpp" />
     <ClInclude Include="World.hpp" />
     <ClInclude Include="Map.hpp" />

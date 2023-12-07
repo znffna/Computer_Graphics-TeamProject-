@@ -177,7 +177,7 @@ GLvoid setup() {
 	}
 
 	{	//조명 초기화
-		light = std::make_unique<Light>(CUBE);
+		light = std::make_unique<Light>();
 		// Light = new Object(CUBE);
 		light->setRotate({ 0.0f, 0.0f, 0.0f });
 		light->setTranslation({ 0.0f, map.getHeight() + 5.0f, 10.0f });	//light_pos

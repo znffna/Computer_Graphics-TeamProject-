@@ -8,6 +8,7 @@
 class Light : public Object {
 	bool out_put{ false };
 public:
+	Light() : Object(CUBE) {}
 	Light(const glm::vec3& pos, const glm::vec3& color) : Object(CUBE) {
 
 	}
@@ -27,7 +28,6 @@ public:
 };
 
 extern std::unique_ptr<Light> light;
-std::unique_ptr<Light> light;
 
 
 
