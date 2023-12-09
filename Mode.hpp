@@ -12,6 +12,7 @@
 #include "World.hpp"
 #include "Map.hpp"
 
+
 extern Camera camera;
 extern Shader shader;
 extern std::shared_ptr<Light> light;
@@ -21,6 +22,10 @@ public:
 	Mode() {} // setup 역할
 	~Mode() { world.clear(); } // world를 비운다.
 
+	void change_mode() {
+		
+	}
+
 	virtual void render() { // displayScene 역할
 		
 	}
@@ -29,12 +34,17 @@ public:
 
 	}
 	virtual void handle_events(unsigned int key, const std::string& state) {
+		// 키보드 입력 처리
 		// state : "DOWN", "UP"
 	}
+	virtual void handle_events(float mx, float my) {
+		// 마우스 클릭 입력 처리 
+	}
 };
+extern std::shared_ptr<Mode> current_mode;
 
 class Play_mode : public Mode {
-
+	std::vector<GLuint> texture;
 	std::shared_ptr<Ball> ball;
 	std::shared_ptr<Map> map;
 	std::vector<std::shared_ptr<Cube>> items;
@@ -62,8 +72,8 @@ public:
 		}
 
 		{	//조명 초기화
-			if(!light)
-				light = std::make_shared<Light>();
+			light = std::make_shared<Light>();
+			shader.Colorselect(Shader::lightOption = true);
 			// Light = new Object(CUBE);
 			light.get()->setRotate({0.0f, 0.0f, 0.0f});
 			light.get()->setTranslation({ 0.0f, map.get()->getHeight() + 5.0f, 10.0f });	//light_pos
@@ -107,12 +117,73 @@ public:
 		}
 	}
 
+	void handle_events(float mx, float my) {
+		// 마우스 클릭 입력 처리 
+		// playmode에서는 처리할게 없다.
+	}
+
 	void reset() { // 시작때로 초기화
 		world.reset();
 	}
 };
 
-extern std::unique_ptr<Mode> current_mode;
+class Title_mode : public Mode {
+public:
+	GLuint intro_texture;
+
+	Title_mode() {
+		// 오브젝트 초기화
+		world.clear();
+		{	//조명 초기화
+			shader.Colorselect(Shader::lightOption = false);
+			light = std::make_shared<Light>();
+		}
+
+		{
+			camera.setPos({ 0.0f, 0.0f, 1.0f });
+			camera.setDir({ 0.0f, 0.0f, -1.0f });
+		}
+		
+	}
+
+	~Title_mode() {
+		Mode::~Mode();
+		light.reset();
+	}
+
+	void render() override { // displayScene 역할
+		world.render(shader);
+	}
+
+	void update() override { // timer 역할
+		// 월드 업데이트
+		world.update();
+	}
+
+	void handle_events(unsigned int key, const std::string& state) override {
+		switch (key) {
+		case 'r': case 'R':	// 초기화 입력
+			break;
+		case 's': case 'S':
+			{
+				current_mode.reset();
+				current_mode = std::make_shared<Play_mode>(0);
+			}
+			break;
+		}
+	}
+
+	void handle_events(float mx, float my) override {
+		if (0.3f < mx and mx < 0.7f) {
+			current_mode.reset();
+			current_mode = std::make_shared<Play_mode>(0);
+		}
+	}
+	void reset() { // 시작때로 초기화
+		world.reset();
+	}
+};
+
 
 
 

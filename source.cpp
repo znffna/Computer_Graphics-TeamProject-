@@ -193,7 +193,8 @@ GLvoid setup() {
 		camera.setPos({ 0.0f, 0.0f, 25.0f * sqrt(2)});
 	}
 	
-	current_mode = std::make_unique<Play_mode>(0);
+	current_mode = std::make_unique<Title_mode>();
+
 	//TODO mode class에서 수행하도록 바꿀 예정
 	//{	// 오브젝트 초기화
 	//	{	// 맵구조 로딩
@@ -202,11 +203,9 @@ GLvoid setup() {
 	//		map.loadMap("waterslide.map");
 	//		map.makeMap();
 	//	}
-
 	//	{	// 조작할 공 생성
 	//		std::shared_ptr<Ball> tmp = std::make_shared<Ball>();
 	//		//tmp.changemesh(CUBE);
-
 	//		tmp.get()->setTranslation({ 3.0f, map.getHeight() + tmp.get()->getScale().y, 0.0f});
 	//		auto send = std::dynamic_pointer_cast<Object>(tmp);
 	//		world.add_object(send);
@@ -215,7 +214,6 @@ GLvoid setup() {
 	//		//world.push_back(tmp);
 	//	}		
 	//}
-
 	//{	//조명 초기화
 	//	light = std::make_unique<Light>();
 	//	// Light = new Object(CUBE);
@@ -223,7 +221,6 @@ GLvoid setup() {
 	//	light->setTranslation({ 0.0f, map.getHeight() + 5.0f, 10.0f });	//light_pos
 	//	light->setColor({ 1.0f, 1.0f, 1.0f });			//light_color
 	//}
-
 	//{	
 	//	camera.setPos({ 0.0f, map.getHeight() + 5.0f, 25.0f * sqrt(2) });
 	//}
@@ -327,22 +324,6 @@ GLvoid Keyboard(unsigned char key, int x, int y) {
 	//std::cout << key << "가 눌림" << std::endl;	
 	if (!move_dir[key]) {
 		switch (key) {
-			// 조명 제거
-		case 'l': case 'L':
-			shader.setLight(Shader::lightOption = !Shader::lightOption);
-			break;
-			// 은면 제거
-		case 'h': case 'H':
-			depthcheck = !depthcheck;
-			break;
-			//투영 선택(직각/원근)
-		case 'p': case 'P':
-			perspective = !perspective;
-			break;
-			//default option
-		case 'm': case 'M':
-			drawstyle = !drawstyle;
-			break;
 		case 'q': case 'Q':
 			glutLeaveMainLoop();
 			break; //--- 프로그램 종료			
@@ -392,6 +373,8 @@ GLvoid Mouse(int button, int state, int x, int y) {
 		mousex = mx;
 		mousey = my;
 		leftdown = true;
+
+		current_mode.get()->handle_events(mx, my);
 	}
 	
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {	
