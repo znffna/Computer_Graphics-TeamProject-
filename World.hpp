@@ -32,7 +32,7 @@ struct World {
 
     // 갱신
     void update();
-    void handle_events(unsigned char);
+    void handle_events(unsigned char, const std::string&);
     void handle_collisions();
     // 출력
     void render(Shader& shader);

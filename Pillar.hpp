@@ -10,7 +10,7 @@ public:
 		backup();
 	}
 
-	void handle_events(unsigned char key) override {
+	void handle_events(unsigned char key, const std::string& state) override {
 		switch (key) {
 		case 'r': case 'R':
 			rollback();

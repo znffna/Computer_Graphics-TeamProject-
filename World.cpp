@@ -37,12 +37,12 @@ void World::update()
     handle_collisions();
 }
 
-void World::handle_events(unsigned char key)
+void World::handle_events(unsigned char key, const std::string& state)
 {
     // 모든 객체에 따로 적용할게 있다면 실행 -> R키를 눌러 초기화 같은거 할때?
     // 객체들 마다 가지는 입력 이벤트 실행.
     for (std::shared_ptr<Object>& object : objects) {
-        object.get()->handle_events(key);
+        object.get()->handle_events(key, state);
     }
 }
 

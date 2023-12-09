@@ -42,7 +42,7 @@ public: // ---- 멤버 함수 ----
 
 	//--- operator overloading
 	void backup();		// 초기화할때 주어지는 값을 저장.
-	void rollback();	// 초기화할때 주어지는 값으로 초기화
+	virtual void rollback();	// 초기화할때 주어지는 값으로 초기화
 
 	// Object 설정 초기화
 	void changemesh(const std::shared_ptr<Mesh>&);
@@ -87,7 +87,7 @@ public: // ---- 멤버 함수 ----
 	// 다형성을 위한 기본 옵션
 	virtual void render() const;
 
-	virtual void handle_events(unsigned char);
+	virtual void handle_events(unsigned char, const std::string&);
 	virtual void update();
 	virtual void handle_collision(const std::string& group, const std::shared_ptr<Object>& other);
 };

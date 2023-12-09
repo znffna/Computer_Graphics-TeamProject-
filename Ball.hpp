@@ -55,13 +55,21 @@ public:
 		draw();
 	}
 
-	void handle_events(unsigned char key) override {
+	void handle_events(unsigned char key, const std::string& state) override {
 		switch (key) {
 		case 'd': case 'D':
-			move_dir += 1;
+			if (state == "DOWN")
+				move_dir += 1;
+			else {	// state == "UP"
+				move_dir -= 1;
+			}
 			break;
 		case 'a': case 'A':
-			move_dir -= 1;
+			if (state == "DOWN")
+				move_dir -= 1;
+			else {
+				move_dir += 1;
+			}
 			break;
 		case 'r': case 'R':
 			rollback();
@@ -71,7 +79,7 @@ public:
 
 	void handle_collision(const std::string& group, const std::shared_ptr<Object>& other) override {
 		if (group == "Ball:Pizza") {
-			//TODO 볼의 속도를 초기화
+			//TODO 볼의 속도를 초기화 = 다시 위로 튀기기 하는 코드
 			fall_velocity = reset_velocity;
 		}
 		if (group == "Ball:Cube") {

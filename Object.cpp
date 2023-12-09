@@ -257,7 +257,7 @@ void Object::render() const
 	draw();
 }
 
-void Object::handle_events(unsigned char key) {
+void Object::handle_events(unsigned char key, const std::string&) {
 	std::cout << "handle_events() 함수가 override 안된 경우 출력되는 줄." << '\n';
 }
 

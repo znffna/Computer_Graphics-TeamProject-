@@ -2,8 +2,8 @@
 #include "Default.hpp"
 #include "Shader.hpp"
 
-bool Mesh::debug = true;
-bool Mesh::draw_option = true;
+bool Mesh::debug = false;
+bool Mesh::draw_option = false;
 
 // 사용할 obj 저장할 포인터
 std::shared_ptr<Mesh> CUBE;

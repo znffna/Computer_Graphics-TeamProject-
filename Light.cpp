@@ -1,3 +1,3 @@
 #include "Light.hpp"
 
-std::unique_ptr<Light> light;
+std::shared_ptr<Light> light;

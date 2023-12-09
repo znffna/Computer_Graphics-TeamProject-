@@ -17,7 +17,7 @@ public:
 		addRotate({ 0.0f, 5.0f, 0.0f });
 	}
 
-	void handle_events(unsigned char key) override {
+	void handle_events(unsigned char key, const std::string& state) override {
 		switch (key) {
 		case 'r': case 'R':
 			rollback();

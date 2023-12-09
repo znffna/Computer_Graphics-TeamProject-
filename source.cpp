@@ -11,6 +11,8 @@
 #include "Camera.hpp"
 #include "Shader.hpp"
 #include "Map.hpp"
+#include "Mode.hpp"
+
 
 //glew32.lib freeglut.lib
 const char title[] = "[[팀 프로젝트]]";
@@ -191,39 +193,40 @@ GLvoid setup() {
 		camera.setPos({ 0.0f, 0.0f, 25.0f * sqrt(2)});
 	}
 	
+	current_mode = std::make_unique<Play_mode>(0);
 	//TODO mode class에서 수행하도록 바꿀 예정
-	{	// 오브젝트 초기화
-		{	// 맵구조 로딩
-			//map.exampleMap();
-			//map.outputMap("example_map.map");
-			map.loadMap("waterslide.map");
-			map.makeMap();
-		}
+	//{	// 오브젝트 초기화
+	//	{	// 맵구조 로딩
+	//		//map.exampleMap();
+	//		//map.outputMap("example_map.map");
+	//		map.loadMap("waterslide.map");
+	//		map.makeMap();
+	//	}
 
-		{	// 조작할 공 생성
-			std::shared_ptr<Ball> tmp = std::make_shared<Ball>();
-			//tmp.changemesh(CUBE);
+	//	{	// 조작할 공 생성
+	//		std::shared_ptr<Ball> tmp = std::make_shared<Ball>();
+	//		//tmp.changemesh(CUBE);
 
-			tmp.get()->setTranslation({ 3.0f, map.getHeight() + tmp.get()->getScale().y, 0.0f});
-			auto send = std::dynamic_pointer_cast<Object>(tmp);
-			world.add_object(send);
-			world.add_collision_pair("Ball:Pizza", send, NULLPTR);
-			ball = tmp;
-			//world.push_back(tmp);
-		}		
-	}
+	//		tmp.get()->setTranslation({ 3.0f, map.getHeight() + tmp.get()->getScale().y, 0.0f});
+	//		auto send = std::dynamic_pointer_cast<Object>(tmp);
+	//		world.add_object(send);
+	//		world.add_collision_pair("Ball:Pizza", send, NULLPTR);
+	//		ball = tmp;
+	//		//world.push_back(tmp);
+	//	}		
+	//}
 
-	{	//조명 초기화
-		light = std::make_unique<Light>();
-		// Light = new Object(CUBE);
-		light->setRotate({ 0.0f, 0.0f, 0.0f });
-		light->setTranslation({ 0.0f, map.getHeight() + 5.0f, 10.0f });	//light_pos
-		light->setColor({ 1.0f, 1.0f, 1.0f });			//light_color
-	}
+	//{	//조명 초기화
+	//	light = std::make_unique<Light>();
+	//	// Light = new Object(CUBE);
+	//	light->setRotate({ 0.0f, 0.0f, 0.0f });
+	//	light->setTranslation({ 0.0f, map.getHeight() + 5.0f, 10.0f });	//light_pos
+	//	light->setColor({ 1.0f, 1.0f, 1.0f });			//light_color
+	//}
 
-	{	
-		camera.setPos({ 0.0f, map.getHeight() + 5.0f, 25.0f * sqrt(2) });
-	}
+	//{	
+	//	camera.setPos({ 0.0f, map.getHeight() + 5.0f, 25.0f * sqrt(2) });
+	//}
 
 }
 
@@ -257,11 +260,11 @@ void RenderWorld(Camera& camera, int perspective) {
 	//--- 조명 위치 출력
 	{	
 		shader.Colorselect(uniform_color);
-		shader.setColor({ light->getColor()});
-		glm::vec3 tmp_translation = light->getTranslation();
-		light->setTranslation(light->getTranslation() + (glm::normalize(light->getTranslation()) * glm::vec3{ 1.5f }));
-		shader.draw_object(*light);
-		light->setTranslation(tmp_translation);
+		shader.setColor({ light.get()->getColor()});
+		glm::vec3 tmp_translation = light.get()->getTranslation();
+		light.get()->setTranslation(light.get()->getTranslation() + (glm::normalize(light.get()->getTranslation()) * glm::vec3{ 1.5f }));
+		shader.draw_object(*light.get());
+		light.get()->setTranslation(tmp_translation);
 
 	}
 
@@ -299,10 +302,11 @@ GLvoid drawScene()
 
 	Shader::debug = true;
 	// 조명 옵션 설정 
-	shader.setUniform(light->getTranslation(), "lightPos");
-	shader.setUniform(light->getColor(), "lightColor");
+	shader.setUniform(light.get()->getTranslation(), "lightPos");
+	shader.setUniform(light.get()->getColor(), "lightColor");
 	shader.setUniform(camera.getPos(), "viewPos");
 	Shader::debug = false;
+
 	RenderWorld(camera, Projective_PERSPECTIVE);
 
 	//--- 화면에 출력하기
@@ -315,49 +319,38 @@ GLvoid Reshape(int w, int h)
 	glViewport(0, 0, w, h);
 }
 
-bool move_dir[]{ false, false };
 
+bool move_dir[128]{ false };
 //--- 키보드 콜백 함수
 GLvoid Keyboard(unsigned char key, int x, int y) {
 	static int shape{ 0 };
 	//std::cout << key << "가 눌림" << std::endl;	
-	switch (key) {
-	// 카메라 이동 (debug 용)
-	/*case 'w': case 'W': case 's': case 'S': case 'a': case 'A': case 'd': case 'D':
-		camera.movePos(key);
-		break;*/
-	// 볼 움직임.
-	case 'a': case 'A': // 시계 방향으로
-		if (!move_dir[0]){
-			ball.get()->handle_events(key);
-			move_dir[0] = true;
+	if (!move_dir[key]) {
+		switch (key) {
+			// 조명 제거
+		case 'l': case 'L':
+			shader.setLight(Shader::lightOption = !Shader::lightOption);
+			break;
+			// 은면 제거
+		case 'h': case 'H':
+			depthcheck = !depthcheck;
+			break;
+			//투영 선택(직각/원근)
+		case 'p': case 'P':
+			perspective = !perspective;
+			break;
+			//default option
+		case 'm': case 'M':
+			drawstyle = !drawstyle;
+			break;
+		case 'q': case 'Q':
+			glutLeaveMainLoop();
+			break; //--- 프로그램 종료			
+		default:
+			current_mode.get()->handle_events(key, "DOWN");
 		}
-		break;
-	case 'd': case 'D': // 반시계 방향으로
-		if (!move_dir[1]) {
-			ball.get()->handle_events(key);
-			move_dir[1] = true;
-		}
-		break;
-	// 조명 제거
-	case 'l': case 'L':
-		shader.setLight(!Shader::lightOption);
-		break;
-	// 은면 제거
-	case 'h': case 'H':	
-		depthcheck = !depthcheck;
-		break;
-	//투영 선택(직각/원근)
-	case 'p': case 'P':	
-		perspective = !perspective;
-		break;
-	//default option
-	case 'm': case 'M':
-		drawstyle = !drawstyle;
-		break;
-	case 'q': case 'Q': glutLeaveMainLoop(); break; //--- 프로그램 종료			
 	}
-	
+	move_dir[key] = true;
 	glutPostRedisplay();
 }
 
@@ -365,21 +358,14 @@ GLvoid Keyboard(unsigned char key, int x, int y) {
 //--- 키보드 콜백 함수
 GLvoid KeyboardUp(unsigned char key, int x, int y) {
 	//std::cout << key << "가 눌림" << std::endl;	
-	switch (key) {
-	case 'a': case 'A':
-		if (move_dir[0]) {
-			ball.get()->handle_events('d');
-			move_dir[0] = false;
+	if (move_dir[key]) {
+		switch (key) {
+		default:
+			current_mode.get()->handle_events(key, "UP");
 		}
-		break;
-	case 'd': case 'D':
-		if (move_dir[1]) {
-			ball.get()->handle_events('a');
-			move_dir[1] = false;
-		}
-		break;
 	}
 	//glutPostRedisplay();
+	move_dir[key] = false;
 }
 
 //--- 키보드 특수키 콜백 함수
@@ -454,15 +440,8 @@ GLvoid handleMouseWheel(int wheel, int direction, int x, int y) {
 //--- 타이머 콜백 함수
 GLvoid Timer(int value) { //--- 콜백 함수: 타이머 콜백 함수
 
-	world.update();
+	current_mode.get()->update();
 
-	light.get()->setTranslation({0.0f, ball.get()->getTranslation().y + 5.0f, 25.0f * sqrt(2)});
-	camera.setPos(ball.get()->getTranslation());
-	camera.setPos(0, ball.get()->getTranslation().x * 5);
-	camera.setPos(1, ball.get()->getTranslation().y+ 6.0f);
-	camera.setPos(2, ball.get()->getTranslation().z * 5);
-	camera.setDir(glm::normalize(ball.get()->getTranslation() - camera.getPos()));
-	
 	glutPostRedisplay();	
 	glutTimerFunc(20, Timer, value); // 타이머함수 재 설정
 }
