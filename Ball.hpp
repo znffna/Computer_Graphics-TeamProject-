@@ -41,7 +41,7 @@ public:
 	// vertical_move( 상하 수직 운동 )
 	void falling() {
 		fall_velocity -= fall_acceleration; // 시간개념은 안넣었음.
-		fall_velocity = glm::clamp(fall_velocity, -5.0f, 5.0f);
+		fall_velocity = glm::clamp(fall_velocity, -4.0f, 4.0f);
 		addTranslation({ 0.0f, fall_velocity, 0.0f });
 	}
 

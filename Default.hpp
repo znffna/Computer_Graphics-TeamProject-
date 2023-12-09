@@ -49,7 +49,7 @@ float random_number(const float& , const float& );
 // mt19937에 의한 랜덤 정수값 생성
 int random_number(const int& , const int& );	
 // 각도를 0~360 사이로 유지하는 정규화 함수
-void degree_range_normalization(float& );	
+float degree_range_normalization(const float& );
 
 // 2차 베지어 곡선 위치 계산 함수
 glm::vec3 CalculateBezierPoint(float t, const glm::vec3& p0, const glm::vec3& p1, const glm::vec3& p2);

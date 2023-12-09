@@ -19,6 +19,7 @@ extern std::unique_ptr<Light> light;
 class Mode {
 public:
 	Mode() {} // setup 역할
+	~Mode() { world.clear(); } // world를 비운다.
 
 	virtual void render() { // displayScene 역할
 		
@@ -30,6 +31,7 @@ public:
 };
 
 class Play_mode : public Mode {
+
 	std::shared_ptr<Ball> ball;
 	std::shared_ptr<Map> map;
 	std::vector<std::shared_ptr<Cube>> items;
@@ -57,7 +59,8 @@ public:
 		}
 
 		{	//조명 초기화
-			light = std::make_unique<Light>(CUBE);
+			if(!light)
+				light = std::make_unique<Light>(CUBE);
 			// Light = new Object(CUBE);
 			light->setRotate({ 0.0f, 0.0f, 0.0f });
 			light->setTranslation({ 0.0f, map.get()->getHeight() + 5.0f, 10.0f });	//light_pos
@@ -68,13 +71,19 @@ public:
 			camera.setPos({ 0.0f, map.get()->getHeight() + 5.0f, 25.0f * sqrt(2) });
 		}
 	}
+	~Play_mode() {
+		Mode::~Mode();
+	}
 
 	void render() override { // displayScene 역할
-
+		world.render(shader);
 	}
 
 	void update() override { // timer 역할
+		// 조명 및 카메라 위치 변경
 
+		// 월드 업데이트
+		world.update();
 	}
 
 	void reset() { // 시작때로 초기화
