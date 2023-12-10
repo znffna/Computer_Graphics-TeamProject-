@@ -17,6 +17,10 @@ void World::add_object(std::shared_ptr<Pizza>& object)
 {
     objects.push_back(object);
 }
+void World::add_object(std::shared_ptr<Cube>& object)
+{
+    objects.push_back(object);
+}
 
 
 void World::add_objects(std::vector<std::shared_ptr<Object>>& object_vector)
@@ -37,12 +41,12 @@ void World::update()
     handle_collisions();
 }
 
-void World::handle_events(unsigned char key)
+void World::handle_events(unsigned char key, const std::string& state)
 {
     // 모든 객체에 따로 적용할게 있다면 실행 -> R키를 눌러 초기화 같은거 할때?
     // 객체들 마다 가지는 입력 이벤트 실행.
     for (std::shared_ptr<Object>& object : objects) {
-        object.get()->handle_events(key);
+        object.get()->handle_events(key, state);
     }
 }
 
@@ -124,7 +128,7 @@ bool World::collide(std::shared_ptr<Object>& first, std::shared_ptr<Object>& sec
 }
 
 bool World::Check_collision(std::shared_ptr<Ball>& ball, std::shared_ptr<Pizza>& pizza) {
-    if (pizza.get()->getInvaild() || pizza.get()->getType() == 1) {
+    if (pizza.get()->getInvaild() ) {
         // invaild 데이터일경우 pass 해버린다.
         // 빈칸을 담당하는 구역일 경우 역시 pass 해버린다.
         return false;
@@ -133,7 +137,11 @@ bool World::Check_collision(std::shared_ptr<Ball>& ball, std::shared_ptr<Pizza>&
     float pizza_rad = pizza.get()->getRotate().y;
     degree_range_normalization(pizza_rad);
     // x,z축이 일단 ball과 같은 경우
-    if (pizza_rad <= ball_rad and ball_rad < pizza_rad + 30.0f) {
+    float theta = glm::asin(ball.get()->getScale().x / ball.get()->getRadius());
+    //TODO 360도와 0도 사이에서의 각도 계산식 개선 필요
+    // 0.0< ball_rad < 30.0f 의 경우 360.0 < ball_rad + 360.0f < 390.0 의 경우도 체크해야 한다.
+
+    if ((pizza_rad - 30.0f - theta <= ball_rad and ball_rad < pizza_rad + theta)or (pizza_rad - 30.0f - theta <= ball_rad - 360.0f and ball_rad - 360.0f < pizza_rad + theta + 360.0f)) {
         // y축 값 비교 시작
         float ball_mid = ball.get()->getTranslation().y;
         float ball_height = ball.get()->getScale().y;

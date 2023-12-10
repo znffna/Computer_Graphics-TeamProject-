@@ -12,6 +12,8 @@
 #include "Cube.hpp"
 #include "Pillar.hpp"
 
+#include "Light.hpp"
+
 #include <unordered_set>
 
 struct World {
@@ -23,6 +25,7 @@ struct World {
     // 객체 추가
     void add_object(std::shared_ptr<Object>& object);
     void add_object(std::shared_ptr<Pizza>& object);
+    void add_object(std::shared_ptr<Cube>& object);
 
 
     void add_objects(std::vector<std::shared_ptr<Object>>& object);
@@ -30,7 +33,7 @@ struct World {
 
     // 갱신
     void update();
-    void handle_events(unsigned char);
+    void handle_events(unsigned char, const std::string&);
     void handle_collisions();
     // 출력
     void render(Shader& shader);

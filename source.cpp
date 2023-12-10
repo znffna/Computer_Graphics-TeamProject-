@@ -1,5 +1,8 @@
 ﻿#define _CRT_SECURE_NO_WARRINGS
 
+#include "fmod.hpp"
+#include "fmod_errors.h"
+
 #include "Default.hpp"
 #include "Mesh.hpp"
 #include "World.hpp"
@@ -8,12 +11,16 @@
 #include "Camera.hpp"
 #include "Shader.hpp"
 #include "Map.hpp"
+#include "Mode.hpp"
+
 
 //glew32.lib freeglut.lib
 const char title[] = "[[팀 프로젝트]]";
 const std::string User_guide[] = {
 "-------------------",
 "--[[팀 프로젝트]]--",
+"-------------------"
+"paste_here",
 "-------------------"
 //"paste_here",
 };
@@ -58,7 +65,6 @@ static Camera camera;
 
 // 조명 위치 적용할 Object
 //Object* Light;
-std::unique_ptr<Object> Light;
 
 
 //--------------------------------------------------------
@@ -80,6 +86,14 @@ bool reverse[10]{ false };//--- 해당 타이머의 역방향 여부
 
 std::shared_ptr<Ball> ball;
 
+// 사운드 관련 연습용 코드
+FMOD::System* ssystem;	//Sound System 약자임.
+FMOD::Sound* sound1, * sound2;	// 사용할 사운드가 동적할당될텐데 그걸 가르키는 포인터
+FMOD::Channel* channel = 0;
+FMOD_RESULT result;
+void* extradriverdata = 0;
+
+
 //------------------------------------
 //메인 함수 정의
 //------------------------------------
@@ -88,6 +102,7 @@ void APIENTRY MessageCallback(GLenum source, GLenum type, GLuint id, GLenum seve
 		(type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
 		type, severity, message);
 }
+
 //--- main
 void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
 {
@@ -107,15 +122,40 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설�
 	//	glEnable(GL_DEBUG_OUTPUT);
 	//	glDebugMessageCallback(MessageCallback, 0);
 	//}
+	//--- 사운드 시스템 초기화
+	{
+		result = FMOD::System_Create(&ssystem);		//--- 사운드 시스템 생성
+		if (result != FMOD_OK) {
+			std::cout << "사운드 시스템 생성 오류! " << '\n';
+			exit(0);	// 오류 체크
+		}
+
+		ssystem->init(32, FMOD_INIT_NORMAL, extradriverdata);
+		ssystem->createSound("bkgmusic.wav", FMOD_LOOP_NORMAL, 0, &sound1);	// FMOD_LOOP_NORMAL(반복 재생) , FMOD_DEFAULT (1번 출력)
+		ssystem->createSound("Illusion.mp3", FMOD_DEFAULT, 0, &sound2);	// FMOD_LOOP_NORMAL(반복 재생) , FMOD_DEFAULT (1번 출력)
+
+		// 예시 출력
+		channel->stop();				// 채널에 출력중인 소리 중지
+		channel->setVolume(0.1);	// 채널 소리 크기 조절
+		ssystem->playSound(sound1, 0, false, &channel);	// 뒤 채널에 sound1을 출력시킴.
+
+		//ssystem->playSound(sound2, 0, false, nullptr);	// 채널지정을 안할 경우 알아서 채널 생성후 재생끝날시 알아서 채널이 삭제됨. 
+																				// (단, 이경우 무조건 해당 sound가 끝까지 플레이가 되어야만 중지된다(도중에 stop 불가) -> 효과음에만 사용.)
+
+		channel->stop();	//
+	}
 
 	//--- 세이더 생성
 	shader.make_shaderProgram();
 
+	// 가져다 사용할 obj 읽어오기
+	Mesh::debug = false;
+	Read_ObjectFile();
+	
 	//--- 기본 셋팅 초기화
 	setup();
-
 	// 디버그 세팅
-	Mesh::debug = false;
+	Mesh::debug = true;
 
 	// 키보드 조작 명령어 출력
 	for (const std::string& s : User_guide) {
@@ -147,48 +187,43 @@ GLvoid setup() {
 
 	Mesh::debug = false;
 
-	{	// 가져다 사용할 obj 읽어오기
-		Read_ObjectFile();
-	}
 
 	{	//카메라 위치 초기화
 		camera.reset();
 		camera.setPos({ 0.0f, 0.0f, 25.0f * sqrt(2)});
 	}
 	
-	{	// 오브젝트 초기화
-		{	// 맵구조 로딩
-			//map.exampleMap();
-			map.Map1();
-			map.outputMap("Map1.map");
-			//map.loadMap("waterslide.map");
-			//map.makeMap();
-		}
+	current_mode = std::make_unique<Title_mode>();
 
-		{	// 조작할 공 생성
-			std::shared_ptr<Ball> tmp = std::make_shared<Ball>();
-			//tmp.changemesh(CUBE);
-
-			tmp.get()->setTranslation({ 3.0f, map.getHeight() + tmp.get()->getScale().y, 0.0f});
-			auto send = std::dynamic_pointer_cast<Object>(tmp);
-			world.add_object(send);
-			world.add_collision_pair("Ball:Pizza", send, NULLPTR);
-			ball = tmp;
-			//world.push_back(tmp);
-		}		
-	}
-
-	{	//조명 초기화
-		Light = std::make_unique<Object>(CUBE);
-		// Light = new Object(CUBE);
-		Light->setRotate({ 0.0f, 0.0f, 0.0f });
-		Light->setTranslation({ 0.0f, map.getHeight() + 5.0f, 10.0f });	//light_pos
-		Light->setColor({ 1.0f, 1.0f, 1.0f });			//light_color
-	}
-
-	{	
-		camera.setPos({ 0.0f, map.getHeight() + 5.0f, 25.0f * sqrt(2) });
-	}
+	//TODO mode class에서 수행하도록 바꿀 예정
+	//{	// 오브젝트 초기화
+	//	{	// 맵구조 로딩
+	//		//map.exampleMap();
+	//		//map.outputMap("example_map.map");
+	//		map.loadMap("waterslide.map");
+	//		map.makeMap();
+	//	}
+	//	{	// 조작할 공 생성
+	//		std::shared_ptr<Ball> tmp = std::make_shared<Ball>();
+	//		//tmp.changemesh(CUBE);
+	//		tmp.get()->setTranslation({ 3.0f, map.getHeight() + tmp.get()->getScale().y, 0.0f});
+	//		auto send = std::dynamic_pointer_cast<Object>(tmp);
+	//		world.add_object(send);
+	//		world.add_collision_pair("Ball:Pizza", send, NULLPTR);
+	//		ball = tmp;
+	//		//world.push_back(tmp);
+	//	}		
+	//}
+	//{	//조명 초기화
+	//	light = std::make_unique<Light>();
+	//	// Light = new Object(CUBE);
+	//	light->setRotate({ 0.0f, 0.0f, 0.0f });
+	//	light->setTranslation({ 0.0f, map.getHeight() + 5.0f, 10.0f });	//light_pos
+	//	light->setColor({ 1.0f, 1.0f, 1.0f });			//light_color
+	//}
+	//{	
+	//	camera.setPos({ 0.0f, map.getHeight() + 5.0f, 25.0f * sqrt(2) });
+	//}
 
 }
 
@@ -222,11 +257,11 @@ void RenderWorld(Camera& camera, int perspective) {
 	//--- 조명 위치 출력
 	{	
 		shader.Colorselect(uniform_color);
-		shader.setColor({Light->getColor()});
-		glm::vec3 tmp_translation = Light->getTranslation();
-		Light->setTranslation(Light->getTranslation() + (glm::normalize(Light->getTranslation()) * glm::vec3{ 1.5f }));
-		shader.draw_object(*Light);
-		Light->setTranslation(tmp_translation);
+		shader.setColor({ light.get()->getColor()});
+		glm::vec3 tmp_translation = light.get()->getTranslation();
+		light.get()->setTranslation(light.get()->getTranslation() + (glm::normalize(light.get()->getTranslation()) * glm::vec3{ 1.5f }));
+		shader.draw_object(*light.get());
+		light.get()->setTranslation(tmp_translation);
 
 	}
 
@@ -264,10 +299,11 @@ GLvoid drawScene()
 
 	Shader::debug = true;
 	// 조명 옵션 설정 
-	shader.setUniform(Light->getTranslation(), "lightPos");
-	shader.setUniform(Light->getColor(), "lightColor");
+	shader.setUniform(light.get()->getTranslation(), "lightPos");
+	shader.setUniform(light.get()->getColor(), "lightColor");
 	shader.setUniform(camera.getPos(), "viewPos");
 	Shader::debug = false;
+
 	RenderWorld(camera, Projective_PERSPECTIVE);
 
 	//--- 화면에 출력하기
@@ -280,49 +316,22 @@ GLvoid Reshape(int w, int h)
 	glViewport(0, 0, w, h);
 }
 
-bool move_dir[]{ false, false };
 
+bool move_dir[128]{ false };
 //--- 키보드 콜백 함수
 GLvoid Keyboard(unsigned char key, int x, int y) {
 	static int shape{ 0 };
 	//std::cout << key << "가 눌림" << std::endl;	
-	switch (key) {
-	// 카메라 이동 (debug 용)
-	/*case 'w': case 'W': case 's': case 'S': case 'a': case 'A': case 'd': case 'D':
-		camera.movePos(key);
-		break;*/
-	// 볼 움직임.
-	case 'a': case 'A': // 시계 방향으로
-		if (!move_dir[0]){
-			ball.get()->handle_events(key);
-			move_dir[0] = true;
+	if (!move_dir[key]) {
+		switch (key) {
+		case 'q': case 'Q':
+			glutLeaveMainLoop();
+			break; //--- 프로그램 종료			
+		default:
+			current_mode.get()->handle_events(key, "DOWN");
 		}
-		break;
-	case 'd': case 'D': // 반시계 방향으로
-		if (!move_dir[1]) {
-			ball.get()->handle_events(key);
-			move_dir[1] = true;
-		}
-		break;
-	// 조명 제거
-	case 'l': case 'L':
-		shader.setLight(!Shader::lightOption);
-		break;
-	// 은면 제거
-	case 'h': case 'H':	
-		depthcheck = !depthcheck;
-		break;
-	//투영 선택(직각/원근)
-	case 'p': case 'P':	
-		perspective = !perspective;
-		break;
-	//default option
-	case 'm': case 'M':
-		drawstyle = !drawstyle;
-		break;
-	case 'q': case 'Q': glutLeaveMainLoop(); break; //--- 프로그램 종료			
 	}
-	
+	move_dir[key] = true;
 	glutPostRedisplay();
 }
 
@@ -330,21 +339,14 @@ GLvoid Keyboard(unsigned char key, int x, int y) {
 //--- 키보드 콜백 함수
 GLvoid KeyboardUp(unsigned char key, int x, int y) {
 	//std::cout << key << "가 눌림" << std::endl;	
-	switch (key) {
-	case 'a': case 'A':
-		if (move_dir[0]) {
-			ball.get()->handle_events('d');
-			move_dir[0] = false;
+	if (move_dir[key]) {
+		switch (key) {
+		default:
+			current_mode.get()->handle_events(key, "UP");
 		}
-		break;
-	case 'd': case 'D':
-		if (move_dir[1]) {
-			ball.get()->handle_events('a');
-			move_dir[1] = false;
-		}
-		break;
 	}
 	//glutPostRedisplay();
+	move_dir[key] = false;
 }
 
 //--- 키보드 특수키 콜백 함수
@@ -371,6 +373,8 @@ GLvoid Mouse(int button, int state, int x, int y) {
 		mousex = mx;
 		mousey = my;
 		leftdown = true;
+
+		current_mode.get()->handle_events(mx, my);
 	}
 	
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {	
@@ -390,7 +394,7 @@ GLvoid Motion(int x, int y) {
 		float dx = mx - mousex;
 		float dy = my - mousey;
 		
-		camera.Dir_rotate(glm::vec3(camera.getSensitivity(), camera.getSensitivity(), camera.getSensitivity()) * glm::vec3(dy, -dx, 0.0f));
+		//camera.Dir_rotate(glm::vec3(camera.getSensitivity(), camera.getSensitivity(), camera.getSensitivity()) * glm::vec3(dy, -dx, 0.0f));
 
 		mousex = mx;
 		mousey = my;
@@ -419,15 +423,8 @@ GLvoid handleMouseWheel(int wheel, int direction, int x, int y) {
 //--- 타이머 콜백 함수
 GLvoid Timer(int value) { //--- 콜백 함수: 타이머 콜백 함수
 
-	world.update();
+	current_mode.get()->update();
 
-	Light.get()->setTranslation({0.0f, ball.get()->getTranslation().y + 5.0f, 25.0f * sqrt(2)});
-	camera.setPos(ball.get()->getTranslation());
-	camera.setPos(0, ball.get()->getTranslation().x * 5);
-	camera.setPos(1, ball.get()->getTranslation().y+ 6.0f);
-	camera.setPos(2, ball.get()->getTranslation().z * 5);
-	camera.setDir(glm::normalize(ball.get()->getTranslation() - camera.getPos()));
-	
 	glutPostRedisplay();	
 	glutTimerFunc(20, Timer, value); // 타이머함수 재 설정
 }

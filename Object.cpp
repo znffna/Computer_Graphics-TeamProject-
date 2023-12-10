@@ -127,9 +127,9 @@ void Object::addTranslation(const glm::vec3& vector)
 void Object::addRotate(const glm::vec3& vector)
 {
 	rotate += vector;
-	degree_range_normalization(rotate.x);
-	degree_range_normalization(rotate.y);
-	degree_range_normalization(rotate.z);
+	rotate.x = degree_range_normalization(rotate.x);
+	rotate.y = degree_range_normalization(rotate.y);
+	rotate.z = degree_range_normalization(rotate.z);
 }
 void Object::addScale(const glm::vec3& vector)
 {
@@ -257,7 +257,7 @@ void Object::render() const
 	draw();
 }
 
-void Object::handle_events(unsigned char key) {
+void Object::handle_events(unsigned char key, const std::string&) {
 	std::cout << "handle_events() 함수가 override 안된 경우 출력되는 줄." << '\n';
 }
 

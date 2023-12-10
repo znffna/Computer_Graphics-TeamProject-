@@ -18,7 +18,7 @@ void Map::outputMap(const std::string& filename)
 }
 
 // 맵 파일 읽어오는 함수.
-void Map::loadMap(const std::string & filename)
+void Map::loadMap(const std::string& filename)
 {
 	std::ifstream in{ filename };
 	if (not in) {
@@ -29,9 +29,10 @@ void Map::loadMap(const std::string & filename)
 	floor_rad.clear();
 	floor_member.clear();
 
+
 	// 데이터 읽어 오기
 	while (!in.eof()) {
-		char input;	// 현재 읽을 줄이 어떤 데이터를 저장한지 파악하기 위함.
+		char input{0};	// 현재 읽을 줄이 어떤 데이터를 저장한지 파악하기 위함.
 		in >> input;
 
 		if (input == 'f') {	//floor 줄을 읽어야 할 경우
@@ -52,11 +53,12 @@ void Map::loadMap(const std::string & filename)
 		else if (input == 'i') {
 			// 존재하는 각도 저장
 			int floor;	// 아이템이 있는 층
-			float rad;	// 아이템이 존재하는 각도
-			in >> floor >> rad;
+			in >> floor;
+			floor_item.push_back(floor);
 
-			//TODO 아이템 어떻게 저장할지 생각하자.
-			
+		}
+		else if (input == 'h') {
+			in >> floor_height;
 		}
 	}
 
@@ -94,60 +96,52 @@ void Map::exampleMap()
 	}
 }
 
+//void Map::Map1()
+//{
+//	// 기존 데이터 초기화
+//	floor_rad.clear();
+//	floor_member.clear();
+//
+//	for (int i = 0; i < 90; ++i) {
+//		float rad = i * 12.0f;
+//		floor_rad.push_back(rad);
+//
+//		std::vector<int> typelist;
+//		for (int j = 0; j < 12; ++j) {
+//			int type;
+//			if (j < 3) {
+//				type = 1; //통과
+//			}
+//			else {
+//				type = 2;
+//			}
+//			typelist.push_back(type);
+//		}
+//
+//		floor_member.push_back(std::move(typelist));
+//	}
+//}
+
 void Map::Map1()
 {
-	// 기존 데이터 초기화
 	floor_rad.clear();
 	floor_member.clear();
 
-	for (int i = 0; i < 30; ++i) {
-		float rad = 30.0f; // 0.0f ~ 360.0f 사이로 조절 가능
+	for (int i = 0; i < 40; ++i) {
+		float rad = 30.0f;
 		floor_rad.push_back(rad);
 
 		std::vector<int> typelist;
+
 		for (int j = 0; j < 12; ++j) {
-			int start_index = i % 12;
-			int type;
-			if (j >= start_index && j < start_index + 3) {
-				type = 0;
-			}
-			else {
-				type = 1;
-			}
+
+			int type = random_number(2, 4);
+		
 			typelist.push_back(type);
 		}
 
 		floor_member.push_back(std::move(typelist));
 	}
-
-}
-
-void Map::Map2()
-{
-	// 기존 데이터 초기화
-	floor_rad.clear();
-	floor_member.clear();
-
-	for (int i = 0; i < 30; ++i) {
-		float rad = 30.0f; // 0.0f ~ 360.0f 사이로 조절 가능
-		floor_rad.push_back(rad);
-
-		std::vector<int> typelist;
-		for (int j = 0; j < 12; ++j) {
-			int start_index = i % 12;
-			int type;
-			if (j >= start_index && j < start_index + 3) {
-				type = 1;
-			}
-			else {
-				type = 0;
-			}
-			typelist.push_back(type);
-		}
-
-		floor_member.push_back(std::move(typelist));
-	}
-
 }
 
 
@@ -168,21 +162,29 @@ void Map::makeMap()
 		for (int j = 0; j < floor_member[i].size(); ++j) {
 
 			std::shared_ptr<Pizza> tmp = std::make_shared<Pizza>(30.0f * j + rad, floor_member[i][j]);
-			tmp.get()->setTranslation({ 0.0f, start_height - 5.0f * i, 0.0f });
+
+			tmp.get()->setTranslation({ 0.0f, start_height - floor_height * i, 0.0f });
 			tmp.get()->setScale({ 5.0f, 0.2f, 5.0f });
 
 			switch (floor_member[i][j]) {
-			case 0: //pass or 만들지 않기
-				tmp.get()->setColor(glm::vec3(0.0f, 1.0f, 0.0f));
-				break;
-			case 1: // die
-				tmp.get()->setColor(glm::vec3(1.0f, 0.0f, 0.0f));
-				break;
-			case 2: // break
-				tmp.get()->setColor(glm::vec3(0.0f, 0.0f, 1.0f));
-				break;
-			default:
-				tmp.get()->setColor(rainbow[floor_member[i][j] % 8]);
+			case 0:
+				tmp.get()->setColor(glm::vec3(0.0f, 0.0f, 0.0f));
+				break;		// finish		//흰
+			case 5:
+				tmp.get()->setColor(glm::vec3(1.0f, 1.0f, 1.0f));
+				break;		// finish		//검정
+
+			case 1:continue;// 생성 x 통과 
+
+			case 2:tmp.get()->setColor(glm::vec3(1.0f, 0.0f, 0.0f));
+				break;		// die			// 빨강
+
+			case 3:
+				tmp.get()->setColor(glm::vec3(0.75f, 0.75f, 0.75f));
+				break;		// break블럭	// 회색
+			case 4:
+				tmp.get()->setColor(glm::vec3(0.0f, 1.0, 0.0f));
+				break;		// 안전블럭		// 초록
 			}
 			floor.push_back(tmp);
 
@@ -201,4 +203,18 @@ void Map::makeMap()
 		world.add_object(o_tmp);
 		//world.push_back(temp);
 	}
+	// 아이템 생성
+	{
+		for (int i = 0; i < floor_item.size(); ++i) {
+
+			float rad = random_number(0.0f, 360.0f);
+			std::shared_ptr<Cube> tmp = std::make_shared<Cube>(glm::vec3(3.0f, start_height - floor_height * floor_item[i]* 0.5 ,3.0f),  glm::vec3(0.0f, rad, 0.0f),  glm::vec3(0.5f) );
+			tmp.get()->setColor({ 0.0f, 0.0f, 1.0f });
+			item.push_back(tmp);
+			world.add_object(tmp);
+			auto o_tmp = std::static_pointer_cast<Object>(tmp);
+			world.add_collision_pair("Ball:Cube", NULLPTR, o_tmp);
+		}
+	}
+
 }

@@ -23,9 +23,11 @@ int random_number(const int& min, const int& max) {
 	return urd(gen);
 }
 
-void degree_range_normalization(float& degree) {
-	while (degree < 0.0f) degree += 360.0f;
-	while (360.0f <= degree) degree -= 360.0f;
+float degree_range_normalization(const float& degree) {
+	float tmp = degree;
+	while (tmp < 0.0f) tmp += 360.0f;
+	while (360.0f <= tmp) tmp -= 360.0f;
+	return tmp;
 }
 
 glm::vec3 CalculateBezierPoint(float t, const glm::vec3& p0, const glm::vec3& p1, const glm::vec3& p2) {

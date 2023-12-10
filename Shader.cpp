@@ -1,6 +1,6 @@
 #include "Shader.hpp"
 
-bool Shader::debug = true;
+bool Shader::debug = false;
 bool Shader::lightOption = true;
 
 Shader::Shader() {	
