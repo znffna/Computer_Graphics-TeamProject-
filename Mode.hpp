@@ -81,6 +81,7 @@ public:
 
 	void push_mode(std::shared_ptr<Mode>& mode) {
 		stack.push_back(mode);	
+		stack[stack.size() - 1].get()->init();
 	}
 
 	void pop_mode() {
