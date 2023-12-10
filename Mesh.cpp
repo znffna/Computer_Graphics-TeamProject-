@@ -74,7 +74,7 @@ Mesh::Mesh(const Mesh& other) {
 	for (const glm::vec3& v : other.vertex_normal) {
 		vertex_normal.push_back(v);
 	}
-	for (const glm::vec3& v : other.vertex_color) {
+	for (const glm::vec4& v : other.vertex_color) {
 		vertex_color.push_back(v);
 	}
 	for (const glm::vec2& v : other.uvs) {
@@ -119,7 +119,7 @@ Mesh& Mesh::operator=(const Mesh& other) {
 		for (const glm::vec3& v : other.vertex_normal) {
 			vertex_normal.push_back(v);
 		}
-		for (const glm::vec3& v : other.vertex_color) {
+		for (const glm::vec4& v : other.vertex_color) {
 			vertex_color.push_back(v);
 		}
 		for (const glm::vec2& v : other.uvs) {
@@ -153,7 +153,7 @@ Mesh::Mesh(Mesh&& other) noexcept {
 	for (const glm::vec3& v : other.vertex_normal) {
 		vertex_normal.push_back(v);
 	}
-	for (const glm::vec3& v : other.vertex_color) {
+	for (const glm::vec4& v : other.vertex_color) {
 		vertex_color.push_back(v);
 	}
 	for (const glm::vec2& v : other.uvs) {
@@ -221,7 +221,7 @@ Mesh& Mesh::operator=(Mesh&& other) noexcept {
 		for (const glm::vec3& v : other.vertex_normal) {
 			vertex_normal.push_back(v);
 		}
-		for (const glm::vec3& v : other.vertex_color) {
+		for (const glm::vec4& v : other.vertex_color) {
 			vertex_color.push_back(v);
 		}
 		for (const glm::vec2& v : other.uvs) {
@@ -266,6 +266,8 @@ Mesh& Mesh::operator=(Mesh&& other) noexcept {
 		other.vao = -1;
 		other.vbo[0] = -1;
 		other.vbo[1] = -1;
+		other.vbo[2] = -1;
+		other.vbo[3] = -1;
 
 	}
 	return *this;
@@ -287,13 +289,13 @@ void Mesh::delVao() {
 
 void Mesh::genVbo() {
 	if (!existVbo) {
-		glGenBuffers(3, vbo);
+		glGenBuffers(4, vbo);
 		existVbo = true;
 	}
 }
 void Mesh::delVbo() {
 	if (existVbo) {
-		glDeleteBuffers(3, vbo);
+		glDeleteBuffers(4, vbo);
 		existVbo = false;
 	}
 }
@@ -326,8 +328,9 @@ void Mesh::delGPUbuffers() {
 void Mesh::push_GPU() {
 
 	std::vector<glm::vec3> vertexs;
-	std::vector<glm::vec3> colors;
+	std::vector<glm::vec4> colors;
 	std::vector<glm::vec3> normals;
+	std::vector<glm::vec2> uv;
 
 	std::vector<unsigned int> real_index;
 	for (int i = 0; i < vertex_index.size(); ++i) {
@@ -338,7 +341,7 @@ void Mesh::push_GPU() {
 		if (debug)
 			std::cout << "face 값 출력 ---" << '\n';
 		for (int i = 0; i < vertex_index.size(); ++i) {
-			if (debug) 
+			if (debug)
 				std::cout << "vertex_index[" << i << "] : " << vertex_index[i] << '\n';
 			vertexs.push_back(vertex_pos[vertex_index[i]]);
 			colors.push_back(vertex_color[vertex_index[i]]);
@@ -362,6 +365,14 @@ void Mesh::push_GPU() {
 		if (debug)
 			std::cout << "normals 의 크기 : " << normals.size() << '\n';
 	}
+
+	{
+		// uvs index 에 맞는 uvs 저장
+		for (int i = 0; i < uv_index.size(); ++i) {
+			uv.push_back(uvs[uv_index[i]]);
+		}
+	}
+
 
 	{
 		glBindVertexArray(vao); //--- VAO를 바인드하기
@@ -388,15 +399,25 @@ void Mesh::push_GPU() {
 		//--- 3번째 VBO를 활성화 하여 바인드 하고, 버텍스 속성 (색상)을 저장
 		glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
 		//--- 변수 colors에서 버텍스 색상을 복사한다.
-		glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(glm::vec3), colors.data(), GL_STATIC_DRAW);
-		//--- 색상값을 attribute 인덱스 2번에 명시한다: 버텍스 당 3*float
-		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(glm::vec4), colors.data(), GL_STATIC_DRAW);
+		//--- 색상값을 attribute 인덱스 2번에 명시한다: 버텍스 당 4*float
+		glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 0, 0);
 		//--- attribute 인덱스 2번을 사용 가능하게 함.
 		glEnableVertexAttribArray(2);
 
+		//--- 3번째 VBO를 활성화 하여 바인드 하고, 버텍스 속성 (색상)을 저장
+		glBindBuffer(GL_ARRAY_BUFFER, vbo[3]);
+		//--- 변수 colors에서 버텍스 색상을 복사한다.
+		glBufferData(GL_ARRAY_BUFFER, uv.size() * sizeof(glm::vec2), uv.data(), GL_STATIC_DRAW);
+		//--- 색상값을 attribute 인덱스 2번에 명시한다: 버텍스 당 2*float
+		glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, 0);
+		//--- attribute 인덱스 2번을 사용 가능하게 함.
+		glEnableVertexAttribArray(3);
+
+
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, real_index.size() * sizeof(unsigned int), real_index.data(), GL_STATIC_DRAW);
-		
+
 		glBindVertexArray(0); //--- VAO를 바인드하기
 	}
 
@@ -500,7 +521,7 @@ void Mesh::clear() {
 //.obj 파일 읽기 샘플 (버전에 따라 수정 필요)
 void Mesh::ReadObj(const char* filename) {
 	//std::cout << "filename : '" << filename << "'" << '\n';
-	std::ifstream file( filename );
+	std::ifstream file(filename);
 
 	if (!file) {
 		std::cout << filename << "##파일 오픈 실패 ##" << '\n';
@@ -538,7 +559,7 @@ void Mesh::ReadObj(const char* filename) {
 				glm::vec3 vertex;
 				file >> vertex.x >> vertex.y >> vertex.z;
 				vertex_pos.push_back(vertex);
-				vertex_color.push_back(glm::vec3{ 0.5f } * (vertex + glm::vec3{ 1.0f }));
+				vertex_color.push_back(glm::vec4{ (glm::vec3{ 0.5f } *(vertex + glm::vec3{ 1.0f })),1.0f });
 				if (debug)
 					std::cout << "vertex_pos.size() : " << vertex_pos.size() << '\n';
 			}
@@ -601,17 +622,17 @@ void Mesh::ReadObj(const char* filename) {
 			std::cout << "벡터 생성중 ..." << '\n';
 		}
 
-		for (int i = 0; i < vertex_index.size()/3; ++i) {
-			if(debug)
-				std::cout << "i = "<< i << ", normal : ";
+		for (int i = 0; i < vertex_index.size() / 3; ++i) {
+			if (debug)
+				std::cout << "i = " << i << ", normal : ";
 
 			glm::vec3 vector[2];
-			vector[0] = vertex_pos[vertex_index[3 * i + 1]] - vertex_pos [vertex_index[3 * i]];
-			vector[1] = vertex_pos[vertex_index[3 * i + 2]] - vertex_pos [vertex_index[3 * i]];
+			vector[0] = vertex_pos[vertex_index[3 * i + 1]] - vertex_pos[vertex_index[3 * i]];
+			vector[1] = vertex_pos[vertex_index[3 * i + 2]] - vertex_pos[vertex_index[3 * i]];
 			glm::vec3 normal = glm::cross(vector[0], vector[1]);
 			normal = glm::normalize(normal);
 			if (debug) {
-				
+
 				print_vec3(vertex_pos[vertex_index[3 * i]]);
 				print_vec3(vertex_pos[vertex_index[3 * i + 1]]);
 				print_vec3(vertex_pos[vertex_index[3 * i + 2]]);
@@ -627,7 +648,7 @@ void Mesh::ReadObj(const char* filename) {
 
 	}
 
-	
+
 
 	//--- 3. 저장된 정보 debug 출력
 	if (debug) {
@@ -640,7 +661,7 @@ void Mesh::ReadObj(const char* filename) {
 			print_vec3(v);
 		}
 		std::cout << "vertex_color --" << vertex_color.size() << '\n';
-		for (const glm::vec3& v : vertex_color) {
+		for (const glm::vec4& v : vertex_color) {
 			print_vec3(v);
 		}
 		std::cout << "uvs --" << uvs.size() << '\n';
