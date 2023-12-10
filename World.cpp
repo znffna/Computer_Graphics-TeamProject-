@@ -124,9 +124,8 @@ bool World::collide(std::shared_ptr<Object>& first, std::shared_ptr<Object>& sec
 }
 
 bool World::Check_collision(std::shared_ptr<Ball>& ball, std::shared_ptr<Pizza>& pizza) {
-    if (pizza.get()->getInvaild() || pizza.get()->getType() == 1) {
+    if (pizza.get()->getInvaild()) {
         // invaild 데이터일경우 pass 해버린다.
-        // 빈칸을 담당하는 구역일 경우 역시 pass 해버린다.
         return false;
     }
     float ball_rad = ball.get()->getRotate().y;
