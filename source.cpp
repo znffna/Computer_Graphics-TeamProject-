@@ -1,8 +1,5 @@
 ﻿#define _CRT_SECURE_NO_WARRINGS
 
-#include "fmod.hpp"
-#include "fmod_errors.h"
-
 #include "Default.hpp"
 #include "Mesh.hpp"
 #include "World.hpp"
@@ -86,12 +83,7 @@ bool reverse[10]{ false };//--- 해당 타이머의 역방향 여부
 
 std::shared_ptr<Ball> ball;
 
-// 사운드 관련 연습용 코드
-FMOD::System* ssystem;	//Sound System 약자임.
-FMOD::Sound* sound1, * sound2;	// 사용할 사운드가 동적할당될텐데 그걸 가르키는 포인터
-FMOD::Channel* channel = 0;
-FMOD_RESULT result;
-void* extradriverdata = 0;
+
 
 
 //------------------------------------
@@ -123,27 +115,23 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설�
 	//	glDebugMessageCallback(MessageCallback, 0);
 	//}
 	//--- 사운드 시스템 초기화
-	{
-		result = FMOD::System_Create(&ssystem);		//--- 사운드 시스템 생성
-		if (result != FMOD_OK) {
-			std::cout << "사운드 시스템 생성 오류! " << '\n';
-			exit(0);	// 오류 체크
-		}
-
-		ssystem->init(32, FMOD_INIT_NORMAL, extradriverdata);
-		ssystem->createSound("Illusion.mp3", FMOD_LOOP_NORMAL, 0, &sound1);	// FMOD_LOOP_NORMAL(반복 재생) , FMOD_DEFAULT (1번 출력)
-		ssystem->createSound("Illusion.mp3", FMOD_DEFAULT, 0, &sound2);	// FMOD_LOOP_NORMAL(반복 재생) , FMOD_DEFAULT (1번 출력)
-
-		// 예시 출력
-		channel->stop();				// 채널에 출력중인 소리 중지
-		channel->setVolume(0.3);	// 채널 소리 크기 조절
-		ssystem->playSound(sound1, 0, false, &channel);	// 뒤 채널에 sound1을 출력시킴.
-
-		ssystem->playSound(sound2, 0, false, nullptr);	// 채널지정을 안할 경우 알아서 채널 생성후 재생끝날시 알아서 채널이 삭제됨. 
-																				// (단, 이경우 무조건 해당 sound가 끝까지 플레이가 되어야만 중지된다(도중에 stop 불가) -> 효과음에만 사용.)
-
-		channel->stop();	//
-	}
+	//{
+	//	result = FMOD::System_Create(&ssystem);		//--- 사운드 시스템 생성
+	//	if (result != FMOD_OK) {
+	//		std::cout << "사운드 시스템 생성 오류! " << '\n';
+	//		exit(0);	// 오류 체크
+	//	}
+	//	ssystem->init(32, FMOD_INIT_NORMAL, extradriverdata);
+	//	ssystem->createSound("Illusion.mp3", FMOD_LOOP_NORMAL, 0, &sound1);	// FMOD_LOOP_NORMAL(반복 재생) , FMOD_DEFAULT (1번 출력)
+	//	ssystem->createSound("Illusion.mp3", FMOD_DEFAULT, 0, &sound2);	// FMOD_LOOP_NORMAL(반복 재생) , FMOD_DEFAULT (1번 출력)
+	//	// 예시 출력
+	//	channel->stop();				// 채널에 출력중인 소리 중지
+	//	channel->setVolume(0.3);	// 채널 소리 크기 조절
+	//	ssystem->playSound(sound1, 0, false, &channel);	// 뒤 채널에 sound1을 출력시킴.
+	//	ssystem->playSound(sound2, 0, false, nullptr);	// 채널지정을 안할 경우 알아서 채널 생성후 재생끝날시 알아서 채널이 삭제됨. 
+	//																			// (단, 이경우 무조건 해당 sound가 끝까지 플레이가 되어야만 중지된다(도중에 stop 불가) -> 효과음에만 사용.)
+	//	channel->stop();	//
+	//}
 
 	//--- 세이더 생성
 	shader.make_shaderProgram();
@@ -193,7 +181,7 @@ GLvoid setup() {
 		camera.setPos({ 0.0f, 0.0f, 25.0f * sqrt(2)});
 	}
 	
-	current_mode = std::make_unique<Title_mode>();
+	game_framework.get()->change_mode(std::make_shared<Title_mode>());
 
 	//TODO mode class에서 수행하도록 바꿀 예정
 	//{	// 오브젝트 초기화
@@ -324,11 +312,11 @@ GLvoid Keyboard(unsigned char key, int x, int y) {
 	//std::cout << key << "가 눌림" << std::endl;	
 	if (!move_dir[key]) {
 		switch (key) {
-		case 'q': case 'Q':
-			glutLeaveMainLoop();
-			break; //--- 프로그램 종료			
+		//case 'q': case 'Q':
+		//	glutLeaveMainLoop();
+		//	break; //--- 프로그램 종료			
 		default:
-			current_mode.get()->handle_events(key, "DOWN");
+			game_framework.get()->handle_events(key, "DOWN");
 		}
 	}
 	move_dir[key] = true;
@@ -342,7 +330,7 @@ GLvoid KeyboardUp(unsigned char key, int x, int y) {
 	if (move_dir[key]) {
 		switch (key) {
 		default:
-			current_mode.get()->handle_events(key, "UP");
+			game_framework.get()->handle_events(key, "UP");
 		}
 	}
 	//glutPostRedisplay();
@@ -374,7 +362,7 @@ GLvoid Mouse(int button, int state, int x, int y) {
 		mousey = my;
 		leftdown = true;
 
-		current_mode.get()->handle_events(mx, my);
+		game_framework.get()->handle_events(mx, my);
 	}
 	
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {	
@@ -423,7 +411,7 @@ GLvoid handleMouseWheel(int wheel, int direction, int x, int y) {
 //--- 타이머 콜백 함수
 GLvoid Timer(int value) { //--- 콜백 함수: 타이머 콜백 함수
 
-	current_mode.get()->update();
+	game_framework.get()->update();
 
 	glutPostRedisplay();	
 	glutTimerFunc(20, Timer, value); // 타이머함수 재 설정

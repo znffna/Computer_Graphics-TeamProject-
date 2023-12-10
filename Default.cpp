@@ -2,6 +2,12 @@
 
 float window_row = 800;			//윈도우 크기(가로)
 float window_col = 600;			//윈도우 크기(세로)
+// 사운드 관련 연습용 코드
+FMOD::System* ssystem;	//Sound System 약자임.
+FMOD::Sound* sound1, * sound2;	// 사용할 사운드가 동적할당될텐데 그걸 가르키는 포인터
+FMOD::Channel* channel = 0;
+FMOD_RESULT result;
+void* extradriverdata = 0;
 
 void show_vec3(const glm::vec3& vector) {
 	std::cout << "{" << vector.x << ", " << vector.y << ", " << vector.z << "}";

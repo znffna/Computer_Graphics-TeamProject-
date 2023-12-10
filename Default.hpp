@@ -19,6 +19,9 @@
 #include <gl/glm/glm.hpp>
 #include <gl/glm/ext.hpp>
 #include <gl/glm/gtc/matrix_transform.hpp>
+// fmod header include
+#include "fmod.hpp"
+#include "fmod_errors.h"
 
 //축의 방향 벡터
 const glm::vec3 x_axis{ 1.0f, 0.0f, 0.0f };
@@ -56,5 +59,12 @@ glm::vec3 CalculateBezierPoint(float t, const glm::vec3& p0, const glm::vec3& p1
 
 // glm::vec3 출력 함수
 void print_vec3(const glm::vec3&);
+
+// 사운드 관련 연습용 코드
+extern FMOD::System* ssystem;	//Sound System 약자임.
+extern FMOD::Sound* sound1, * sound2;	// 사용할 사운드가 동적할당될텐데 그걸 가르키는 포인터
+extern FMOD::Channel* channel;
+extern FMOD_RESULT result;
+extern void* extradriverdata;
 
 #endif //
