@@ -1,5 +1,8 @@
 #include "Camera.hpp"
 
+
+Camera camera;
+
 Camera::Camera()
 {
 	lat = 0.0f;

@@ -1,5 +1,7 @@
 #include "Shader.hpp"
 
+Shader shader;
+
 bool Shader::debug = false;
 bool Shader::lightOption = true;
 

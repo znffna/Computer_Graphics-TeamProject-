@@ -53,4 +53,6 @@ public:
 	void draw_object(const Object&);
 };
 
+extern Shader shader;
+
 #endif //

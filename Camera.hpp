@@ -97,4 +97,6 @@ public:
 	glm::mat4 ortho_transform() const;
 };
 
+extern Camera camera;
+
 #endif
