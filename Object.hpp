@@ -24,7 +24,7 @@ private:
 	glm::vec3 rotate{ 0.0f };			//회전 백터
 	glm::vec3 scale{ 1.0f };			//축소/확대 백터
 
-	glm::vec3 color{ 1.0f };		//오브젝트 출력 색깔
+	glm::vec4 color{ 1.0f };		//오브젝트 출력 색깔
 
 	// 출력할 3D 오브젝트
 	std::shared_ptr<Mesh> mesh{ nullptr };
@@ -68,8 +68,8 @@ public: // ---- 멤버 함수 ----
 	glm::vec3 getRotate() const;
 	glm::vec3 getScale() const;
 	// 색상 변경 함수 getter / setter
-	void setColor(const glm::vec3&);
-	glm::vec3 getColor() const;
+	void setColor(const glm::vec4&);
+	glm::vec4 getColor() const;
 
 	// Position 변경 함수.
 	void translation_rotate(const glm::vec3&);

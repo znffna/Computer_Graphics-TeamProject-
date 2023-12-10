@@ -165,11 +165,11 @@ void Object::rollback()
 }
 
 
-void Object::setColor(const glm::vec3& rhs)
+void Object::setColor(const glm::vec4& rhs)
 {
 	color = rhs;
 }
-glm::vec3 Object::getColor() const
+glm::vec4 Object::getColor() const
 {
 	return color;
 }
