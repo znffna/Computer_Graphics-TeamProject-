@@ -9,7 +9,7 @@ public:
 	Cube(glm::vec3 position, glm::vec3 rotate, glm::vec3 scale) : Object(CUBE) {
 		if(!texture)
 			texture = (loadTexture("image1.png"));
-
+		setTexture();
 		setTranslation(position);
 		setRotate(rotate);
 		setScale(scale);
@@ -22,7 +22,6 @@ public:
 	}
 
 	void render() const override {
-
 		glBindVertexArray(getVao());
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture);

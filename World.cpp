@@ -53,6 +53,12 @@ void World::render(Shader& shader)
     for (std::shared_ptr<Object>& object : objects) {
         shader.setColor({ object.get()->getColor() });
         shader.draw_object(*object.get());
+        if (object.get()->getTexture()) {
+            shader.enableTexture();
+        }
+        else {
+            shader.disableTexture();
+        }
         object.get()->render();
         cnt++;
     }

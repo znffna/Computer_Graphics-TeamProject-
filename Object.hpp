@@ -11,6 +11,7 @@ private:
 	void World_after_rotate(glm::mat4&) const;
 
 	bool invaild{ false }; // true일시 game_world의 모든 부분에서 무시.
+	bool use_texture{ false };	// 텍스처 사용 유무
 
 	glm::vec3 after_translation{ 0.0f };			//이동 백터
 	glm::vec3 after_rotate{ 0.0f };			//회전 백터(각 축에대한 degree값)
@@ -70,6 +71,9 @@ public: // ---- 멤버 함수 ----
 	// 색상 변경 함수 getter / setter
 	void setColor(const glm::vec4&);
 	glm::vec4 getColor() const;
+
+	void setTexture(const bool rhs = true) { use_texture = rhs; }
+	bool getTexture() const { return use_texture; }
 
 	GLuint getVao() const { return mesh.get()->vao; }
 
