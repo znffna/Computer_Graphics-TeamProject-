@@ -7,7 +7,6 @@ bool Mesh::draw_option = false;
 
 // 사용할 obj 저장할 포인터
 std::shared_ptr<Mesh> CUBE;
-std::shared_ptr<Mesh> PYRAMID;
 std::shared_ptr<Mesh> SPHERE;
 std::shared_ptr<Mesh> PIZZA;
 std::shared_ptr<Mesh> PILLAR;
@@ -15,7 +14,6 @@ std::shared_ptr<Mesh> PILLAR;
 
 // 사용할 obj의 파일 위치
 const std::string cube_storage_location = "resource\\cube.obj";
-const std::string pyramid_storage_location = "resource\\pyramid.obj";
 const std::string sphere_storage_location = "resource\\sphere.obj";
 const std::string pizza_storage_location = "resource\\pizza.obj";
 const std::string pillar_storage_location = "resource\\pillar.obj";
@@ -23,7 +21,6 @@ const std::string pillar_storage_location = "resource\\pillar.obj";
 void Read_ObjectFile(){
 	// 가져다 사용할 obj 읽어오기
 	CUBE = std::make_shared<Mesh>(cube_storage_location);
-	PYRAMID = std::make_shared<Mesh>(pyramid_storage_location);
 	SPHERE = std::make_shared<Mesh>(sphere_storage_location);
 	PIZZA = std::make_shared<Mesh>(pizza_storage_location);	
 	PILLAR = std::make_shared<Mesh>(pillar_storage_location);
@@ -49,6 +46,7 @@ Mesh::Mesh() {
 Mesh::Mesh(const std::string& filename)
 {
 	genGPUbuffers();
+	name = filename;
 	ReadObj(filename.c_str());
 	push_GPU();
 }
@@ -368,9 +366,17 @@ void Mesh::push_GPU() {
 
 	{
 		// uvs index 에 맞는 uvs 저장
-		for (int i = 0; i < uv_index.size(); ++i) {
-			uv.push_back(uvs[uv_index[i]]);
+		if (uv_index[0] == std::numeric_limits<unsigned int>().max()) {
+			for (int i = 0; i < vertexs.size(); ++i) {
+				uv.push_back({0.0f, 0.0f});
+			}
 		}
+		else {
+			for (int i = 0; i < uv_index.size(); ++i) {
+				uv.push_back(uvs[uv_index[i]]);
+			}
+		}
+
 	}
 
 

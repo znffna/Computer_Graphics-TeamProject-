@@ -1,14 +1,13 @@
-#include "Default.hpp"
-#include "Camera.hpp"
-#include "Object.hpp"
+
 
 #ifndef SHADER_HPP
 #define SHADER_HPP
 
-class Shader {
-	void setUniform(const glm::mat4& matrix, const char* uName) const;
-	void setUniform(const int& int_value, const char* uName) const;
+#include "Default.hpp"
+#include "Camera.hpp"
+#include "Object.hpp"
 
+class Shader {
 public:
 	GLchar* vertexSource, * fragmentSource; //--- 소스코드 저장 변수
 	GLuint vertexShader, fragmentShader;	//--- 세이더 객체
@@ -32,9 +31,18 @@ public:
 
 	// 세이더 uniform 변경 함수
 	void setColor(const glm::vec3& vertex_color = { 1.0f, 1.0f, 1.0f }, const char* uName = "uColor") const;
+	void setColor(const glm::vec4& vertex_color = { 1.0f, 1.0f, 1.0f, 1.0f }, const char* uniform = "uColor") const;
 	void Colorselect(const int& vertex_color = 1) const;
 	void setUniform(const glm::vec3& vector, const char* uName) const;
+	void setUniform(const glm::vec4& vector, const char* uName) const;
+	void setUniform(const glm::mat4& matrix, const char* uName) const;
+	void setUniform(const int& int_value, const char* uName) const;
+	void setUniform(const float& float_value, const char* uName) const;
 
+	void enableTexture() { setUniform(1, "useTexture"); }
+	void disableTexture() { setUniform(0, "useTexture"); }
+
+	void setTexture(int idx) { setUniform(idx, "outTexture"); }
 
 	// 세이더 조명 사용 여부
 	void setLight(const bool light = true);

@@ -122,7 +122,7 @@ void Map::makeMap()
 			std::shared_ptr<Pizza> tmp = std::make_shared<Pizza>(30.0f * j + rad, floor_member[i][j]);
 			tmp.get()->setTranslation({ 0.0f, start_height - floor_height * i, 0.0f });
 			tmp.get()->setScale({ 5.0f, 0.2f, 5.0f });
-			tmp.get()->setColor(rainbow[floor_member[i][j] % 8]);
+			tmp.get()->setColor({ rainbow[floor_member[i][j] % 8], 1.0f });
 			floor.push_back(tmp);
 
 			world.add_object(tmp);
@@ -135,7 +135,7 @@ void Map::makeMap()
 	{
 		std::shared_ptr<Pillar> tmp = std::make_shared<Pillar>(glm::vec3{ 1.5f, start_height * 1.5f, 1.5f });
 		tmp.get()->setTranslation({ 0.0f, 0.0f, 0.0f });
-		tmp.get()->setColor({ 1.0f, 1.0f, 1.0f });
+		tmp.get()->setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 		auto o_tmp = std::static_pointer_cast<Object>(tmp);
 		world.add_object(o_tmp);
 		//world.push_back(temp);

@@ -71,6 +71,8 @@ public: // ---- 멤버 함수 ----
 	void setColor(const glm::vec4&);
 	glm::vec4 getColor() const;
 
+	GLuint getVao() const { return mesh.get()->vao; }
+
 	// Position 변경 함수.
 	void translation_rotate(const glm::vec3&);
 

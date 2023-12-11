@@ -1,6 +1,8 @@
 
 #pragma once
 
+
+
 #ifndef DEFAULT_HPP
 #define DEFAULT_HPP
 
@@ -19,6 +21,8 @@
 #include <gl/glm/glm.hpp>
 #include <gl/glm/ext.hpp>
 #include <gl/glm/gtc/matrix_transform.hpp>
+
+
 // fmod header include
 #include "fmod.hpp"
 #include "fmod_errors.h"
@@ -59,6 +63,9 @@ glm::vec3 CalculateBezierPoint(float t, const glm::vec3& p0, const glm::vec3& p1
 
 // glm::vec3 출력 함수
 void print_vec3(const glm::vec3&);
+
+// 이미지 로드 함수
+GLuint loadTexture(const char* imagePath);
 
 // 사운드 관련 연습용 코드
 extern FMOD::System* ssystem;	//Sound System 약자임.

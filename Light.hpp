@@ -7,16 +7,20 @@
 
 class Light : public Object {
 	bool out_put{ false };
+	float lightBright{ 1.0f };
 public:
 	Light() : Object(CUBE) {}
 	Light(const glm::vec3& pos, const glm::vec3& color) : Object(CUBE) {
 		setTranslation(pos);
-		setColor(color);
+		setColor({ color, 1.0f });
 	}
 
 	// interface
 	void setOut(bool rhs) { out_put = rhs; }
 	bool getOut() { return out_put; }
+
+	void setBright(float rhs) { lightBright = rhs; }
+	float getBright() { return lightBright; }
 
 	void update() override {
 		// Light는 mode 클래스에서 update 시킬 예정

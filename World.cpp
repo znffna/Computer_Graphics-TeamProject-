@@ -49,10 +49,12 @@ void World::handle_events(unsigned char key, const std::string& state)
 // Ãâ·Â
 void World::render(Shader& shader)
 {
+    int cnt{0};
     for (std::shared_ptr<Object>& object : objects) {
         shader.setColor({ object.get()->getColor() });
         shader.draw_object(*object.get());
         object.get()->render();
+        cnt++;
     }
 }
 

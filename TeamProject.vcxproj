@@ -136,6 +136,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Cube.cpp" />
     <ClCompile Include="Default.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="Mode.cpp" />

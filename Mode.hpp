@@ -14,9 +14,6 @@
 #include "Camera.hpp"
 #include "Shader.hpp"
 
-
-extern Camera camera;
-extern Shader shader;
 extern std::shared_ptr<Light> light;
 
 class Mode {
@@ -136,6 +133,7 @@ public:
 
 	// 생성후 한 번 호출 필수.
 	void init() {
+		shader.enableTexture();
 		// 오브젝트 초기화
 		{	// 맵구조 로딩
 			map = std::make_shared<Map>();
@@ -165,7 +163,7 @@ public:
 			// Light = new Object(CUBE);
 			light.get()->setRotate({ 0.0f, 0.0f, 0.0f });
 			light.get()->setTranslation({ 0.0f, map.get()->getHeight() + 5.0f, 10.0f });	//light_pos
-			light.get()->setColor({ 1.0f, 1.0f, 1.0f });			//light_color
+			light.get()->setColor({ 1.0f, 1.0f, 1.0f, 1.0f });			//light_color
 		}
 
 		{
@@ -288,7 +286,39 @@ public:
 	}
 };
 
-
+//GLuint loadTexture(const char* imagePath)
+//{
+//	// 이미지 데이터 로드
+//	int width, height, channels;
+//	unsigned char* imageData = stbi_load(imagePath, &width, &height, &channels, 0);
+//	if (!imageData) {
+//		std::cerr << "Failed to load image: " << imagePath << std::endl;
+//		return 0;
+//	}
+//
+//	// OpenGL 텍스처 생성
+//	GLuint textureID;
+//	glGenTextures(1, &textureID);
+//	glBindTexture(GL_TEXTURE_2D, textureID);
+//
+//	// 텍스처 파라미터 설정
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//
+//	// 텍스처 데이터 전송
+//	//glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+//	if (channels == 3)
+//		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imageData);
+//	else
+//		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
+//
+//	// 이미지 데이터 해제
+//	stbi_image_free(imageData);
+//
+//	return textureID;
+//}
 
 
 #endif // !MODE_HPP

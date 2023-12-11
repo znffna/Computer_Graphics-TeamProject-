@@ -109,11 +109,12 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설�
 	glewExperimental = GL_TRUE;
 	glewInit();
 
-	//{
-	//	//--- GL 디버그
-	//	glEnable(GL_DEBUG_OUTPUT);
-	//	glDebugMessageCallback(MessageCallback, 0);
-	//}
+	{
+		//--- GL 디버그
+		glEnable(GL_DEBUG_OUTPUT);
+		glDebugMessageCallback(MessageCallback, 0);
+	}
+	Shader::debug = false;
 	//--- 사운드 시스템 초기화
 	//{
 	//	result = FMOD::System_Create(&ssystem);		//--- 사운드 시스템 생성
@@ -135,7 +136,8 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설�
 
 	//--- 세이더 생성
 	shader.make_shaderProgram();
-
+	shader.setUniform(0, "useTexture");
+	//shader.getUniformLocate("");
 	// 가져다 사용할 obj 읽어오기
 	Mesh::debug = false;
 	Read_ObjectFile();
@@ -285,12 +287,11 @@ GLvoid drawScene()
 
 	shader.use();
 
-	Shader::debug = true;
 	// 조명 옵션 설정 
 	shader.setUniform(light.get()->getTranslation(), "lightPos");
 	shader.setUniform(light.get()->getColor(), "lightColor");
+	shader.setUniform(light.get()->getBright(), "lightBright");
 	shader.setUniform(camera.getPos(), "viewPos");
-	Shader::debug = false;
 
 	RenderWorld(camera, Projective_PERSPECTIVE);
 

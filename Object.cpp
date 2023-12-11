@@ -169,6 +169,7 @@ void Object::setColor(const glm::vec4& rhs)
 {
 	color = rhs;
 }
+
 glm::vec4 Object::getColor() const
 {
 	return color;
