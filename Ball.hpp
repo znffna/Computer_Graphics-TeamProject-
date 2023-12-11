@@ -81,6 +81,14 @@ public:
 		if (group == "Ball:Pizza") {
 			//TODO 볼의 속도를 초기화 = 다시 위로 튀기기 하는 코드
 			fall_velocity = reset_velocity;
+			// 공이 위일 경우
+			if (other.get()->getTranslation().y + other.get()->getScale().y < getTranslation().y) {
+				fall_velocity = glm::abs(fall_velocity);
+			}
+			else {
+				fall_velocity = -glm::abs(fall_velocity);
+			}
+			//fall_velocity = reset_velocity;
 		}
 		if (group == "Ball:Cube") {
 			//TODO 아이템을 획득
