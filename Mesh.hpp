@@ -16,13 +16,13 @@ private:
 public:
 	//---멤버 변수
 	GLuint vao;
-	GLuint vbo[3];
+	GLuint vbo[4];
 
 	GLuint ebo;
 
 	std::vector<glm::vec3> vertex_pos;		// 기본 정점 위치 데이터
 	std::vector<glm::vec3> vertex_normal;	// 기본 정점 노멀 데이터
-	std::vector<glm::vec3> vertex_color;	// 기본 정점 색상 데이터
+	std::vector<glm::vec4> vertex_color;	// 기본 정점 색상 데이터
 	std::vector<glm::vec2> uvs;				// 기본 텍스처(UV) 좌표 데이터
 
 	std::vector<unsigned int> vertex_index;	// 정점 index

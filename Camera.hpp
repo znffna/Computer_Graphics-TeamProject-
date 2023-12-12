@@ -1,9 +1,9 @@
-#include "Default.hpp"
-#include "Object.hpp"
+
 
 #ifndef CAMERA_HPP
 #define CAMERA_HPP
-
+#include "Default.hpp"
+#include "Object.hpp"
 class Camera {
 	float lat; // 카메라가 y축과 가까워질수록 절대값이 커짐(90.0f = y축과 평행)
 	float radius;
@@ -96,5 +96,7 @@ public:
 	glm::mat4 perspective_transform() const;
 	glm::mat4 ortho_transform() const;
 };
+
+extern Camera camera;
 
 #endif

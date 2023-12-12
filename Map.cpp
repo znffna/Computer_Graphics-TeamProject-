@@ -31,7 +31,7 @@ void Map::loadMap(const std::string & filename)
 
 	// 데이터 읽어 오기
 	while (!in.eof()) {
-		char input;	// 현재 읽을 줄이 어떤 데이터를 저장한지 파악하기 위함.
+		char input{0};	// 현재 읽을 줄이 어떤 데이터를 저장한지 파악하기 위함.
 		in >> input;
 
 		if (input == 'f') {	//floor 줄을 읽어야 할 경우
@@ -56,7 +56,9 @@ void Map::loadMap(const std::string & filename)
 			in >> floor >> rad;
 
 			//TODO 아이템 어떻게 저장할지 생각하자.
-			
+		}
+		else if (input == 'h') {
+			in >> floor_height;
 		}
 	}
 
@@ -108,16 +110,19 @@ void Map::makeMap()
 		std::cout << "map.makeMap() : 현재 불러온 데이터가 없음" << '\n';
 		return;
 	}
-	float start_height = 5.0f * floor_rad.size() / 2.0f;
+	float start_height = floor_height * floor_rad.size() / 2.0f;
 	// 각층 구조 생성
 	for (int i = 0; i < floor_rad.size(); ++i) {
 		std::vector< std::shared_ptr<Object> > floor;
 		float rad = floor_rad[i];
 		for (int j = 0; j < floor_member[i].size(); ++j) {
+			if (floor_member[i][j] == 1) {
+				continue;
+			}
 			std::shared_ptr<Pizza> tmp = std::make_shared<Pizza>(30.0f * j + rad, floor_member[i][j]);
-			tmp.get()->setTranslation({ 0.0f, start_height - 5.0f * i, 0.0f });
+			tmp.get()->setTranslation({ 0.0f, start_height - floor_height * i, 0.0f });
 			tmp.get()->setScale({ 5.0f, 0.2f, 5.0f });
-			tmp.get()->setColor(rainbow[floor_member[i][j] % 8]);
+			tmp.get()->setColor({ rainbow[floor_member[i][j] % 8], 1.0f });
 			floor.push_back(tmp);
 
 			world.add_object(tmp);
@@ -130,7 +135,7 @@ void Map::makeMap()
 	{
 		std::shared_ptr<Pillar> tmp = std::make_shared<Pillar>(glm::vec3{ 1.5f, start_height * 1.5f, 1.5f });
 		tmp.get()->setTranslation({ 0.0f, 0.0f, 0.0f });
-		tmp.get()->setColor({ 1.0f, 1.0f, 1.0f });
+		tmp.get()->setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 		auto o_tmp = std::static_pointer_cast<Object>(tmp);
 		world.add_object(o_tmp);
 		//world.push_back(temp);

@@ -37,22 +37,30 @@ void World::update()
     handle_collisions();
 }
 
-void World::handle_events(unsigned char key)
+void World::handle_events(unsigned char key, const std::string& state)
 {
     // 모든 객체에 따로 적용할게 있다면 실행 -> R키를 눌러 초기화 같은거 할때?
     // 객체들 마다 가지는 입력 이벤트 실행.
     for (std::shared_ptr<Object>& object : objects) {
-        object.get()->handle_events(key);
+        object.get()->handle_events(key, state);
     }
 }
 
 // 출력
 void World::render(Shader& shader)
 {
+    int cnt{0};
     for (std::shared_ptr<Object>& object : objects) {
         shader.setColor({ object.get()->getColor() });
         shader.draw_object(*object.get());
+        if (object.get()->getTexture()) {
+            shader.enableTexture();
+        }
+        else {
+            shader.disableTexture();
+        }
         object.get()->render();
+        cnt++;
     }
 }
 
@@ -124,9 +132,8 @@ bool World::collide(std::shared_ptr<Object>& first, std::shared_ptr<Object>& sec
 }
 
 bool World::Check_collision(std::shared_ptr<Ball>& ball, std::shared_ptr<Pizza>& pizza) {
-    if (pizza.get()->getInvaild() || pizza.get()->getType() == 1) {
+    if (pizza.get()->getInvaild()) {
         // invaild 데이터일경우 pass 해버린다.
-        // 빈칸을 담당하는 구역일 경우 역시 pass 해버린다.
         return false;
     }
     float ball_rad = ball.get()->getRotate().y;

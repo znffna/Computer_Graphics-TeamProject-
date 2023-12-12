@@ -11,6 +11,7 @@ private:
 	void World_after_rotate(glm::mat4&) const;
 
 	bool invaild{ false }; // true일시 game_world의 모든 부분에서 무시.
+	bool use_texture{ false };	// 텍스처 사용 유무
 
 	glm::vec3 after_translation{ 0.0f };			//이동 백터
 	glm::vec3 after_rotate{ 0.0f };			//회전 백터(각 축에대한 degree값)
@@ -24,7 +25,7 @@ private:
 	glm::vec3 rotate{ 0.0f };			//회전 백터
 	glm::vec3 scale{ 1.0f };			//축소/확대 백터
 
-	glm::vec3 color{ 1.0f };		//오브젝트 출력 색깔
+	glm::vec4 color{ 1.0f };		//오브젝트 출력 색깔
 
 	// 출력할 3D 오브젝트
 	std::shared_ptr<Mesh> mesh{ nullptr };
@@ -42,7 +43,7 @@ public: // ---- 멤버 함수 ----
 
 	//--- operator overloading
 	void backup();		// 초기화할때 주어지는 값을 저장.
-	void rollback();	// 초기화할때 주어지는 값으로 초기화
+	virtual void rollback();	// 초기화할때 주어지는 값으로 초기화
 
 	// Object 설정 초기화
 	void changemesh(const std::shared_ptr<Mesh>&);
@@ -68,8 +69,13 @@ public: // ---- 멤버 함수 ----
 	glm::vec3 getRotate() const;
 	glm::vec3 getScale() const;
 	// 색상 변경 함수 getter / setter
-	void setColor(const glm::vec3&);
-	glm::vec3 getColor() const;
+	void setColor(const glm::vec4&);
+	glm::vec4 getColor() const;
+
+	void setTexture(const bool rhs = true) { use_texture = rhs; }
+	bool getTexture() const { return use_texture; }
+
+	GLuint getVao() const { return mesh.get()->vao; }
 
 	// Position 변경 함수.
 	void translation_rotate(const glm::vec3&);
@@ -87,7 +93,7 @@ public: // ---- 멤버 함수 ----
 	// 다형성을 위한 기본 옵션
 	virtual void render() const;
 
-	virtual void handle_events(unsigned char);
+	virtual void handle_events(unsigned char, const std::string&);
 	virtual void update();
 	virtual void handle_collision(const std::string& group, const std::shared_ptr<Object>& other);
 };

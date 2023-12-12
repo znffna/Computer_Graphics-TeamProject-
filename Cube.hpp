@@ -5,7 +5,11 @@
 
 class Cube : public Object {
 public:
+	static GLuint texture;
 	Cube(glm::vec3 position, glm::vec3 rotate, glm::vec3 scale) : Object(CUBE) {
+		if(!texture)
+			texture = (loadTexture("image1.png"));
+		setTexture();
 		setTranslation(position);
 		setRotate(rotate);
 		setScale(scale);
@@ -17,7 +21,14 @@ public:
 		addRotate({ 0.0f, 5.0f, 0.0f });
 	}
 
-	void handle_events(unsigned char key) override {
+	void render() const override {
+		glBindVertexArray(getVao());
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		draw();
+	}
+
+	void handle_events(unsigned char key, const std::string& state) override {
 		switch (key) {
 		case 'r': case 'R':
 			rollback();

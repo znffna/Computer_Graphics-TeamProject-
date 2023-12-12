@@ -1,6 +1,8 @@
 #include "Shader.hpp"
 
-bool Shader::debug = true;
+Shader shader;
+
+bool Shader::debug = false;
 bool Shader::lightOption = true;
 
 Shader::Shader() {	
@@ -122,6 +124,7 @@ void Shader::use() const {
 }
 
 unsigned int Shader::getUniformLocate(const char* uName) const {
+	use();
 	GLint uniformLocation = glGetUniformLocation(shaderProgramID, uName);
 	if(debug)
 	{
@@ -140,11 +143,27 @@ unsigned int Shader::getUniformLocate(const char* uName) const {
 void Shader::setUniform(const glm::vec3& vector, const char* uName) const {
 	glUniform3fv(getUniformLocate(uName), 1, glm::value_ptr(vector));
 }
+
+void Shader::setUniform(const glm::vec4& vector, const char* uName) const {
+	if (debug)
+		std::cout << uName << " = {" << vector.r << ", " << vector.g << ", " << vector.b << ", " << vector.a << "} " << '\n';
+	glUniform4fv(getUniformLocate(uName), 1, glm::value_ptr(vector));
+}
+
 void Shader::setUniform(const glm::mat4& matrix, const char* uName) const {
 	glUniformMatrix4fv(getUniformLocate(uName), 1, GL_FALSE, glm::value_ptr(matrix));
 }
+
 void Shader::setUniform(const int& int_value, const char* uName) const {
+	if (debug)
+		std::cout << uName << " = {" << int_value << "} " << '\n';
 	glUniform1i(getUniformLocate(uName), int_value);
+}
+
+void Shader::setUniform(const float& float_value, const char* uName) const {
+	if (debug)
+		std::cout << uName << " = {" << float_value << "} " << '\n';
+	glUniform1f(getUniformLocate(uName), float_value);
 }
 
 void Shader::setLight(const bool light) {
@@ -152,9 +171,10 @@ void Shader::setLight(const bool light) {
 	setUniform(light, "lightOption");
 }
 
-
-
 void Shader::setColor(const glm::vec3& vertex_color, const char* uniform) const {
+	setUniform(vertex_color, "uColor");
+}
+void Shader::setColor(const glm::vec4& vertex_color, const char* uniform) const {
 	setUniform(vertex_color, "uColor");
 }
 
