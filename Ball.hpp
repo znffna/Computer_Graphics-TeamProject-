@@ -4,16 +4,16 @@
 #define BALL_HPP
 
 class Ball : public Object {
-	float radius{ 3.0f }; // 원기둥 중심으로 부터의 거리
+	float radius{ 5.0f }; // 원기둥 중심으로 부터의 거리
 
 	float velocity{ 5.0f };		// 좌우 이동 속도(rad)
 	int move_dir{ 0 };			// 좌우 이동 방향(0: 이동안함)
 
-	float reset_velocity{ 0.5f };	// 땅과 부딫힐 경우 초기화될 값.
+	float reset_velocity{ 0.4f };	// 땅과 부딫힐 경우 초기화될 값.
 	float fall_velocity{ 0.0f };	// 내려가는 속도 (가속도로 계속 줄어들 값 )
-	float fall_acceleration{ 0.05f };	// 중력역할 ( 줄어드는 값을 적으면 됨 )
+	float fall_acceleration{ 0.03f };	// 중력역할 ( 줄어드는 값을 적으면 됨 )
 public:
-	Ball() : Object(SPHERE) { backup(); }
+	Ball() : Object(SPHERE) { backup(); setTranslation({ radius, 0.0f, 0.0f });  setScale(glm::vec3(0.6f)); }
 	// interface function
 	float getVelocity() { return velocity; }
 	void setVelocity(float rhs) { velocity = rhs; }
@@ -92,6 +92,7 @@ public:
 		}
 		if (group == "Ball:Cube") {
 			//TODO 아이템을 획득
+			//gettime. 특정시간 무적 충돌판정 무시 
 		}
 	}
 
