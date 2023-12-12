@@ -14,6 +14,10 @@
 #include "Camera.hpp"
 #include "Shader.hpp"
 
+const std::string Mouse_click_sound{ "Illusion.mp3" };
+const std::string Title_mode_background{ "Illusion.mp3" };
+const std::string Play_mode_background{ "Illusion.mp3" };
+
 extern std::shared_ptr<Light> light;
 
 class Mode {
@@ -124,17 +128,32 @@ class Play_mode : public Mode {
 	std::shared_ptr<Map> map;
 	std::vector<std::shared_ptr<Cube>> items;
 	int stage;
+	FMOD::Sound* background_sound;
 public:
 	Play_mode(int stage) : stage{ stage } {}
 
 	~Play_mode() {
+		bool isPlay{ false };
+		channel->isPlaying(&isPlay);
+		if (isPlay) {
+			channel->stop();
+		}
+
+		background_sound->release();
+		background_sound = nullptr;
+
 		Mode::~Mode();
 	}
 
 	// 생성후 한 번 호출 필수.
 	void init() {
-		shader.enableTexture();
+		// 사운드 설정 먼저.
+		ssystem->createSound(Play_mode_background.c_str(), FMOD_LOOP_NORMAL, 0, &background_sound);	// FMOD_LOOP_NORMAL(반복 재생) , FMOD_DEFAULT (1번 출력)
+		channel->setVolume(0.3f);	// 채널 소리 크기 조절
+		ssystem->playSound(background_sound, 0, false, &channel);	// 뒤 채널에 sound1을 출력시킴.
+
 		// 오브젝트 초기화
+		shader.enableTexture();
 		{	// 맵구조 로딩
 			map = std::make_shared<Map>();
 			if (stage < 0) {
@@ -236,8 +255,8 @@ public:
 	}
 
 	void init() override {	//초기화 역할.
-		ssystem->createSound("Illusion.mp3", FMOD_LOOP_NORMAL, 0, &background_sound);	// FMOD_LOOP_NORMAL(반복 재생) , FMOD_DEFAULT (1번 출력)
-		ssystem->createSound("Illusion.mp3", FMOD_DEFAULT, 0, &click_sound);	// FMOD_LOOP_NORMAL(반복 재생) , FMOD_DEFAULT (1번 출력)
+		ssystem->createSound(Title_mode_background.c_str(), FMOD_LOOP_NORMAL, 0, &background_sound);	// FMOD_LOOP_NORMAL(반복 재생) , FMOD_DEFAULT (1번 출력)
+		ssystem->createSound(Mouse_click_sound.c_str(), FMOD_DEFAULT, 0, &click_sound);	// FMOD_LOOP_NORMAL(반복 재생) , FMOD_DEFAULT (1번 출력)
 
 		channel->setVolume(0.3f);	// 채널 소리 크기 조절
 		ssystem->playSound(background_sound, 0, false, &channel);	// 뒤 채널에 sound1을 출력시킴.
