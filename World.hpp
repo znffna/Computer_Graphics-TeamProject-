@@ -25,6 +25,7 @@ struct World {
     // °´Ã¼ Ãß°¡
     void add_object(std::shared_ptr<Object>& object);
     void add_object(std::shared_ptr<Pizza>& object);
+    void add_object(std::shared_ptr<Cube>& object);
 
 
     void add_objects(std::vector<std::shared_ptr<Object>>& object);

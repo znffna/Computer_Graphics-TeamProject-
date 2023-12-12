@@ -9,11 +9,12 @@
 #include "World.hpp"
 #include <fstream>
 
-const std::string Map_filename[] = { "waterslide.map"};
+const std::string Map_filename[] = {  "waterslide.map", "itemmode.map", "mode1.map", };
 
 class Map {
 	// 파일에어 읽어온 데이터가 저장되는 변수들
-	float floor_height{ 1.0f };
+	float floor_height;
+	std::vector<int> floor_item;
 	std::vector<float> floor_rad;
 	std::vector<std::vector<int>> floor_member;
 
@@ -31,6 +32,7 @@ public:
 	void loadMap(const std::string& filename);
 	// 맵 코드 만드는 예제 함수
 	void exampleMap();
+	void Map1();
 
 	// 불러온 데이터로 실제 오브젝트 생성하는 함수
 	void makeMap();

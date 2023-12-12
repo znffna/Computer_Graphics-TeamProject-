@@ -17,6 +17,10 @@ void World::add_object(std::shared_ptr<Pizza>& object)
 {
     objects.push_back(object);
 }
+void World::add_object(std::shared_ptr<Cube>& object)
+{
+    objects.push_back(object);
+}
 
 
 void World::add_objects(std::vector<std::shared_ptr<Object>>& object_vector)
