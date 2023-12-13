@@ -11,6 +11,7 @@
 #include "Ball.hpp"
 #include "Cube.hpp"
 #include "Pillar.hpp"
+#include "Square.hpp"
 
 #include "Light.hpp"
 
@@ -26,6 +27,7 @@ struct World {
     void add_object(std::shared_ptr<Object>& object);
     void add_object(std::shared_ptr<Pizza>& object);
     void add_object(std::shared_ptr<Cube>& object);
+    void add_object(std::shared_ptr<Square>& object);
 
 
     void add_objects(std::vector<std::shared_ptr<Object>>& object);

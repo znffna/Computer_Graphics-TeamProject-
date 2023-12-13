@@ -48,8 +48,6 @@ static bool leftdown{ false };								//--- 마우스 클릭상황 flag
 //출력 옵션s
 static bool drawstyle{ true };	//false : 와이어(line) 객체/ true : 솔리드(triangle) 객체
 static bool depthcheck{ true };	//은면제거 유무
-static bool perspective{ true };	//투영 방식(true : 원근 투영)
-
 //마우스 좌표값
 static float mousex{ 0.0f };		//마우스의 x값
 static float mousey{ 0.0f };		//마우스의 y값
@@ -176,45 +174,11 @@ GLvoid setup() {
 	drawstyle = true;	//false : 와이어(line) 객체/ true : 솔리드(triangle) 객체
 
 	Mesh::debug = false;
-
-
 	{	//카메라 위치 초기화
 		camera.reset();
 		camera.setPos({ 0.0f, 0.0f, 25.0f * sqrt(2)});
 	}
-	
 	game_framework.get()->change_mode(std::make_shared<Title_mode>());
-
-	//TODO mode class에서 수행하도록 바꿀 예정
-	//{	// 오브젝트 초기화
-	//	{	// 맵구조 로딩
-	//		//map.exampleMap();
-	//		//map.outputMap("example_map.map");
-	//		map.loadMap("waterslide.map");
-	//		map.makeMap();
-	//	}
-	//	{	// 조작할 공 생성
-	//		std::shared_ptr<Ball> tmp = std::make_shared<Ball>();
-	//		//tmp.changemesh(CUBE);
-	//		tmp.get()->setTranslation({ 3.0f, map.getHeight() + tmp.get()->getScale().y, 0.0f});
-	//		auto send = std::dynamic_pointer_cast<Object>(tmp);
-	//		world.add_object(send);
-	//		world.add_collision_pair("Ball:Pizza", send, NULLPTR);
-	//		ball = tmp;
-	//		//world.push_back(tmp);
-	//	}		
-	//}
-	//{	//조명 초기화
-	//	light = std::make_unique<Light>();
-	//	// Light = new Object(CUBE);
-	//	light->setRotate({ 0.0f, 0.0f, 0.0f });
-	//	light->setTranslation({ 0.0f, map.getHeight() + 5.0f, 10.0f });	//light_pos
-	//	light->setColor({ 1.0f, 1.0f, 1.0f });			//light_color
-	//}
-	//{	
-	//	camera.setPos({ 0.0f, map.getHeight() + 5.0f, 25.0f * sqrt(2) });
-	//}
-
 }
 
 const int Projective_PERSPECTIVE{ 1 };
@@ -293,7 +257,8 @@ GLvoid drawScene()
 	shader.setUniform(light.get()->getBright(), "lightBright");
 	shader.setUniform(camera.getPos(), "viewPos");
 
-	RenderWorld(camera, Projective_PERSPECTIVE);
+
+	RenderWorld(camera, perspective);
 
 	//--- 화면에 출력하기
 	glutSwapBuffers(); 
@@ -302,6 +267,8 @@ GLvoid drawScene()
 //--- 다시그리기 콜백 함수
 GLvoid Reshape(int w, int h)
 {
+	window_row = w;
+	window_col = h;
 	glViewport(0, 0, w, h);
 }
 

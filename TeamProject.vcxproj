@@ -140,6 +140,7 @@
     <ClCompile Include="Default.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="Mode.cpp" />
+    <ClCompile Include="Square.cpp" />
     <ClCompile Include="World.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -156,6 +157,7 @@
     <ClInclude Include="Light.hpp" />
     <ClInclude Include="Mode.hpp" />
     <ClInclude Include="Pillar.hpp" />
+    <ClInclude Include="Square.hpp" />
     <ClInclude Include="World.hpp" />
     <ClInclude Include="Map.hpp" />
     <ClInclude Include="Mesh.hpp" />

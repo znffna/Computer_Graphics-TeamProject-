@@ -88,6 +88,7 @@ extern std::shared_ptr<Mesh> PYRAMID;
 extern std::shared_ptr<Mesh> SPHERE;
 extern std::shared_ptr<Mesh> PIZZA;
 extern std::shared_ptr<Mesh> PILLAR;
+extern std::shared_ptr<Mesh> SQUARE;
 
 
 #endif //

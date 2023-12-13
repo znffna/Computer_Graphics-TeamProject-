@@ -70,7 +70,7 @@ public:
 	
 	}
 
-	void change_mode(std::shared_ptr<Mode> mode) {
+	void change_mode(const std::shared_ptr<Mode>& mode) {
 		if( stack.size() > 0) {
 			stack[stack.size() - 1].reset();
 			stack.pop_back();
@@ -228,8 +228,9 @@ public:
 };
 
 class Title_mode : public Mode {
+	std::shared_ptr<Square> background;
 public:
-	GLuint intro_texture;
+	GLuint intro_texture{0};
 	FMOD::Sound* background_sound;
 	FMOD::Sound* click_sound;
 
@@ -259,8 +260,19 @@ public:
 		ssystem->createSound(Mouse_click_sound.c_str(), FMOD_DEFAULT, 0, &click_sound);	// FMOD_LOOP_NORMAL(반복 재생) , FMOD_DEFAULT (1번 출력)
 
 		channel->setVolume(0.3f);	// 채널 소리 크기 조절
+		{
+			bool isPlay{ false };
+			channel->isPlaying(&isPlay);
+			if (isPlay) {
+				channel->stop();
+			}
+		}
 		ssystem->playSound(background_sound, 0, false, &channel);	// 뒤 채널에 sound1을 출력시킴.
 
+		if (!intro_texture) {
+			shader.use();
+			intro_texture = loadTexture("resource\\tilte.png");
+		}
 		// (단, 이경우 무조건 해당 sound가 끝까지 플레이가 되어야만 중지된다(도중에 stop 불가) -> 효과음에만 사용.)
 		// 오브젝트 초기화
 		world.clear();
@@ -273,6 +285,9 @@ public:
 			camera.setPos({ 0.0f, 0.0f, 1.0f });
 			camera.setDir({ 0.0f, 0.0f, -1.0f });
 		}
+
+		background = std::make_shared<Square>(intro_texture);
+		world.add_object(background);
 	}
 
 	void render() override { // displayScene 역할
@@ -295,7 +310,7 @@ public:
 	}
 
 	void handle_events(float mx, float my) override {
-		ssystem->playSound(click_sound, 0, false, nullptr);	// 채널지정을 안할 경우 알아서 채널 생성후 재생끝날시 알아서 채널이 삭제됨. 
+		// ssystem->playSound(click_sound, 0, false, nullptr);	// 채널지정을 안할 경우 알아서 채널 생성후 재생끝날시 알아서 채널이 삭제됨. 
 		if (0.3f < mx and mx < 0.7f) {
 			game_framework.get()->change_mode(std::make_shared<Play_mode>(0));
 		}

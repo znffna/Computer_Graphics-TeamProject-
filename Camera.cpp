@@ -255,9 +255,9 @@ glm::mat4 Camera::perspective_transform() const {
 }
 
 glm::mat4 Camera::ortho_transform() const {
-	float max = 50.0f;
+	float max = 1.0f;
 	glm::mat4 ortho{ 1.0f };
-	ortho = glm::ortho(-max, max, -max, max, -max, max); //--- 투영 공간 설정: [-100.0, 100.0]
+	ortho = glm::ortho(-max, max, -max, max, -10.0f, 10.0f); //--- 투영 공간 설정: [-100.0, 100.0]
 	return ortho;
 	//unsigned int projectionLocation = glGetUniformLocation(shaderProgramID, "projectionTransform"); //--- 투영 변환 값 설정
 }

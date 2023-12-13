@@ -6,6 +6,7 @@
 #include "stb_image.h"
 
 
+bool perspective{ true };	//투영 방식(true : 원근 투영)
 
 float window_row = 800;			//윈도우 크기(가로)
 float window_col = 600;			//윈도우 크기(세로)

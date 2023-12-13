@@ -100,4 +100,6 @@ public: // ---- ¸â¹ö ÇÔ¼ö ----
 
 extern std::shared_ptr<Object> NULLPTR;
 
+
+
 #endif
