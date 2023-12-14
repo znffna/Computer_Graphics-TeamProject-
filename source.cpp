@@ -17,7 +17,8 @@ const std::string User_guide[] = {
 "-------------------",
 "--[[팀 프로젝트]]--",
 "-------------------"
-"paste_here",
+" - 타이틀 : 마우스 클릭으로 게임 시작",
+" - 공 조작법 : A (좌)/ D(우)",
 "-------------------"
 //"paste_here",
 };
@@ -84,11 +85,11 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설�
 	glewExperimental = GL_TRUE;
 	glewInit();
 
-	{
-		//--- GL 디버그
-		glEnable(GL_DEBUG_OUTPUT);
-		glDebugMessageCallback(MessageCallback, 0);
-	}
+	//{
+	//	//--- GL 디버그
+	//	glEnable(GL_DEBUG_OUTPUT);
+	//	glDebugMessageCallback(MessageCallback, 0);
+	//}
 	Shader::debug = false;
 	//--- 사운드 시스템 초기화
 	//{

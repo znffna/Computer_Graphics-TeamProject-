@@ -44,7 +44,7 @@ void main(void)
 
 		float len = distance( lightPos, vec3(FragPos)) / 5;
 		//vec3 result = (ambient + diffuse + specular) * objectColor; //--- 최종 조명 설정된 픽셀 색상: (주변+산란반사+거울반사조명)*객체 색상
-		vec3 result = (ambient + diffuse + specular)/ pow(len, 2) * lightBright * 11.0 * use_color.rgb; //--- 최종 조명 설정된 픽셀 색상: (주변+산란반사+거울반사조명)*객체 색상
+		vec3 result = (ambient + diffuse + specular)/ pow(len, 2) * lightBright * 25.0 * use_color.rgb; //--- 최종 조명 설정된 픽셀 색상: (주변+산란반사+거울반사조명)*객체 색상
 		FragColor = vec4(result, use_color.a); // --- 픽셀 색을 출력
 	}
 	else{

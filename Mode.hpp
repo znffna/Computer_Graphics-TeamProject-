@@ -82,11 +82,9 @@ public:
 
 	void change_mode(const std::shared_ptr<Mode>& mode) {
 		if( stack.size() > 0) {
-			std::cout << "ÇöÀç ¸Ê »èÁ¦" << '\n';
 			stack[stack.size() - 1].reset();
 			stack.pop_back();
 		}
-		std::cout << "ÇöÀç ¸Ê »ý¼º" << '\n';
 		stack.push_back(mode);
 		stack[stack.size() - 1].get()->init();
 

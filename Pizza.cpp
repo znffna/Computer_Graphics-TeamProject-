@@ -41,14 +41,12 @@ int Pizza::handle_collision(const std::string& group, const std::shared_ptr<Obje
 		switch (type) {
 		case 0:
 			//TODO 다음 스페이지로 연결하는 코드.
-			std::cout << "도착함." << '\n';
 			ssystem->playSound(victory, 0, false, nullptr);	// 뒤 채널에 sound1을 출력시킴.
 			next_level(game_framework);
 			return 1;
 			break;		// finish		//흰
 		case 5:
 			//TODO 다음 스페이지로 연결하는 코드.
-			std::cout << "도착함." << '\n';
 			ssystem->playSound(victory, 0, false, nullptr);	// 뒤 채널에 sound1을 출력시킴.
 			next_level(game_framework);
 			return 1;

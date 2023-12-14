@@ -33,6 +33,8 @@ public:
 		FMOD_RESULT result2;
 		result1 = ssystem->createSound(poing_sound.c_str(), FMOD_DEFAULT, nullptr, &pingpong);
 		result2 = ssystem->createSound(item_sound.c_str(), FMOD_DEFAULT, nullptr, &item);
+		item_start = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
 	}
 	// interface function
 	float getVelocity() { return velocity; }
@@ -81,7 +83,7 @@ public:
 		}
 		else{
 			fall_velocity -= fall_acceleration; // 시간개념은 안넣었음.
-			fall_velocity = glm::clamp(fall_velocity, -4.0f, 4.0f);
+			fall_velocity = glm::clamp(fall_velocity, -2.0f, 2.0f);
 			addTranslation({ 0.0f, fall_velocity, 0.0f });
 		}
 	}
@@ -89,9 +91,16 @@ public:
 	void update() override {
 		//std::cout << "Ball.update() 호출" << '\n';
 		horizontal_move();	// 좌우 이동 갱신
-		falling();	// 상하 이동 갱신
-		if (item_start - std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()) > 3) {
-			invincibility = false;
+		if (invincibility) {
+			std::cout << "무적 진행 시간: " << std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()) - item_start << '\n';
+			if (std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()) - item_start > 1) {
+				invincibility = false;
+				fall_velocity = 0.0f;
+			}
+			addTranslation({ 0.0f, -0.5f, 0.0f });
+		}
+		else {
+			falling();	// 상하 이동 갱신
 		}
 
 	}
@@ -125,8 +134,10 @@ public:
 	int handle_collision(const std::string& group, const std::shared_ptr<Object>& other) override {
 		if (group == "Ball:Pizza") {
 			//TODO 볼의 속도를 초기화 = 다시 위로 튀기기 하는 코드
-			collision_flag = true;
-			ssystem->playSound(pingpong, 0, false, nullptr);	// 뒤 채널에 sound1을 출력시킴.
+			if(!invincibility) {
+				collision_flag = true;
+				ssystem->playSound(pingpong, 0, false, nullptr);	// 뒤 채널에 sound1을 출력시킴.
+			}
 
 		}
 		if (group == "Ball:Cube") {
