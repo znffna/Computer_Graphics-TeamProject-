@@ -321,14 +321,14 @@ public:
 		case 'r': case 'R':	// 초기화 입력
 			break;
 		case 's': case 'S':
-			game_framework.get()->change_mode(std::make_shared<Play_mode>(1));
+			game_framework.get()->change_mode(std::make_shared<Play_mode>(0));
 			break;
 		}
 	}
 
 	void handle_events(float mx, float my) override {
 		// ssystem->playSound(click_sound, 0, false, nullptr);	// 채널지정을 안할 경우 알아서 채널 생성후 재생끝날시 알아서 채널이 삭제됨. 
-		game_framework.get()->change_mode(std::make_shared<Play_mode>(1));
+		game_framework.get()->change_mode(std::make_shared<Play_mode>(0));
 	}
 	void reset() { // 시작때로 초기화
 		world.reset();

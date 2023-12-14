@@ -2,9 +2,7 @@
 #include "Mode.hpp"
 
 void next_level(std::shared_ptr<Game_Frame_Work>& game_framework) {
-	std::cout << "next_level 도착함." << '\n';
 	game_framework.get()->change_mode(std::make_shared<Play_mode>(game_framework.get()->get_stage() + 1));
-	std::cout << "next_level 끝났다." << '\n';
 }
 
 Pizza::Pizza(float rad, int type) : Object(PIZZA), type{ type }
@@ -31,15 +29,16 @@ void Pizza::handle_events(unsigned char key, const std::string&) {
 
 int Pizza::handle_collision(const std::string& group, const std::shared_ptr<Object>& other) {
 	if (group == "Ball:Pizza") {
-		std::cout << "도착함." << '\n';
 		switch (type) {
 		case 0:
 			//TODO 다음 스페이지로 연결하는 코드.
+			std::cout << "도착함." << '\n';
 			next_level(game_framework);
 			return 1;
 			break;		// finish		//흰
 		case 5:
 			//TODO 다음 스페이지로 연결하는 코드.
+			std::cout << "도착함." << '\n';
 			next_level(game_framework);
 			return 1;
 			break;		// finish		//검정
