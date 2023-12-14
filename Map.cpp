@@ -216,6 +216,7 @@ void Map::makeMap()
 			tmp.get()->setColor({ 0.0f, 0.0f, 1.0f, 1.0f });
 			tmp.get()->backup();
 			item.push_back(tmp);
+
 			world.add_object(tmp);
 			auto o_tmp = std::static_pointer_cast<Object>(tmp);
 			world.add_collision_pair("Ball:Cube", NULLPTR, o_tmp);

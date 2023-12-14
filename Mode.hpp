@@ -194,6 +194,7 @@ public:
 			auto send = std::dynamic_pointer_cast<Object>(ball);
 			world.add_object(send);
 			world.add_collision_pair("Ball:Pizza", send, NULLPTR);
+			world.add_collision_pair("Ball:Cube", send, NULLPTR);
 		}
 
 

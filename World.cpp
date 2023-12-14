@@ -177,12 +177,14 @@ bool World::Check_collision(std::shared_ptr<Ball>& ball, std::shared_ptr<Cube>& 
         std::cout << "Check_collision(ball:cube)" << '\n';
     glm::vec3 ball_pos = ball.get()->getTranslation();
     glm::vec3 cube_pos = cube.get()->getTranslation();
-    
+
+    std::cout << "Check_collision(ball:cube)";
     if (glm::length(ball_pos - cube_pos) < ball.get()->getScale().x + (cube.get()->getScale().x * sqrt(3))) {
         // 일단 중심간의 거리가 size 합보다 작은경우 true;
+        std::cout << "true" << '\n';
         return true;
     }
-  
+    std::cout << "false" << '\n';
     return false;
 }
 
