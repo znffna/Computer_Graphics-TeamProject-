@@ -95,7 +95,7 @@ public: // ---- ¸â¹ö ÇÔ¼ö ----
 
 	virtual void handle_events(unsigned char, const std::string&);
 	virtual void update();
-	virtual void handle_collision(const std::string& group, const std::shared_ptr<Object>& other);
+	virtual int handle_collision(const std::string& group, const std::shared_ptr<Object>& other);
 };
 
 extern std::shared_ptr<Object> NULLPTR;

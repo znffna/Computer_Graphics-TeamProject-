@@ -34,7 +34,7 @@ void World::add_objects(std::vector<std::shared_ptr<Object>>& object_vector)
     }
 }
     
-void World::update()
+int World::update()
 {
     // 객체들을 애니메이트 시킴.
     for (std::shared_ptr<Object>& object : objects) {
@@ -42,7 +42,7 @@ void World::update()
     }
 
     // 충돌판정 시작.
-    handle_collisions();
+    return handle_collisions();
 }
 
 void World::handle_events(unsigned char key, const std::string& state)
@@ -238,7 +238,7 @@ void World::add_collision_pair(const std::string& group, std::shared_ptr<Object>
     //    collision_pairs[group][1].append(b)
 }
 
-void World::handle_collisions()
+int World::handle_collisions()
 {
     // 등록된 모든 충돌 상황에 대해서 충돌 검사 및 충돌 처리 수행.
 
@@ -253,14 +253,21 @@ void World::handle_collisions()
             for (auto s_o : second) {
                 if (collide(f_o, s_o)) {
                     // 충돌시 해당 group과 상대방을 리턴.
-                    f_o.get()->handle_collision(key, s_o);
-                    s_o.get()->handle_collision(key, f_o);
+                    int result{ 0 };
+                    result += f_o.get()->handle_collision(key, s_o);
+                    if (result > 0) {
+                        return 1;
+                    }
+                    result += s_o.get()->handle_collision(key, f_o);
+                    if (result > 0) {
+                        return 1;
+                    }
                 }
             }
         }
     }
     
-
+    return 0;
     //for group, pairs in collision_pairs.items() : # key 'boy:ball', value [[], []]
     //    for a in pairs[0]:
     //        for (b in pairs[1]) {

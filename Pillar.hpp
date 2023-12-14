@@ -26,8 +26,9 @@ public:
 		draw();
 	}
 
-	void handle_collision(const std::string& group, const std::shared_ptr<Object>& other) override {
+	int handle_collision(const std::string& group, const std::shared_ptr<Object>& other) override {
 		// 가운데 기둥은 아무것도 하지 않음.
+		return 0;
 	}
 };
 

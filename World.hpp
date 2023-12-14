@@ -34,9 +34,9 @@ struct World {
     void remove_object(std::shared_ptr<Object>& o);
 
     // 갱신
-    void update();
+    int update();
     void handle_events(unsigned char, const std::string&);
-    void handle_collisions();
+    int handle_collisions();
     // 출력
     void render(Shader& shader);
 

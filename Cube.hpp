@@ -36,12 +36,14 @@ public:
 		}
 	}
 
-	void handle_collision(const std::string& group, const std::shared_ptr<Object>& other) override {
+	int handle_collision(const std::string& group, const std::shared_ptr<Object>& other) override {
 		if (group == "ball:cube") {
 			//std::shared_ptr<Object> tmp = shared_from_this();
 			setInvaild(true);
 			//world.remove_object(tmp);
 		}
+
+		return 0;
 	}
 };
 

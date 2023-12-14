@@ -108,7 +108,7 @@ public:
 		}
 	}
 
-	void handle_collision(const std::string& group, const std::shared_ptr<Object>& other) override {
+	int handle_collision(const std::string& group, const std::shared_ptr<Object>& other) override {
 		if (group == "Ball:Pizza") {
 			//TODO 볼의 속도를 초기화 = 다시 위로 튀기기 하는 코드
 			collision_flag = true;
@@ -118,6 +118,7 @@ public:
 			//TODO 아이템을 획득
 			//gettime. 특정시간 무적 충돌판정 무시 
 		}
+		return 0;
 	}
 
 };

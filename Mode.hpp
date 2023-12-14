@@ -46,10 +46,15 @@ public:
 	virtual void handle_events(float mx, float my) {
 		// 마우스 클릭 입력 처리 
 	}
+	virtual int get_stage() {
+		// 아무것도 안함.
+		return 0;
+	}
 };
 
 class Game_Frame_Work {
 	std::vector<std::shared_ptr<Mode>>  stack;
+	int stage;
 public:
 
 	// 멤버 함수
@@ -70,12 +75,18 @@ public:
 	
 	}
 
+	int get_stage() {
+		return stack[stack.size() - 1].get()->get_stage();
+	}
+
 	void change_mode(const std::shared_ptr<Mode>& mode) {
 		if( stack.size() > 0) {
+			std::cout << "현재 맵 삭제" << '\n';
 			stack[stack.size() - 1].reset();
 			stack.pop_back();
 		}
 
+		std::cout << "현재 맵 생성" << '\n';
 		stack.push_back(mode);
 		stack[stack.size() - 1].get()->init();
 	}
@@ -145,6 +156,7 @@ public:
 		Mode::~Mode();
 	}
 
+	int get_stage() { return stage; }
 	// 생성후 한 번 호출 필수.
 	void init() {
 		perspective = true;
@@ -197,7 +209,9 @@ public:
 
 	void update() override { // timer 역할
 		// 월드 업데이트
-		world.update();
+		if (world.update()) {
+			return;
+		}
 		// 조명 및 카메라 위치 변경
 		light.get()->setTranslation({ 0.0f, ball.get()->getTranslation().y + 5.0f, 25.0f * sqrt(2) });
 		camera.setPos(ball.get()->getTranslation());
@@ -307,14 +321,14 @@ public:
 		case 'r': case 'R':	// 초기화 입력
 			break;
 		case 's': case 'S':
-			game_framework.get()->change_mode(std::make_shared<Play_mode>(0));
+			game_framework.get()->change_mode(std::make_shared<Play_mode>(1));
 			break;
 		}
 	}
 
 	void handle_events(float mx, float my) override {
 		// ssystem->playSound(click_sound, 0, false, nullptr);	// 채널지정을 안할 경우 알아서 채널 생성후 재생끝날시 알아서 채널이 삭제됨. 
-		game_framework.get()->change_mode(std::make_shared<Play_mode>(0));
+		game_framework.get()->change_mode(std::make_shared<Play_mode>(1));
 	}
 	void reset() { // 시작때로 초기화
 		world.reset();

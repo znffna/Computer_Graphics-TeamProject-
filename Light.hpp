@@ -39,8 +39,9 @@ public:
 		// 그런거 없다.
 	}
 
-	virtual void handle_collision(const std::string& group, const std::shared_ptr<Object>& other)override {
+	virtual int handle_collision(const std::string& group, const std::shared_ptr<Object>& other)override {
 		// 그런거 없다.
+		return 0;
 	}
 };
 

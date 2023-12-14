@@ -2,13 +2,13 @@
 
 #include "Default.hpp"
 #include "Mesh.hpp"
+#include "Mode.hpp"
 #include "World.hpp"
 #include "Object.hpp"
 #include "Pizza.hpp"
 #include "Camera.hpp"
 #include "Shader.hpp"
 #include "Map.hpp"
-#include "Mode.hpp"
 
 
 //glew32.lib freeglut.lib

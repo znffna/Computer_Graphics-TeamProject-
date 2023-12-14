@@ -4,10 +4,12 @@
 #define PIZZA_HPP
 
 #include "Object.hpp"
+#include <memory>
 
 class Game_Frame_Work;
 class Play_Mode;
-extern std::shared_ptr<Game_Frame_Work> game_framework;
+
+void next_level(std::shared_ptr<Game_Frame_Work>& );
 
 class Pizza : public Object {	//상 속
 	int type;
@@ -25,33 +27,9 @@ public:
 		draw();
 	}
 
-	void handle_events(unsigned char key, const std::string&) override {
-		switch (key) {
-		case 'r': case 'R':
-			rollback();
-			break;
-		}
-	}
+	void handle_events(unsigned char key, const std::string&) override;
 
-	void handle_collision(const std::string& group, const std::shared_ptr<Object>& other) override {
-		if (group == "Ball:Pizza") {
-			switch (type) {
-			case 0:
-				//TODO 다음 스페이지로 연결하는 코드.
-				break;		// finish		//흰
-			case 5:
-				//TODO 다음 스페이지로 연결하는 코드.
-				break;		// finish		//검정
-			case 2:
-				break;		// die			// 빨강
-			case 3:
-				break;		// break블럭	// 회색
-			case 4:
-				break;		// 안전블럭		// 초록
-			}
-			
-		}
-	}
+	int handle_collision(const std::string& group, const std::shared_ptr<Object>& other) override;
 };
 
 #endif // !PIZZA_HPP
