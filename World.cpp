@@ -161,8 +161,11 @@ bool World::Check_collision(std::shared_ptr<Ball>& ball, std::shared_ptr<Pizza>&
 
         // Ball 의 바닥y값이 pizza와 겹칠시 true 리턴.
         if (ball_mid - ball_height < pizza_mid + pizza_height and ball_mid + ball_height > pizza_mid - pizza_height) {
-            std::cout << "충돌판정 (Ball : Pizza)" << '\n';
-            std::cout << "Ball.rad :" << ball_rad << " : Pizza.rad :"<< pizza_rad << '\n';
+            if (debug)
+            {
+                std::cout << "충돌판정 (Ball : Pizza)" << '\n';
+                std::cout << "Ball.rad :" << ball_rad << " : Pizza.rad :" << pizza_rad << '\n';
+            }
             return true;
         }
     }
@@ -170,7 +173,8 @@ bool World::Check_collision(std::shared_ptr<Ball>& ball, std::shared_ptr<Pizza>&
 }
 
 bool World::Check_collision(std::shared_ptr<Ball>& ball, std::shared_ptr<Cube>& cube) {
-    std::cout << "Check_collision(ball:cube)" << '\n';
+    if(debug)
+        std::cout << "Check_collision(ball:cube)" << '\n';
     glm::vec3 ball_pos = ball.get()->getTranslation();
     glm::vec3 cube_pos = cube.get()->getTranslation();
     

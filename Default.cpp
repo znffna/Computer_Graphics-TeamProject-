@@ -8,8 +8,8 @@
 
 bool perspective{ true };	//투영 방식(true : 원근 투영)
 
-float window_row = 800;			//윈도우 크기(가로)
-float window_col = 600;			//윈도우 크기(세로)
+float window_row = 600;			//윈도우 크기(가로)
+float window_col = 800;			//윈도우 크기(세로)
 // 사운드 관련 연습용 코드
 FMOD::System* ssystem;	//Sound System 약자임.
 FMOD::Sound* sound1, * sound2;	// 사용할 사운드가 동적할당될텐데 그걸 가르키는 포인터

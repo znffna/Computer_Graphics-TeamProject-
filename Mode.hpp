@@ -147,6 +147,7 @@ public:
 
 	// 생성후 한 번 호출 필수.
 	void init() {
+		perspective = true;
 		// 사운드 설정 먼저.
 		ssystem->createSound(Play_mode_background.c_str(), FMOD_LOOP_NORMAL, 0, &background_sound);	// FMOD_LOOP_NORMAL(반복 재생) , FMOD_DEFAULT (1번 출력)
 		channel->setVolume(0.3f);	// 채널 소리 크기 조절
@@ -256,6 +257,8 @@ public:
 	}
 
 	void init() override {	//초기화 역할.
+		perspective = false;
+
 		ssystem->createSound(Title_mode_background.c_str(), FMOD_LOOP_NORMAL, 0, &background_sound);	// FMOD_LOOP_NORMAL(반복 재생) , FMOD_DEFAULT (1번 출력)
 		ssystem->createSound(Mouse_click_sound.c_str(), FMOD_DEFAULT, 0, &click_sound);	// FMOD_LOOP_NORMAL(반복 재생) , FMOD_DEFAULT (1번 출력)
 
