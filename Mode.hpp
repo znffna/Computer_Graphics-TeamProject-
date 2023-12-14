@@ -314,9 +314,7 @@ public:
 
 	void handle_events(float mx, float my) override {
 		// ssystem->playSound(click_sound, 0, false, nullptr);	// 채널지정을 안할 경우 알아서 채널 생성후 재생끝날시 알아서 채널이 삭제됨. 
-		if (0.3f < mx and mx < 0.7f) {
-			game_framework.get()->change_mode(std::make_shared<Play_mode>(0));
-		}
+		game_framework.get()->change_mode(std::make_shared<Play_mode>(0));
 	}
 	void reset() { // 시작때로 초기화
 		world.reset();

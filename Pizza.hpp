@@ -5,6 +5,10 @@
 
 #include "Object.hpp"
 
+class Game_Frame_Work;
+class Play_Mode;
+extern std::shared_ptr<Game_Frame_Work> game_framework;
+
 class Pizza : public Object {	//상 속
 	int type;
 	bool isCollapse{ false };
@@ -33,17 +37,19 @@ public:
 		if (group == "Ball:Pizza") {
 			switch (type) {
 			case 0:
-				// 0은 평지기 때문에 아무것도 안한다.
-				break;
-			case 1:
-				//TODO 게임 오버
-				// 1은 닿으면 죽는다.
-				break;
+				//TODO 다음 스페이지로 연결하는 코드.
+				break;		// finish		//흰
+			case 5:
+				//TODO 다음 스페이지로 연결하는 코드.
+				break;		// finish		//검정
 			case 2:
-				// 얘는 한번 밣으면 부서지는 블럭
-				// 부서지는 함수 호출
-				break;
+				break;		// die			// 빨강
+			case 3:
+				break;		// break블럭	// 회색
+			case 4:
+				break;		// 안전블럭		// 초록
 			}
+			
 		}
 	}
 };

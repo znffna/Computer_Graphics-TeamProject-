@@ -46,17 +46,11 @@ static glm::vec3 background_color{ 0.7f, 0.7f, 0.7f };	//--- 배경 색깔
 static bool leftdown{ false };								//--- 마우스 클릭상황 flag
 
 //출력 옵션s
-static bool drawstyle{ true };	//false : 와이어(line) 객체/ true : 솔리드(triangle) 객체
-static bool depthcheck{ true };	//은면제거 유무
+bool drawstyle{ true };	//false : 와이어(line) 객체/ true : 솔리드(triangle) 객체
+bool depthcheck{ true };	//은면제거 유무
 //마우스 좌표값
 static float mousex{ 0.0f };		//마우스의 x값
 static float mousey{ 0.0f };		//마우스의 y값
-
-//세이더 클래스 생성
-static Shader shader;
-
-//카메라 클래스 생성
-static Camera camera;
 
 // 조명 위치 적용할 Object
 //Object* Light;
@@ -66,23 +60,6 @@ static Camera camera;
 //--- 실습용 함수 선언
 //--------------------------------------------------------
 GLvoid setup();				//--- main에서 최초로 생성할때 부르는 초기화 함수
-void DebugPrintVBOContents(GLuint vbo, int numVertices, int vertexSizeInBytes);	//--- GPU에 있는 버퍼에서 현재 바인드된 vao에 바인드된 vbo, ebo를 가져와 콘솔에 출력함.
-void Timer_option(const int&, const bool&);
-void Change_switch(bool&);
-
-//--------------------------------------------------------
-//--- 실습용 전역변수 선언
-//-------------------------------------------------------
-//std::vector<std::shared_ptr<Object>> world;	//--- 출력될 오브젝트 모음.
-
-int timer_stop{ 0 };	//0일때 timer 꺼짐.
-bool timers[10]{ false };	//--- 해당 타이머 스위치
-bool reverse[10]{ false };//--- 해당 타이머의 역방향 여부
-
-std::shared_ptr<Ball> ball;
-
-
-
 
 //------------------------------------
 //메인 함수 정의
@@ -404,97 +381,4 @@ void DebugPrintVBOContents(GLuint vbo, int numVertices, int vertexSizeInBytes) {
 
 	delete[] data;
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
-//--- 배경 색상을 랜덤하게 바꾸는 함수
-void change_background() {
-	std::random_device rd;
-	std::mt19937 gen(rd());
-	std::uniform_real_distribution<float> urd(0.0, 1.0);
-
-	background_color = { urd(gen), urd(gen), urd(gen) };
-}
-
-
-class TIMER {
-	//디버그용 출력
-	void show_timerName(const unsigned int idx) {
-		std::cout << "timer[" << idx << "] = " << timer_name[idx];
-	}
-
-	//디버그용 출력
-	void show_boolean(const bool b) {
-		std::cout << b ? " True " : " False ";
-	}
-
-public:
-	size_t size{};						//--- 현재 적용된 타이머 갯수
-	std::vector<bool> timers;			//--- index값의 타이머를 키고 껏는지.
-	std::vector<bool> reverse;			//--- index값의 타이머에 주어지는 옵션.(대문자 = false, 소문자 = true)
-	std::vector<std::string> timer_name;//--- index값의 역할 저장
-	std::map <unsigned int, std::string> index;	// 타이머에 index와 이름을 연결.
-
-	//--- Timer 를 추가함.
-	void insert(const std::string& timerName, const bool& timer_power = false, const bool& timer_reverse = false) {
-		timers.push_back(timer_power);
-		reverse.push_back(timer_reverse);
-		timer_name.push_back(timerName);
-		index.insert({ size, timerName });
-		size = timers.size();
-	}
-
-	void show_list() {
-		for (int i = 0; i < size; ++i) {
-			show_timerName(i);
-			std::cout << ", 타이머 상황: ";
-			show_boolean(timers[i]);
-			std::cout << ", 타이머 리버스 : ";
-			show_boolean(reverse[i]);
-			std::cout << '\n';
-		}
-	}
-
-	//--- 타이머를 변경 시킨다.
-	void switching_timer(const int& idx, const bool& option) {
-		if (idx >= size) {		//입력 오류 방지
-			std::cout << "idx가 주어진 timers 수를 벗어남. ( " << idx << " > " << size << ") " << '\n';
-			return;
-		}
-
-		if (timers[idx] and reverse[idx] == option) {	// 현재 실행중인 타이머를 누를시.
-			timers[idx] = false;						// 해당 타이머를 중지 시킨다.
-		}
-		else if (timers[idx]) {							// 현재 실행중인 타이머인데 대/소문자 차이일 경우.
-			reverse[idx] = option;						// reverse 값이 바뀐다.
-		}
-		else {											// 실행중이지 않은 타이머를 누를 경우.
-			timers[idx] = true;							// 해당 타이머를 키고,
-			reverse[idx] = option;						// 해당 reverse 값을 넣어준다.
-		}
-	}
-
-	void reset() {
-		timers.clear();
-		reverse.clear();
-		timer_name.clear();
-		index.clear();
-		std::cout << "Timer 리셋 완료" << '\n';
-	}
-};
-
-void Timer_option(const int& type, const bool& option) {
-	if (timers[type] and reverse[type] == option) {
-		timers[type] = false;
-	}
-	else if (timers[type]) {
-		reverse[type] = option;
-	}
-	else {
-		timers[type] = true;
-		reverse[type] = option;
-	}
-}
-
-void Change_switch(bool& variable) {
-	variable = variable == true ? false : true;
 }
