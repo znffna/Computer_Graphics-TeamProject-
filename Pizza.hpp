@@ -9,6 +9,13 @@
 class Game_Frame_Work;
 class Play_Mode;
 
+
+extern FMOD::Sound* victory;
+extern FMOD::Sound* defeat;
+
+const std::string victory_sound{ "resource\\sound\\victory.mp3" };
+const std::string defeat_sound{ "resource\\sound\\defeat.mp3" };
+
 void next_level(std::shared_ptr<Game_Frame_Work>& );
 
 class Pizza : public Object {	//»ó ¼Ó

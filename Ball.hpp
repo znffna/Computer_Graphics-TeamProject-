@@ -117,6 +117,7 @@ public:
 			//TODO 볼의 속도를 초기화 = 다시 위로 튀기기 하는 코드
 			collision_flag = true;
 			ssystem->playSound(pingpong, 0, false, nullptr);	// 뒤 채널에 sound1을 출력시킴.
+
 		}
 		if (group == "Ball:Cube") {
 			//TODO 아이템을 획득
