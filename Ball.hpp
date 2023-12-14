@@ -3,6 +3,10 @@
 #ifndef BALL_HPP
 #define BALL_HPP
 
+extern FMOD::Sound* pingpong;
+
+const std::string poing_sound{ "dsadasdas.mp3" };
+
 class Ball : public Object {
 	float radius{ 5.0f }; // 원기둥 중심으로 부터의 거리
 	float size{ 0.6f };		// 공의 크기
@@ -15,7 +19,13 @@ class Ball : public Object {
 	float fall_velocity{ 0.0f };	// 내려가는 속도 (가속도로 계속 줄어들 값 )
 	float fall_acceleration{ 0.03f };	// 중력역할 ( 줄어드는 값을 적으면 됨 )
 public:
-	Ball() : Object(SPHERE) { backup(); setTranslation({ radius, 0.0f, 0.0f });  setScale(glm::vec3(size)); }
+	Ball() : Object(SPHERE) {
+		setTranslation({ radius, 0.0f, 0.0f });
+		setScale(glm::vec3(size));
+		backup();
+		if(pingpong)
+			ssystem->createSound(poing_sound.c_str(), FMOD_DEFAULT, 0, &pingpong);	// FMOD_LOOP_NORMAL(반복 재생) , FMOD_DEFAULT (1번 출력)
+	}
 	// interface function
 	float getVelocity() { return velocity; }
 	void setVelocity(float rhs) { velocity = rhs; }
@@ -102,15 +112,7 @@ public:
 		if (group == "Ball:Pizza") {
 			//TODO 볼의 속도를 초기화 = 다시 위로 튀기기 하는 코드
 			collision_flag = true;
-			//fall_velocity = reset_velocity;
-			//// 공이 위일 경우
-			//if (other.get()->getTranslation().y + other.get()->getScale().y < getTranslation().y) {
-			//	fall_velocity = glm::abs(fall_velocity);
-			//}
-			//else {
-			//	fall_velocity = -glm::abs(fall_velocity);
-			//}
-			//fall_velocity = reset_velocity;
+			ssystem->playSound(pingpong, 0, false, nullptr);	// 뒤 채널에 sound1을 출력시킴.
 		}
 		if (group == "Ball:Cube") {
 			//TODO 아이템을 획득
