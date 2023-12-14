@@ -55,6 +55,7 @@ public:
 class Game_Frame_Work {
 	std::vector<std::shared_ptr<Mode>>  stack;
 	int stage;
+	bool input[128]{ false };
 public:
 
 	// 멤버 함수
@@ -85,10 +86,16 @@ public:
 			stack[stack.size() - 1].reset();
 			stack.pop_back();
 		}
-
 		std::cout << "현재 맵 생성" << '\n';
 		stack.push_back(mode);
 		stack[stack.size() - 1].get()->init();
+
+		if (input['a'] or input['A']) {
+			stack[stack.size() - 1].get()->handle_events('a', "DOWN");
+		}
+		if (input['d'] or input['D']) {
+			stack[stack.size() - 1].get()->handle_events('d', "DOWN");
+		}
 	}
 
 	void push_mode(std::shared_ptr<Mode>& mode) {
@@ -118,6 +125,7 @@ public:
 
 	void handle_events(unsigned int key, const std::string& state) {
 		// 키보드 입력 처리
+		input[key] = state == "DOWN" ? true : false;
 		if (key == 'q' or key == 'Q') {
 			quit();
 		}
