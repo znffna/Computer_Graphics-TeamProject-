@@ -5,15 +5,17 @@
 
 class Ball : public Object {
 	float radius{ 5.0f }; // 원기둥 중심으로 부터의 거리
+	float size{ 0.6f };		// 공의 크기
 
 	float velocity{ 5.0f };		// 좌우 이동 속도(rad)
 	int move_dir{ 0 };			// 좌우 이동 방향(0: 이동안함)
 
+	bool collision_flag{ false };	// 공의 scale을 움직일땐 true, translate가 움직일땐 false;
 	float reset_velocity{ 0.4f };	// 땅과 부딫힐 경우 초기화될 값.
 	float fall_velocity{ 0.0f };	// 내려가는 속도 (가속도로 계속 줄어들 값 )
 	float fall_acceleration{ 0.03f };	// 중력역할 ( 줄어드는 값을 적으면 됨 )
 public:
-	Ball() : Object(SPHERE) { backup(); setTranslation({ radius, 0.0f, 0.0f });  setScale(glm::vec3(0.6f)); }
+	Ball() : Object(SPHERE) { backup(); setTranslation({ radius, 0.0f, 0.0f });  setScale(glm::vec3(size)); }
 	// interface function
 	float getVelocity() { return velocity; }
 	void setVelocity(float rhs) { velocity = rhs; }
@@ -40,9 +42,28 @@ public:
 
 	// vertical_move( 상하 수직 운동 )
 	void falling() {
-		fall_velocity -= fall_acceleration; // 시간개념은 안넣었음.
-		fall_velocity = glm::clamp(fall_velocity, -4.0f, 4.0f);
-		addTranslation({ 0.0f, fall_velocity, 0.0f });
+		if (collision_flag) {
+			glm::vec3 pos = getTranslation() - getScale();
+			addScale({ 0.0f, fall_velocity * 0.3f, 0.0f });
+			pos += getScale();
+			setTranslation(pos);
+			if (getScale().y < size / 4.0f) {
+				glm::vec3 tmp{ getScale() };
+				setScale({ tmp.x, size / 4.0f, tmp.z });
+				fall_velocity = -fall_velocity;
+			}
+			else if (getScale().y > size) {
+				glm::vec3 tmp{ getScale() };
+				setScale({ tmp.x, size, tmp.z });
+				collision_flag = false;
+				fall_velocity = reset_velocity;
+			}
+		}
+		else{
+			fall_velocity -= fall_acceleration; // 시간개념은 안넣었음.
+			fall_velocity = glm::clamp(fall_velocity, -4.0f, 4.0f);
+			addTranslation({ 0.0f, fall_velocity, 0.0f });
+		}
 	}
 
 	void update() override {
@@ -80,7 +101,16 @@ public:
 	void handle_collision(const std::string& group, const std::shared_ptr<Object>& other) override {
 		if (group == "Ball:Pizza") {
 			//TODO 볼의 속도를 초기화 = 다시 위로 튀기기 하는 코드
-			fall_velocity = reset_velocity;
+			collision_flag = true;
+			//fall_velocity = reset_velocity;
+			//// 공이 위일 경우
+			//if (other.get()->getTranslation().y + other.get()->getScale().y < getTranslation().y) {
+			//	fall_velocity = glm::abs(fall_velocity);
+			//}
+			//else {
+			//	fall_velocity = -glm::abs(fall_velocity);
+			//}
+			//fall_velocity = reset_velocity;
 		}
 		if (group == "Ball:Cube") {
 			//TODO 아이템을 획득

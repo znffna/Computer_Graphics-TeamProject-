@@ -73,5 +73,5 @@ extern FMOD::Sound* sound1, * sound2;	// 사용할 사운드가 동적할당될텐데 그걸 가�
 extern FMOD::Channel* channel;
 extern FMOD_RESULT result;
 extern void* extradriverdata;
-
+extern bool perspective;
 #endif //

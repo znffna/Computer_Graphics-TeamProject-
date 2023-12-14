@@ -188,6 +188,7 @@ void Map::makeMap()
 			}
 			floor.push_back(tmp);
 
+			tmp.get()->backup();
 			world.add_object(tmp);
 			auto o_tmp = std::static_pointer_cast<Object>(tmp);
 			world.add_collision_pair("Ball:Pizza", NULLPTR, o_tmp);
@@ -199,6 +200,7 @@ void Map::makeMap()
 		std::shared_ptr<Pillar> tmp = std::make_shared<Pillar>(glm::vec3{ 1.5f, start_height * 1.5f, 1.5f });
 		tmp.get()->setTranslation({ 0.0f, 0.0f, 0.0f });
 		tmp.get()->setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+		tmp.get()->backup();
 		auto o_tmp = std::static_pointer_cast<Object>(tmp);
 		world.add_object(o_tmp);
 		//world.push_back(temp);
@@ -210,6 +212,7 @@ void Map::makeMap()
 			float rad = random_number(0.0f, 360.0f);
 			std::shared_ptr<Cube> tmp = std::make_shared<Cube>(glm::vec3(3.0f, start_height - floor_height * floor_item[i]* 0.5 ,3.0f),  glm::vec3(0.0f, rad, 0.0f),  glm::vec3(0.5f) );
 			tmp.get()->setColor({ 0.0f, 0.0f, 1.0f, 1.0f });
+			tmp.get()->backup();
 			item.push_back(tmp);
 			world.add_object(tmp);
 			auto o_tmp = std::static_pointer_cast<Object>(tmp);
