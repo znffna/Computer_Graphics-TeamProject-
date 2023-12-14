@@ -4,8 +4,10 @@
 #define BALL_HPP
 
 extern FMOD::Sound* pingpong;
+extern FMOD::Sound* item;
 
-const std::string poing_sound{ "dsadasdas.mp3" };
+const std::string poing_sound{ "resource\\sound\\ballsound.mp3" };
+const std::string item_sound{ "resource\\sound\\item.mp3" };
 
 class Ball : public Object {
 	float radius{ 5.0f }; // 원기둥 중심으로 부터의 거리
@@ -23,8 +25,10 @@ public:
 		setTranslation({ radius, 0.0f, 0.0f });
 		setScale(glm::vec3(size));
 		backup();
-		if(pingpong)
-			ssystem->createSound(poing_sound.c_str(), FMOD_DEFAULT, 0, &pingpong);	// FMOD_LOOP_NORMAL(반복 재생) , FMOD_DEFAULT (1번 출력)
+		FMOD_RESULT result1;
+		FMOD_RESULT result2;
+		result1 = ssystem->createSound(poing_sound.c_str(), FMOD_DEFAULT, nullptr, &pingpong);
+		result2 = ssystem->createSound(item_sound.c_str(), FMOD_DEFAULT, nullptr, &item);
 	}
 	// interface function
 	float getVelocity() { return velocity; }
@@ -117,6 +121,7 @@ public:
 		if (group == "Ball:Cube") {
 			//TODO 아이템을 획득
 			//gettime. 특정시간 무적 충돌판정 무시 
+			ssystem->playSound(item, 0, false, nullptr);	// 뒤 채널에 sound1을 출력시킴.
 		}
 		return 0;
 	}

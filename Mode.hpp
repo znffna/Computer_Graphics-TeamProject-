@@ -14,9 +14,9 @@
 #include "Camera.hpp"
 #include "Shader.hpp"
 
-const std::string Mouse_click_sound{ "Illusion.mp3" };
-const std::string Title_mode_background{ "Illusion.mp3" };
-const std::string Play_mode_background{ "Illusion.mp3" };
+const std::string Mouse_click_sound{ "resource\\sound\\bkgmusic.wav" };
+const std::string Title_mode_background{ "resource\\sound\\titlesound.wav" };
+const std::string Play_mode_background{ "resource\\sound\\bkgmusic.wav" };
 
 extern std::shared_ptr<Light> light;
 
