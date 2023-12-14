@@ -54,7 +54,7 @@ public: // ---- ¸â¹ö ÇÔ¼ö ----
 
 	// interface function
 	void setInvaild(bool rhs) { invaild = rhs; }
-	bool getInvaild() { return invaild; }
+	bool getInvaild() const { return invaild; }
 
 	void setTranslation(const glm::vec3& vector);
 	void setRotate(const glm::vec3& vector);

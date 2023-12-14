@@ -31,7 +31,8 @@ public:
 	void update();
 
 	void render() const override {
-		draw();
+		if(!getInvaild())
+			draw();
 	}
 
 	void handle_events(unsigned char key, const std::string&) override;
