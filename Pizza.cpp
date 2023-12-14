@@ -54,7 +54,7 @@ int Pizza::handle_collision(const std::string& group, const std::shared_ptr<Obje
 			break;		// finish		//검정
 		case 2:
 			ssystem->playSound(defeat, 0, false, nullptr);	// 뒤 채널에 sound1을 출력시킴.
-			rollback();
+			game_framework.get()->handle_events('r', "DOWN");
 			break;		// die			// 빨강
 		case 3:
 			setInvaild(true);
