@@ -95,7 +95,9 @@ public:
 			std::cout << "무적 진행 시간: " << std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()) - item_start << '\n';
 			if (std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()) - item_start > 1) {
 				invincibility = false;
+				collision_flag = false;
 				fall_velocity = 0.0f;
+				setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 			}
 			addTranslation({ 0.0f, -0.5f, 0.0f });
 		}
@@ -106,7 +108,10 @@ public:
 	}
 
 	void render() const override {
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		draw();
+		glDisable(GL_BLEND);
 	}
 
 	void handle_events(unsigned char key, const std::string& state) override {
@@ -146,6 +151,8 @@ public:
 			item_start = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
 			invincibility = true;
+			setColor({ 134.0f / 256.0f, 71.0f / 256.0f, 71.0f / 256.0f, 0.5f });
+
 			ssystem->playSound(item, 0, false, nullptr);	// 뒤 채널에 sound1을 출력시킴.
 		}
 		return 0;
