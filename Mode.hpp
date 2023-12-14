@@ -181,7 +181,8 @@ public:
 
 		{	// 조작할 공 생성
 			ball = std::make_shared<Ball>();
-			ball.get()->setTranslation({ 3.0f, map.get()->getHeight() + ball.get()->getScale().y, 0.0f });
+			ball.get()->setTranslation({ 3.0f, map.get()->getHeight()+  5.0f + ball.get()->getScale().y, 0.0f });
+			ball.get()->backup();
 			auto send = std::dynamic_pointer_cast<Object>(ball);
 			world.add_object(send);
 			world.add_collision_pair("Ball:Pizza", send, NULLPTR);
@@ -191,7 +192,8 @@ public:
 		{	//조명 초기화
 			if (!light)
 				light = std::make_shared<Light>();
-			shader.Colorselect(Shader::lightOption = true);
+			shader.setLight(true);
+			shader.Colorselect(false);
 			// Light = new Object(CUBE);
 			light.get()->setRotate({ 0.0f, 0.0f, 0.0f });
 			light.get()->setTranslation({ 0.0f, map.get()->getHeight() + 5.0f, 10.0f });	//light_pos
@@ -227,6 +229,12 @@ public:
 			ball.get()->handle_events(key, state);
 			break;
 		case 'r': case 'R':	// 초기화 입력
+			shader.setLight(true);
+			shader.Colorselect(false);
+			if(!light)
+				light = std::make_shared<Light>();
+			camera.setPos({ 0.0f, 0.0f, 1.0f });
+			camera.setDir({ 0.0f, 0.0f, -1.0f });
 			world.handle_events(key, state);
 			break;
 		}
@@ -319,6 +327,11 @@ public:
 	void handle_events(unsigned int key, const std::string& state) override {
 		switch (key) {
 		case 'r': case 'R':	// 초기화 입력
+			//조명 초기화
+			shader.Colorselect(Shader::lightOption = false);
+			light = std::make_shared<Light>();
+			camera.setPos({ 0.0f, 0.0f, 1.0f });
+			camera.setDir({ 0.0f, 0.0f, -1.0f });
 			break;
 		case 's': case 'S':
 			game_framework.get()->change_mode(std::make_shared<Play_mode>(0));

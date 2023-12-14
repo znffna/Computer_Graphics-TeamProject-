@@ -126,6 +126,12 @@ public:
 		return 0;
 	}
 
+	void rollback() override {
+		Object::rollback();
+		fall_velocity = 0.0f;
+		collision_flag = false;
+	}
+
 };
 
 #endif // !BALL_HPP

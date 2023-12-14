@@ -189,6 +189,7 @@ void Map::makeMap()
 			floor.push_back(tmp);
 
 			tmp.get()->backup();
+
 			world.add_object(tmp);
 			auto o_tmp = std::static_pointer_cast<Object>(tmp);
 			world.add_collision_pair("Ball:Pizza", NULLPTR, o_tmp);

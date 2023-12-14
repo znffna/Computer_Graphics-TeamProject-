@@ -159,8 +159,8 @@ void Object::backup()
 void Object::rollback()
 {
 	translation = reset_translation;
-	translation = reset_rotate;
-	translation = reset_scale;
+	rotate = reset_rotate;
+	scale = reset_scale;
 	setInvaild(false);
 }
 
