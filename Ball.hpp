@@ -1,4 +1,5 @@
 #include "Object.hpp"
+#include <chrono>
 
 #ifndef BALL_HPP
 #define BALL_HPP
@@ -20,6 +21,9 @@ class Ball : public Object {
 	float reset_velocity{ 0.4f };	// 땅과 부딫힐 경우 초기화될 값.
 	float fall_velocity{ 0.0f };	// 내려가는 속도 (가속도로 계속 줄어들 값 )
 	float fall_acceleration{ 0.03f };	// 중력역할 ( 줄어드는 값을 적으면 됨 )
+	time_t item_start{};
+	bool invincibility{ false }; //무적
+
 public:
 	Ball() : Object(SPHERE) {
 		setTranslation({ radius, 0.0f, 0.0f });
@@ -39,6 +43,8 @@ public:
 
 	float getFallAccelation() { return fall_acceleration; }
 	void setFallAccelation(float rhs) { fall_acceleration = rhs; }
+
+	bool getinvincibility() { return  invincibility; }
 
 	float getRadius() { return radius; }
 	void setRadius(float rhs) { radius = rhs; }
@@ -84,6 +90,10 @@ public:
 		//std::cout << "Ball.update() 호출" << '\n';
 		horizontal_move();	// 좌우 이동 갱신
 		falling();	// 상하 이동 갱신
+		if (item_start - std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()) > 3) {
+			invincibility = false;
+		}
+
 	}
 
 	void render() const override {
@@ -122,6 +132,9 @@ public:
 		if (group == "Ball:Cube") {
 			//TODO 아이템을 획득
 			//gettime. 특정시간 무적 충돌판정 무시 
+			item_start = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
+			invincibility = true;
 			ssystem->playSound(item, 0, false, nullptr);	// 뒤 채널에 sound1을 출력시킴.
 		}
 		return 0;

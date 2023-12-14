@@ -149,6 +149,7 @@ void Map::Map1()
 // 불러온 데이터로 실제 오브젝트 생성하는 함수
 void Map::makeMap()
 {
+
 	if (floor_rad.size() == 0) {
 		std::cout << "map.makeMap() : 현재 불러온 데이터가 없음" << '\n';
 		return;

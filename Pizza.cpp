@@ -37,6 +37,7 @@ void Pizza::handle_events(unsigned char key, const std::string&) {
 
 int Pizza::handle_collision(const std::string& group, const std::shared_ptr<Object>& other) {
 	if (group == "Ball:Pizza") {
+		std::shared_ptr<Ball> tmp = std::dynamic_pointer_cast<Ball>(other);
 		switch (type) {
 		case 0:
 			//TODO 다음 스페이지로 연결하는 코드.
@@ -53,8 +54,10 @@ int Pizza::handle_collision(const std::string& group, const std::shared_ptr<Obje
 			return 1;
 			break;		// finish		//검정
 		case 2:
-			ssystem->playSound(defeat, 0, false, nullptr);	// 뒤 채널에 sound1을 출력시킴.
-			game_framework.get()->handle_events('r', "DOWN");
+			if(!tmp.get()->getinvincibility())	{
+				ssystem->playSound(defeat, 0, false, nullptr);	// 뒤 채널에 sound1을 출력시킴.
+				game_framework.get()->handle_events('r', "DOWN");
+			}
 			break;		// die			// 빨강
 		case 3:
 			setInvaild(true);
@@ -63,5 +66,6 @@ int Pizza::handle_collision(const std::string& group, const std::shared_ptr<Obje
 			break;		// 안전블럭		// 초록
 		}
 	}
+
 	return 0;
 }
